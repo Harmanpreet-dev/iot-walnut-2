@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+* {
+  font-family: "DM Sans", sans-serif;
+}
+
+.main-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  height: 100vh;
+}
+
+.content-wrapper {
+  flex-grow: 1;
+  padding: 2.5rem 1.9rem;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 0.15s;
+}
+
+.breadcrumbs > ul {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  min-height: min-content;
+}
+
+.breadcrumbs > ul > li {
+  display: flex;
+  align-items: center;
+}
+
+.simplebar-content:after,
+.simplebar-content:before {
+  content: " ";
+  display: table;
+}
+
+.simplebar-scrollbar:before {
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  right: 2px;
+}
+
+.leftmenu-wrapper {
+  width: 250px;
+  transition: all 0.3s;
+  position: sticky;
+  bottom: 0;
+  top: 0;
+  height: 100vh;
+  min-width: 15rem;
+  border-inline-end-width: 1px;
+  border-right: 1px solid #f8f9fa;
+  background-color: #f8f9fa;
+}
+
+.profile-group .profile-image::after {
+  content: "\270E";
+  color: black;
+  background-color: white;
+  border-radius: 50%;
+  padding: 4px 8px;
+  font-size: 18px;
+  position: relative;
+  top: -24px;
+  left: 84px;
+}
+
+.effect a .iconsSet svg {
+  width: 35px;
+  height: 35px;
+  padding: 4px;
+  border-radius: 15px;
+  transition: all 0.5s;
+}
+
+.effect a:hover .iconsSet svg,
+.effect a.active .iconsSet svg.fill-current {
+  background-color: black;
+  fill: white;
+}
+
+.effect a:hover {
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border-radius: 15px;
+  color: black;
+}
+
+.table :where(th, td) {
+  padding: 1rem 1.5rem;
+}
+
+.menu li > *:not(ul, .menu-title, details, .btn).active {
+  background-color: white;
+  color: black;
+  border-radius: 15px;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-steps {
+  width: 40%;
+  margin: 10px auto 40px;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-steps
+  .ant-steps-item-process
+  .ant-steps-item-icon,
+:where(.css-dev-only-do-not-override-3rel02).ant-steps
+  .ant-steps-item-finish
+  .ant-steps-item-icon {
+  background-color: #333333;
+  border-color: #333333;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-steps
+  .ant-steps-item-finish
+  .ant-steps-item-icon
+  > .ant-steps-icon {
+  color: #ffffff;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-steps
+  .ant-steps-item-finish
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title::after {
+  background-color: #000000;
+}
+
+.filtersSet::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 15px;
+  color: #b1b1b1;
+  background-color: #b1b1b1;
+  margin-left: 14px;
+}
+
+.modal-box {
+  border-radius: 20px;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-drawer
+  .ant-drawer-header-title {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-drawer .ant-drawer-body {
+  padding: 10px;
+}
+
+.collapse-content .checkbox {
+  height: 1rem;
+  width: 1rem;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-drawer .ant-drawer-title {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 22px;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-drawer .ant-drawer-header {
+  padding: 35px 24px 10px 24px;
+  border-bottom: none;
+}
+
+:where(.css-dev-only-do-not-override-3rel02).ant-btn-default:not(:disabled):not(
+    .ant-btn-disabled
+  ):hover,
+:where(.css-dev-only-do-not-override-3rel02).ant-btn-primary:not(:disabled):not(
+    .ant-btn-disabled
+  ):hover {
+  color: #040404;
+  border-color: #4d4d4d;
+  background: #ffffff;
+}
+
+@media (hover: hover) {
+  @supports (color: oklch(0% 0 0)) {
+    .btn-ghost:hover {
+      background-color: transparent;
+    }
+  }
+}
