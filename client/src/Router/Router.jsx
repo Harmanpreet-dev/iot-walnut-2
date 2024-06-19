@@ -14,6 +14,7 @@ import ChangePassword from "../pages/Profile/ChangePassword";
 import ManageCategory from "../pages/ManageCategory";
 import ManageFleets from "../pages/ManageFleets";
 import Settings from "../pages/Profile/Settings";
+import ManageDevices from "../pages/ManageDevices";
 
 const routerAdmin = createBrowserRouter(
   createRoutesFromElements(
@@ -26,6 +27,7 @@ const routerAdmin = createBrowserRouter(
         <Route path="/manage-admin" element={<ManageAdmin />}></Route>
         <Route path="/manage-category" element={<ManageCategory />}></Route>
         <Route path="/manage-fleets" element={<ManageFleets />}></Route>
+        <Route path="/manage-devices" element={<ManageDevices />}></Route>
       </Route>
     </>
   )

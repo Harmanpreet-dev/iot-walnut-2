@@ -89,7 +89,10 @@ const Login = () => {
               phone: user.data.phone,
               jwt: user.token,
               status: true,
-              google_secret: JSON.parse(user.data.google_secret).base32,
+              google_secret:
+                user.data.google_secret === null
+                  ? ""
+                  : JSON.parse(user.data.google_secret).base32,
             })
           );
           navigate("/manage-admin");
@@ -99,6 +102,7 @@ const Login = () => {
         setLoading(false);
       })
       .catch((err) => {
+        console.log(err);
         setLoading(false);
         openNotification("error", "Server Error");
       });

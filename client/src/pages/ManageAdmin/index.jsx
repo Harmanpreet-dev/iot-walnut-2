@@ -72,15 +72,15 @@ export default function ManageAdmin() {
       });
   };
 
-  const handle2FA = (response) => {
-    if (response === true) {
-      handleDeleteAdmin(formValues);
-    }
-  };
+  // const handle2FA = (response) => {
+  //   if (response === true) {
+  //     handleDeleteAdmin(formValues);
+  //   }
+  // };
 
   return (
     <>
-      <TwoFactAuth handle2FA={handle2FA} />
+      {/* <TwoFactAuth handle2FA={handle2FA} /> */}
       <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">

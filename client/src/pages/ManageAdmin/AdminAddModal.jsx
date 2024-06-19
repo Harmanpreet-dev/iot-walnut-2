@@ -106,6 +106,7 @@ export default function AdminAddModal({ getUsers, state }) {
   };
 
   const handle2FA = (response) => {
+    console.log(response);
     if (response === true) {
       handleFormSubmit(formValues);
     }
