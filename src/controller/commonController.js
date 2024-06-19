@@ -76,6 +76,10 @@ const verifyGoogleOTP = async (req, res) => {
   res.json({ verified });
 };
 
+const demo = async (req, res) => {
+  res.json({ status: true });
+};
+
 module.exports = {
   vertifyTokenStatus,
   updateProfile,
@@ -83,4 +87,5 @@ module.exports = {
   verifyEmailOTP,
   generateGoogleOTP,
   verifyGoogleOTP,
+  demo,
 };
