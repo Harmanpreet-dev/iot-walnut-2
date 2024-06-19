@@ -11,18 +11,11 @@ app.use(cors());
 // Serve static files from the "profile" directory
 app.use("/profile", express.static("./src/profile"));
 
-app.use(
-  "/static",
-  express.static("/Users/macbookpro/Harman/IOT/Develop/client/build/static")
-);
-
-app.use(
-  "/images",
-  express.static("/Users/macbookpro/Harman/IOT/Develop/client/build/images")
-);
+app.use("/static", express.static("./src/client/build/static"));
+app.use("/images", express.static("./src/client/build/images"));
 
 app.get("/", (req, res) => {
-  res.sendFile("/Users/macbookpro/Harman/IOT/Develop/client/build/index.html");
+  res.sendFile(__dirname + "/client/build/index.html");
 });
 
 // Use the user router
