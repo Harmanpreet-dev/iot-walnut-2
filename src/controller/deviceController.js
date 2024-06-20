@@ -3,14 +3,14 @@ const { pgClient } = require("../db/connection");
 
 const addDevice = async (req, res) => {
   try {
-    const { imei, fleet } = req.body;
+    const { imei, fleet, name } = req.body;
 
     let result = await pgClient.query(
-      "INSERT INTO devices (imei,fleet) VALUES ($1,$2)",
-      [imei, fleet]
+      "INSERT INTO devices (imei,fleet,name) VALUES ($1,$2,$3)",
+      [imei, fleet, name]
     );
 
-    await CreateThingAndAddToGroup(imei, fleet);
+    await CreateThingAndAddToGroup(name, fleet);
 
     res.status(200).json(result);
   } catch (err) {

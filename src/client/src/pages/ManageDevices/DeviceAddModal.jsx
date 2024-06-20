@@ -32,6 +32,9 @@ export default function DeviceAddModal({ getDevices }) {
 
   const handleFormSubmit = (values) => {
     values.fleet = params.fleet;
+    values.name = `${params.fleet}_${values.imei}_sp_${Math.floor(
+      Math.random() * 10
+    )}`;
     axios
       .post(`${process.env.REACT_APP_API_URL}/addDevice`, values, {
         headers: {

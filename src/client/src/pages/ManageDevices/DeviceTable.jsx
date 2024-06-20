@@ -39,7 +39,7 @@ export default function DeviceTable({ devices }) {
                       <td className="bg-base-100 rounded-l-[15px]">
                         <div className="flex items-center gap-3">
                           <div className="text-base-500 font-[700] text-[19px] landing-[35px]">
-                            {x.imei}
+                            {x.name}
                           </div>
                         </div>
                       </td>
