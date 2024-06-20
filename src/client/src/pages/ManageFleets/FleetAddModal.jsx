@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 const validate = (values) => {
   const errors = {};
@@ -26,16 +28,32 @@ const validate = (values) => {
 };
 
 export default function FleetAddModal() {
+  const state = useSelector((state) => state.auth);
   const formik = useFormik({
     initialValues: {
       name: "",
     },
     validate,
     onSubmit: (values) => {
-      console.log("ok");
-      alert(JSON.stringify(values, null, 2));
+      handleFormSubmit(values);
     },
   });
+
+  const handleFormSubmit = (values) => {
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/addFleet`, values, {
+        headers: {
+          Authorization: state.jwt,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <dialog id="my_modal_3" className="modal">
       <div className="modal-box bg-base-200 max-w-[50rem] h-3/4">

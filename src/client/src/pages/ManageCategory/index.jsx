@@ -1,9 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import CategoryTable from "./CategoryTable";
 import CategoryAddModal from "./CategoryAddModal";
 
 export default function ManageCategory() {
+  const [categories, setCategories] = useState([]);
+  const state = useSelector((state) => state.auth);
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  const getCategory = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/getCategories`, {
+        headers: {
+          Authorization: state.jwt,
+        },
+      })
+      .then((res) => {
+        setCategories(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   return (
     <>
       <div className="content-wrapper bg-base-200 h-screen">
@@ -24,13 +46,13 @@ export default function ManageCategory() {
                 >
                   Add Category <FaPlus className="pl-1 text-[18px]" />
                 </button>
-                <CategoryAddModal />
+                <CategoryAddModal getCategory={getCategory} state={state} />
               </div>
             </div>
           </div>
         </div>
 
-        <CategoryTable />
+        <CategoryTable categories={categories} />
       </div>
     </>
   );

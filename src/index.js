@@ -21,6 +21,8 @@ app.get("/", (req, res) => {
 // Use the user router
 app.use("/api", require("./routers/userRouter"));
 app.use("/api", require("./routers/commonRouter"));
+app.use("/api", require("./routers/FleetRouter"));
+app.use("/api", require("./routers/categoryRouter"));
 
 // Connect to PostgreSQL and start the server
 pgClient.connect((err) => {
