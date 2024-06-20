@@ -1,17 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
 import FleetAddModal from "./FleetAddModal";
 import FleetTable from "./FleetTable";
 import FleetFilter from "./FleetFilter";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 export default function ManageFleets() {
+  const [fleets, setFleets] = useState([]);
+  const [admin, setAdmin] = useState([]);
+  const [category, setCategory] = useState([]);
+
   const [open, setOpen] = useState(false);
+
+  const state = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    getFleets();
+    getUserCategory();
+  }, []);
+
   const showDrawer = () => {
     setOpen(true);
   };
   const onClose = () => {
     setOpen(false);
+  };
+
+  const getFleets = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/getFleets`, {
+        headers: {
+          Authorization: state.jwt,
+        },
+      })
+      .then((res) => {
+        setFleets(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getUserCategory = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/getUserCategory`, {
+        headers: {
+          Authorization: state.jwt,
+        },
+      })
+      .then((res) => {
+        setAdmin(res.data.users);
+        setCategory(res.data.category);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -48,13 +93,17 @@ export default function ManageFleets() {
                 >
                   Add Fleets <FaPlus className="pl-2 text-[24px]" />
                 </button>
-                <FleetAddModal />
+                <FleetAddModal
+                  getFleets={getFleets}
+                  admin={admin}
+                  category={category}
+                />
               </div>
             </div>
           </div>
         </div>
 
-        <FleetTable />
+        <FleetTable fleets={fleets} admin={admin} category={category} />
       </div>
     </>
   );

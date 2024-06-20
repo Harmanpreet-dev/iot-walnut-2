@@ -27,7 +27,7 @@ const validate = (values) => {
   return errors;
 };
 
-export default function FleetAddModal() {
+export default function FleetAddModal({ getFleets, admin, category }) {
   const state = useSelector((state) => state.auth);
   const formik = useFormik({
     initialValues: {
@@ -48,6 +48,8 @@ export default function FleetAddModal() {
       })
       .then((res) => {
         console.log(res);
+        getFleets();
+        document.getElementById("my_modal_3").close();
       })
       .catch((err) => {
         console.log(err);
@@ -98,13 +100,18 @@ export default function FleetAddModal() {
                       className="select focus:outline-none focus:border-none w-full  form-control flex flex-row items-center rounded-[15px] h-14 bg-base-100 px-3 shadow"
                       name="category"
                       onChange={formik.handleChange}
-                      value={formik.values.category}
+                      defaultValue={0}
                     >
-                      <option disabled selected>
+                      <option value="0" disabled>
                         Select Category
                       </option>
-                      <option>Han Solo</option>
-                      <option>Greedo</option>
+                      {category.map((x, i) => {
+                        return (
+                          <option value={x.id} key={i}>
+                            {x.name}
+                          </option>
+                        );
+                      })}
                     </select>
                   </div>
                   <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
@@ -124,13 +131,18 @@ export default function FleetAddModal() {
                       className="select focus:outline-none focus:border-none w-full  form-control flex flex-row items-center rounded-[15px] h-14 bg-base-100 px-3 shadow"
                       name="admin"
                       onChange={formik.handleChange}
-                      value={formik.values.admin}
+                      defaultValue={0}
                     >
-                      <option disabled selected>
+                      <option value="0" disabled>
                         Select Admin
                       </option>
-                      <option>Han Solo</option>
-                      <option>Greedo</option>
+                      {admin.map((x, i) => {
+                        return (
+                          <option value={x.id} key={i}>
+                            {x.name}
+                          </option>
+                        );
+                      })}
                     </select>
                   </div>
                   <span className="h-[2px] mt-2 text-rose-600 text-[12px]">

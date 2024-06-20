@@ -27,7 +27,10 @@ const routerAdmin = createBrowserRouter(
         <Route path="/manage-admin" element={<ManageAdmin />}></Route>
         <Route path="/manage-category" element={<ManageCategory />}></Route>
         <Route path="/manage-fleets" element={<ManageFleets />}></Route>
-        <Route path="/manage-devices" element={<ManageDevices />}></Route>
+        <Route
+          path="/manage-devices/:fleet"
+          element={<ManageDevices />}
+        ></Route>
       </Route>
     </>
   )

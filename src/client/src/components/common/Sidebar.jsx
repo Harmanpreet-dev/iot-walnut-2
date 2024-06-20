@@ -39,10 +39,10 @@ const Sidebar = () => {
               <li className="menu-title font-medium text-[17px] text-base-content/70 leading-[35px] pt-[30px]">
                 Main Menu
               </li>
-              {SideBarData.map((x) => {
+              {SideBarData.map((x, i) => {
                 let { name, link, svg } = x;
                 return (
-                  <li className="mb-0.5 effect">
+                  <li className="mb-0.5 effect" key={i}>
                     <NavLink
                       to={link}
                       className="px-2 py-4 text-base-600 text-[15px] font-[400] leading-[22px]"

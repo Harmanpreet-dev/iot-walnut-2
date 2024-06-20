@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 
-export default function FleetTable({ fleets, admin, category }) {
+export default function DeviceTable({ devices }) {
   const navigate = useNavigate();
 
   return (
@@ -18,16 +18,16 @@ export default function FleetTable({ fleets, admin, category }) {
                     <input type="checkbox" className="checkbox" />
                   </label>
                 </th>
-                <th>Fleet name</th>
-                <th>Category</th>
-                <th>Admin</th>
+                <th>Device name</th>
+                <th>IMEI Number</th>
+                <th>Status</th>
                 <th>Admin Phone</th>
                 <th></th>
               </tr>
             </thead>
             <br />
             <tbody className="mt-3">
-              {fleets.map((x) => {
+              {devices.map((x) => {
                 return (
                   <React.Fragment key={x.id}>
                     <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
@@ -39,34 +39,22 @@ export default function FleetTable({ fleets, admin, category }) {
                       <td className="bg-base-100 rounded-l-[15px]">
                         <div className="flex items-center gap-3">
                           <div className="text-base-500 font-[700] text-[19px] landing-[35px]">
-                            {x.name}
+                            {x.imei}
                           </div>
                         </div>
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
-                        {category.map((y) => {
-                          if (y.id === parseInt(x.category)) {
-                            return y.name;
-                          }
-                        })}
+                        {x.imei}
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                        {admin.map((y) => {
-                          if (y.id === parseInt(x.admin)) {
-                            return y.name;
-                          }
-                        })}
+                        Active
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                        {admin.map((y) => {
-                          if (y.id === parseInt(x.admin)) {
-                            return y.phone;
-                          }
-                        })}
+                        9876543210
                       </td>
                       <td
                         className="bg-base-100 rounded-r-[15px] w-8 cursor-pointer cursor-pointer"
-                        onClick={() => navigate(`/manage-devices/${x.name}`)}
+                        onClick={() => navigate("/manage-devices")}
                       >
                         <div className="text-[20px] font-[500] landing-[35px] text-neutral-500 ">
                           <IoIosArrowForward />
