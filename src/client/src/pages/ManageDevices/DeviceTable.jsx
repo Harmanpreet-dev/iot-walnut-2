@@ -54,7 +54,7 @@ export default function DeviceTable({ devices }) {
                       </td>
                       <td
                         className="bg-base-100 rounded-r-[15px] w-8 cursor-pointer cursor-pointer"
-                        onClick={() => navigate("/manage-devices")}
+                        onClick={() => navigate(`/device/${x.name}`)}
                       >
                         <div className="text-[20px] font-[500] landing-[35px] text-neutral-500 ">
                           <IoIosArrowForward />

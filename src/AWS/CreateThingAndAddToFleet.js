@@ -74,9 +74,48 @@ function addThingToGroup(thingName, groupName, callback) {
   });
 }
 
+// Function to create a policy
+function createPolicy(policyName, policyDocument, callback) {
+  const params = {
+    policyName: policyName,
+    policyDocument: JSON.stringify(policyDocument),
+  };
+
+  iot.createPolicy(params, (err, data) => {
+    if (err && err.code !== "ResourceAlreadyExistsException") {
+      console.error("Error creating policy:", err);
+    } else {
+      if (err && err.code === "ResourceAlreadyExistsException") {
+        console.log("Policy already exists:", policyName);
+        data = { policyName: policyName }; // Use existing policy
+      } else {
+        console.log("Policy created successfully:", data);
+      }
+      callback(data);
+    }
+  });
+}
+
+// Function to attach policy to a certificate
+function attachPolicyToCertificate(policyName, certificateArn, callback) {
+  const params = {
+    policyName: policyName,
+    target: certificateArn,
+  };
+
+  iot.attachPolicy(params, (err, data) => {
+    if (err) {
+      console.error("Error attaching policy to certificate:", err);
+    } else {
+      console.log("Policy attached to certificate successfully:", data);
+      callback();
+    }
+  });
+}
+
 // Function to save certificate and key to files
-function saveCertificates(certificates) {
-  const certPath = path.join(__dirname, "certificates");
+function saveCertificates(certificates, thingName) {
+  const certPath = path.join(__dirname, `certificates/${thingName}`);
   if (!fs.existsSync(certPath)) {
     fs.mkdirSync(certPath);
   }
@@ -98,10 +137,10 @@ function saveCertificates(certificates) {
 }
 
 // Function to download root CA certificate
-function downloadRootCACertificate() {
+function downloadRootCACertificate(thingName) {
   const url = "https://www.amazontrust.com/repository/AmazonRootCA1.pem";
   const https = require("https");
-  const certPath = path.join(__dirname, "certificates");
+  const certPath = path.join(__dirname, `certificates/${thingName}`);
 
   const file = fs.createWriteStream(path.join(certPath, "AmazonRootCA1.pem"));
   https.get(url, function (response) {
@@ -110,21 +149,45 @@ function downloadRootCACertificate() {
   });
 }
 
-// Main function to create a thing, create a certificate, attach it to the thing, and add the thing to a group
+// Main function to create a thing, create a certificate, attach it to the thing, add the thing to a group, create a policy, and attach the policy to the certificate
 function CreateThingAndAddToGroup(thingName, groupName) {
+  let policyName = "device-connect";
+  const policyDocument = {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Effect: "Allow",
+        Action: ["iot:Connect", "iot:Publish", "iot:Subscribe", "iot:Receive"],
+        Resource: "*",
+      },
+    ],
+  };
   createThing(thingName, () => {
     createCertificate((certificates) => {
-      saveCertificates(certificates);
-      downloadRootCACertificate();
+      saveCertificates(certificates, thingName);
+      downloadRootCACertificate(thingName);
       attachCertificateToThing(certificates.certificateArn, thingName, () => {
         addThingToGroup(thingName, groupName, () => {
-          console.log(
-            "Thing created with certificate and added to group successfully."
-          );
+          createPolicy(policyName, policyDocument, (policyData) => {
+            attachPolicyToCertificate(
+              policyData.policyName,
+              certificates.certificateArn,
+              () => {
+                console.log(
+                  "Thing created with certificate, added to group, and policy attached successfully."
+                );
+              }
+            );
+          });
         });
       });
     });
   });
 }
 
+// Define your policy document
+
 module.exports = CreateThingAndAddToGroup;
+
+// Call the main function with your desired thing name, group name, policy name, and policy document
+// createThingAddToGroupWithCertAndPolicy('MyNewThing', 'MyIoTGroup', 'MyIoTPolicy', policyDocument); // Replace with your desired names and policy document

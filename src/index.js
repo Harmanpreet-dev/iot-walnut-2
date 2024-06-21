@@ -13,6 +13,7 @@ app.use("/profile", express.static("./src/profile"));
 
 app.use("/static", express.static("./src/client/build/static"));
 app.use("/images", express.static("./src/client/build/images"));
+app.use("/certificate", express.static("./src/AWS/certificates"));
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/client/build/index.html");
@@ -24,6 +25,7 @@ app.use("/api", require("./routers/commonRouter"));
 app.use("/api", require("./routers/categoryRouter"));
 app.use("/api", require("./routers/FleetRouter"));
 app.use("/api", require("./routers/deviceRouter"));
+app.use("/", require("./routers/certificateRouter"));
 
 // Connect to PostgreSQL and start the server
 pgClient.connect((err) => {
