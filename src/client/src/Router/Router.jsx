@@ -16,6 +16,7 @@ import ManageFleets from "../pages/ManageFleets";
 import Settings from "../pages/Profile/Settings";
 import ManageDevices from "../pages/ManageDevices";
 import ManageSingleDevice from "../pages/ManageSingleDevice";
+import IemiUpload from "../components/common/IemiUpload";
 
 const routerAdmin = createBrowserRouter(
   createRoutesFromElements(
@@ -32,7 +33,8 @@ const routerAdmin = createBrowserRouter(
           path="/manage-devices/:fleet"
           element={<ManageDevices />}
         ></Route>
-        <Route path="device/:name" element={<ManageSingleDevice />}></Route>
+        <Route path="/device/:name" element={<ManageSingleDevice />}></Route>
+        <Route path="/upload" element={<IemiUpload />}></Route>
       </Route>
     </>
   )

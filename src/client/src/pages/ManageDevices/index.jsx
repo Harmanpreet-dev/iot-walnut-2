@@ -32,7 +32,7 @@ export default function ManageDevices() {
 
   return (
     <>
-      <div className="content-wrapper bg-base-200 h-screen">
+      <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
             <ul>
