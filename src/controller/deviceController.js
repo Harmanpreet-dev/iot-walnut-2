@@ -28,14 +28,10 @@ const addImei = async (req, res) => {
 
       await CreateThingAndAddToGroup(name_uniqe, fleet, imei, pgClient);
 
-      // console.log("start");
-      // console.log(certificate_id);
-      // console.log("end");
-
-      // await pgClient.query(
-      //   "INSERT INTO devices (imei,fleet,name,certificate_id) VALUES ($1,$2,$3,$4)",
-      //   [imei, fleet, name_uniqe, certificate_id]
-      // );
+      await pgClient.query(
+        "INSERT INTO devices (imei,fleet,name,certificate_id) VALUES ($1,$2,$3,$4)",
+        [imei, fleet, name_uniqe, "certificate_id"]
+      );
     }
 
     if (duplicates.length > 0) {

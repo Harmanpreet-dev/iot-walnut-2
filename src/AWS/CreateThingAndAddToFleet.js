@@ -176,10 +176,10 @@ function CreateThingAndAddToGroup(thingName, groupName, imei, pgClient) {
                 console.log(
                   "Thing created with certificate, added to group, and policy attached successfully."
                 );
-                await pgClient.query(
-                  "INSERT INTO devices (imei,fleet,name,certificate_id) VALUES ($1,$2,$3,$4)",
-                  [imei, groupName, thingName, certificates.certificateId]
-                );
+                // await pgClient.query(
+                //   "INSERT INTO devices (imei,fleet,name,certificate_id) VALUES ($1,$2,$3,$4)",
+                //   [imei, groupName, thingName, certificates.certificateId]
+                // );
               }
             );
           });
