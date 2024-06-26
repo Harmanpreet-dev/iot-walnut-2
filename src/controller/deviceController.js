@@ -49,6 +49,40 @@ const addImei = async (req, res) => {
   }
 };
 
+const addBlackImei = async (req, res) => {
+  try {
+    const file = req.file;
+    let { fleet } = req.body;
+    if (!file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const workbook = xlsx.read(file.buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
+
+    const imeis = data.map((row) => row.imei_no);
+    const existingImeis = await getExistingImeis();
+
+    const duplicates = imeis.filter((imei) => existingImeis.includes(imei));
+    const uniqueImeis = imeis.filter((imei) => !existingImeis.includes(imei));
+
+    for (let imei of uniqueImeis) {
+      await pgClient.query("INSERT INTO blacklist (imei) VALUES ($1)", [imei]);
+    }
+
+    if (duplicates.length > 0) {
+      return res.status(400).json({ error: "Duplicate imei_no", duplicates });
+    }
+
+    res.status(200).json({ message: "IMEIs uploaded successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const getExistingImeis = async () => {
   try {
     const result = await pgClient.query("SELECT imei FROM devices");
@@ -115,4 +149,5 @@ module.exports = {
   getDevice,
   revokeDevice,
   addImei,
+  addBlackImei,
 };

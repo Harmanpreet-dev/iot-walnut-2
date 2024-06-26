@@ -5,6 +5,7 @@ const {
   getDevices,
   addImei,
   getDevice,
+  addBlackImei,
   revokeDevice,
 } = require("../controller/deviceController");
 const multer = require("multer");
@@ -19,5 +20,6 @@ deviceRouter.get("/getDevices", verifyToken, getDevices);
 deviceRouter.post("/getDevice", verifyToken, getDevice);
 deviceRouter.post("/revokeDevice", verifyToken, revokeDevice);
 deviceRouter.post("/upload", upload.single("file"), addImei);
+deviceRouter.post("/uploadBlack", upload.single("file"), addBlackImei);
 
 module.exports = deviceRouter;

@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import DevicetAddModal from "./DeviceAddModal";
 import DeviceTable from "./DeviceTable";
+import DeviceAddBlackModal from "./DeviceAddBlackModal";
 
 export default function ManageDevices() {
   const [devices, setDevices] = useState([]);
@@ -58,6 +59,17 @@ export default function ManageDevices() {
                   Add Whitelisting <FaPlus className="pl-2 text-[24px]" />
                 </button>
                 <DevicetAddModal getDevices={getDevices} />
+                <DeviceAddBlackModal getDevices={getDevices} />
+              </div>
+              <div>
+                <button
+                  className="btn btn-neutral font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] mr-4"
+                  onClick={() =>
+                    document.getElementById("my_modal_4").showModal()
+                  }
+                >
+                  Add Blacklisting <FaPlus className="pl-2 text-[24px]" />
+                </button>
               </div>
             </div>
           </div>
