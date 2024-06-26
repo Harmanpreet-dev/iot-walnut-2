@@ -18,3 +18,10 @@ export const UPDATE_PROFILE = (data) => {
     payload: data,
   };
 };
+
+export const UPDATE_GOOGLE_SECRET = (data) => {
+  return {
+    type: "UPDATE_GOOGLE_SECRET",
+    payload: data,
+  };
+};

@@ -48,6 +48,13 @@ const AuthReducer = (state = istate, action) => {
       };
       return state;
     }
+    case "UPDATE_GOOGLE_SECRET": {
+      state = {
+        ...state,
+        google_secret: action.payload.google_secret,
+      };
+      return state;
+    }
     default:
       return state;
   }

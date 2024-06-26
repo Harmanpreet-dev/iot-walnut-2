@@ -5,6 +5,51 @@ import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 
+// const validate = (values) => {
+//   const errors = {};
+
+//   if (!values.name) {
+//     errors.name = "Required";
+//   } else if (!/^[0-9a-zA-Z].*/i.test(values.name)) {
+//     errors.name = "Invalid username";
+//   }
+
+//   if (!values.email) {
+//     errors.email = "Required";
+//   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+//     errors.email = "Invalid email address";
+//   }
+
+//   if (!values.phone) {
+//     errors.phone = "Required";
+//   } else if (
+//     !/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/i.test(
+//       values.phone
+//     )
+//   ) {
+//     errors.phone = "Enter max 8 Characters";
+//   }
+
+//   if (!values.password) {
+//     errors.password = "Required";
+//   } else if (values.length < 8) {
+//     errors.password = "*Password must be 8 characters long.";
+//   } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.password)) {
+//     errors.password = "*Invaild Password";
+//   }
+
+//   if (!values.confirmpassword) {
+//     errors.confirmpassword = "Required";
+//   } else if (values.length < 8) {
+//     errors.confirmpassword = "*confirmpassword must be 8 characters long.";
+//   } else if (
+//     !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.confirmpassword)
+//   ) {
+//     errors.confirmpassword = "*Invaild confirmpassword";
+//   }
+//   return errors;
+// };
+
 const validate = (values) => {
   const errors = {};
 
@@ -32,11 +77,32 @@ const validate = (values) => {
 
   if (!values.password) {
     errors.password = "Required";
-  } else if (values.length < 8) {
+  } else if (values.password.length < 8) {
+    // Fixed this line
     errors.password = "*Password must be 8 characters long.";
   } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.password)) {
-    errors.password = "*Invaild Password";
+    errors.password = "*Invalid Password";
   }
+
+  if (!values.confirmpassword) {
+    errors.confirmpassword = "Required";
+  } else if (values.confirmpassword.length < 8) {
+    // Fixed this line
+    errors.confirmpassword = "*confirmpassword must be 8 characters long.";
+  } else if (
+    !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.confirmpassword)
+  ) {
+    errors.confirmpassword = "*Invalid confirmpassword";
+  }
+
+  if (
+    values.password &&
+    values.confirmpassword &&
+    values.password !== values.confirmpassword
+  ) {
+    errors.confirmpassword = "Passwords do not match";
+  }
+
   return errors;
 };
 
@@ -302,10 +368,11 @@ export default function AdminAddModal({ getUsers, state }) {
                       <input
                         className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
                         name="password"
-                        type="password"
+                        type={type}
                         onChange={formik.handleChange}
                         value={formik.values.password}
                       />
+                      <span onClick={handleToggle}>{icon}</span>
                     </div>
                     <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
                       {formik.errors.password ? (
@@ -323,17 +390,17 @@ export default function AdminAddModal({ getUsers, state }) {
                     <div className="form-control flex flex-row items-center rounded-[15px] h-12 bg-base-100 px-3 shadow">
                       <input
                         className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                        name="password"
+                        name="confirmpassword"
                         type={type}
                         onChange={formik.handleChange}
-                        value={formik.values.password}
+                        value={formik.values.confirmpassword}
                       />
                       <span onClick={handleToggle}>{icon}</span>
                     </div>
 
                     <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
-                      {formik.errors.password ? (
-                        <div>{formik.errors.password}</div>
+                      {formik.errors.confirmpassword ? (
+                        <div>{formik.errors.confirmpassword}</div>
                       ) : null}
                     </span>
                   </div>
