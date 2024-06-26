@@ -15,7 +15,7 @@ export default function TwoFactEmailAuth({ next }) {
       .post(
         `${process.env.REACT_APP_API_URL}/verifyEmailOTP`,
         {
-          email: "harmanpreet.techie@gmail.com",
+          email: state.email,
           otp: code,
         },
         {
@@ -42,7 +42,7 @@ export default function TwoFactEmailAuth({ next }) {
         Email Verification
       </h3>
       <p className="py-1 text-center text-[14px] font-[500] text-[#898B8F] landing-[19px] w-80 m-auto">
-        Enter verification code sent to test2389@gmail.com
+        Enter verification code sent to {state.email}
       </p>
       <div className="modal-action flex items-center justify-center max-h-96">
         <form
@@ -82,18 +82,18 @@ export default function TwoFactEmailAuth({ next }) {
             Submit
           </Button>
           <span className="countdown mt-4 text-base-content/70  text-[16px] landing-[19px] font-[500]">
-            <span style={{ "--value": 0 }}></span>:
-            <span style={{ "--value": 0 }}></span>
+            {/* <span style={{ "--value": 0 }}></span>:
+            <span style={{ "--value": 0 }}></span> */}
           </span>
 
-          <div className="mt-3">
+          {/* <div className="mt-3">
             <h3 className="text-base-content/70  ml-2 font-[500] text-[16px] landing-[19px]">
               Didn’t Received OTP?{" "}
               <span className="text-base-content ml-2 font-[500] text-[16px] landing-[19px]">
                 Resend
               </span>
             </h3>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

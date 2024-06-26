@@ -150,7 +150,7 @@ function downloadRootCACertificate(thingName) {
 }
 
 // Main function to create a thing, create a certificate, attach it to the thing, add the thing to a group, create a policy, and attach the policy to the certificate
-function CreateThingAndAddToGroup(thingName, groupName) {
+function CreateThingAndAddToGroup(thingName, groupName, imei, pgClient) {
   let policyName = "device-connect";
   const policyDocument = {
     Version: "2012-10-17",
@@ -172,9 +172,13 @@ function CreateThingAndAddToGroup(thingName, groupName) {
             attachPolicyToCertificate(
               policyData.policyName,
               certificates.certificateArn,
-              () => {
+              async () => {
                 console.log(
                   "Thing created with certificate, added to group, and policy attached successfully."
+                );
+                await pgClient.query(
+                  "INSERT INTO devices (imei,fleet,name,certificate_id) VALUES ($1,$2,$3,$4)",
+                  [imei, groupName, thingName, certificates.certificateId]
                 );
               }
             );
@@ -185,9 +189,4 @@ function CreateThingAndAddToGroup(thingName, groupName) {
   });
 }
 
-// Define your policy document
-
 module.exports = CreateThingAndAddToGroup;
-
-// Call the main function with your desired thing name, group name, policy name, and policy document
-// createThingAddToGroupWithCertAndPolicy('MyNewThing', 'MyIoTGroup', 'MyIoTPolicy', policyDocument); // Replace with your desired names and policy document

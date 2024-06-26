@@ -55,11 +55,17 @@ const CategoryAddModal = ({ getCategory }) => {
 
   const verifyUser = (value) => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/sendEmailOTP`, {
-        headers: {
-          Authorization: state.jwt,
+      .post(
+        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
+        {
+          email: state.email,
         },
-      })
+        {
+          headers: {
+            Authorization: state.jwt,
+          },
+        }
+      )
       .then((res) => {
         console.log(res.data);
         setFormValues(value);

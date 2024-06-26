@@ -49,11 +49,17 @@ export default function DeviceAddModal({ getDevices }) {
 
   const verifyUser = () => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/sendEmailOTP`, {
-        headers: {
-          Authorization: state.jwt,
+      .post(
+        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
+        {
+          email: state.email,
         },
-      })
+        {
+          headers: {
+            Authorization: state.jwt,
+          },
+        }
+      )
       .then((res) => {
         document.getElementById("my_modal_2").showModal();
       })

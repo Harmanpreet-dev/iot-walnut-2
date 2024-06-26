@@ -1,4 +1,5 @@
 const CreateThingAndAddToGroup = require("../AWS/CreateThingAndAddToFleet");
+const stopDeviceConnectivity = require("../AWS/stopDeviceConnectivity");
 const { pgClient } = require("../db/connection");
 
 const xlsx = require("xlsx");
@@ -23,16 +24,18 @@ const addImei = async (req, res) => {
     const uniqueImeis = imeis.filter((imei) => !existingImeis.includes(imei));
 
     for (let imei of uniqueImeis) {
-      // await pgClient.query("INSERT INTO devices (imei_no) VALUES ($1)", [
-      //   imei,
-      // ]);
       let name_uniqe = `${fleet}_${imei}_sp_${Math.floor(Math.random() * 10)}`;
 
-      await pgClient.query(
-        "INSERT INTO devices (imei,fleet,name) VALUES ($1,$2,$3)",
-        [imei, fleet, name_uniqe]
-      );
-      await CreateThingAndAddToGroup(name_uniqe, fleet);
+      await CreateThingAndAddToGroup(name_uniqe, fleet, imei, pgClient);
+
+      // console.log("start");
+      // console.log(certificate_id);
+      // console.log("end");
+
+      // await pgClient.query(
+      //   "INSERT INTO devices (imei,fleet,name,certificate_id) VALUES ($1,$2,$3,$4)",
+      //   [imei, fleet, name_uniqe, certificate_id]
+      // );
     }
 
     if (duplicates.length > 0) {
@@ -46,7 +49,6 @@ const addImei = async (req, res) => {
   }
 };
 
-// Function to get existing IMEIs from the database
 const getExistingImeis = async () => {
   try {
     const result = await pgClient.query("SELECT imei FROM devices");
@@ -84,8 +86,33 @@ const getDevices = async (req, res) => {
   }
 };
 
+const getDevice = async (req, res) => {
+  try {
+    let result = await pgClient.query("SELECT * FROM devices WHERE name=$1", [
+      req.body.name,
+    ]);
+
+    res.status(200).json(result.rows);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const revokeDevice = async (req, res) => {
+  try {
+    stopDeviceConnectivity(
+      "cffcc0bdec97e7e1349f228710f71daa68ecfea15cfea9b02db8a04783413801"
+    );
+    res.status(200).json({ status: true });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 module.exports = {
   addDevice,
   getDevices,
+  getDevice,
+  revokeDevice,
   addImei,
 };

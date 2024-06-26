@@ -17,7 +17,7 @@ commonRouter.post("/updateProfile", verifyToken, updateProfile);
 commonRouter.get("/demo", demo);
 
 // 2FA
-commonRouter.get("/sendEmailOTP", verifyToken, sendEmailOTP);
+commonRouter.post("/sendEmailOTP", verifyToken, sendEmailOTP);
 commonRouter.post("/verifyEmailOTP", verifyToken, verifyEmailOTP);
 commonRouter.post("/generateGoogleOTP", verifyToken, generateGoogleOTP);
 commonRouter.post("/verifyGoogleOTP", verifyToken, verifyGoogleOTP);

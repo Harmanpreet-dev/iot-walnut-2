@@ -16,7 +16,7 @@ app.use("/images", express.static("./src/client/build/images"));
 app.use("/certificate", express.static("./src/AWS/certificates"));
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/client/build/index.html");
+  res.send("Server is Live");
 });
 
 // Use the user router

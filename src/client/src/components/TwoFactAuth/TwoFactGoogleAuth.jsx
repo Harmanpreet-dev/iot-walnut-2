@@ -88,18 +88,18 @@ export default function TwoFactGoogleAuth({ handleSubmitfinal }) {
           </Button>
 
           <span className="countdown mt-4 text-[#000] text-[16px] landing-[19px] font-[500]">
-            <span style={{ "--value": 0 }}></span>:
-            <span style={{ "--value": 0 }}></span>
+            {/* <span style={{ "--value": 0 }}></span>:
+            <span style={{ "--value": 0 }}></span> */}
           </span>
 
-          <div className="mt-3">
+          {/* <div className="mt-3">
             <h3 className="text-[#8C8C8C] ml-2 font-[500] text-[16px] landing-[19px]">
               Didn’t Received OTP?{" "}
               <span className="text-[#000] ml-2 font-[500] text-[16px] landing-[19px]">
                 Resend
               </span>
             </h3>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

@@ -34,7 +34,7 @@ const updateProfile = async (req, res) => {
 };
 
 const sendEmailOTP = async (req, res) => {
-  const email = "harmanpreet.techie@gmail.com";
+  const email = req.body.email;
   await generateAndSendOtp(email);
   res.status(200).send("OTP sent");
 };
