@@ -3,13 +3,15 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { message, Upload, Spin, Button } from "antd";
-import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
+import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
+import useMessage from "antd/es/message/useMessage";
 
 export default function DeviceAddBlackModal({ getDevices }) {
   const state = useSelector((state) => state.auth);
   const params = useParams();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const { Dragger } = Upload;
 
@@ -30,7 +32,8 @@ export default function DeviceAddBlackModal({ getDevices }) {
       .then((res) => {
         setLoading(false);
         getDevices();
-        document.getElementById("my_modal_3").close();
+        document.getElementById("my_modal_4").close();
+        messageApi.success("Blacklist is Uploaded");
       })
       .catch((err) => {
         setLoading(false);
@@ -47,7 +50,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
     },
   };
 
-  const verifyUser2 = () => {
+  const verifyUser = () => {
     axios
       .post(
         `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
@@ -61,7 +64,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
         }
       )
       .then((res) => {
-        document.getElementById("my_modal_2").showModal();
+        document.getElementById("my_modal_2_2").showModal();
       })
       .catch((err) => {
         console.log(err);
@@ -76,7 +79,8 @@ export default function DeviceAddBlackModal({ getDevices }) {
 
   return (
     <>
-      <TwoFactAuth handle2FA={handle2FA} />
+      {contextHolder}
+      <TwoFactAuth2 handle2FA={handle2FA} />
       <dialog id="my_modal_4" className="modal">
         <div className="modal-box bg-base-200 ">
           <form method="dialog" onSubmit={handleFormSubmit}>
@@ -109,7 +113,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
                   block
                   loading={loading}
                   disabled={!file || loading}
-                  onClick={() => verifyUser2()}
+                  onClick={() => verifyUser()}
                 >
                   Upload
                 </Button>

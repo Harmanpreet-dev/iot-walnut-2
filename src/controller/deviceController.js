@@ -26,12 +26,12 @@ const addImei = async (req, res) => {
     for (let imei of uniqueImeis) {
       let name_uniqe = `${fleet}_${imei}_sp_${Math.floor(Math.random() * 10)}`;
 
-      await CreateThingAndAddToGroup(name_uniqe, fleet, imei, pgClient);
-
       await pgClient.query(
-        "INSERT INTO devices (imei,fleet,name,certificate_id) VALUES ($1,$2,$3,$4)",
-        [imei, fleet, name_uniqe, "certificate_id"]
+        "INSERT INTO devices(imei,fleet,name,certificate_id,status) VALUES ($1,$2,$3,$4,$5)",
+        [imei, fleet, name_uniqe, "certificate_id", true]
       );
+
+      await CreateThingAndAddToGroup(name_uniqe, fleet, imei, pgClient);
     }
 
     if (duplicates.length > 0) {
@@ -66,6 +66,18 @@ const addBlackImei = async (req, res) => {
 
     for (let imei of uniqueImeis) {
       await pgClient.query("INSERT INTO blacklist (imei) VALUES ($1)", [imei]);
+
+      let data = await pgClient.query(
+        "SELECT certificate_id FROM devices WHERE imei=$1",
+        [imei]
+      );
+
+      await pgClient.query("UPDATE devices SET status=$1 WHERE imei=$2", [
+        "false",
+        imei,
+      ]);
+
+      await stopDeviceConnectivity(data.rows[0].certificate_id);
     }
 
     if (duplicates.length > 0) {
@@ -130,10 +142,8 @@ const getDevice = async (req, res) => {
 
 const revokeDevice = async (req, res) => {
   try {
-    stopDeviceConnectivity(
-      "cffcc0bdec97e7e1349f228710f71daa68ecfea15cfea9b02db8a04783413801"
-    );
-    res.status(200).json({ status: true });
+    let result = await stopDeviceConnectivity(req.body.certificate_id);
+    res.status(200).json({ status: result });
   } catch (err) {
     res.status(500).json(err);
   }

@@ -47,7 +47,7 @@ export default function DeviceTable({ devices }) {
                         {x.imei}
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                        Active
+                        {x.status == "true" ? "Active" : "Revoked"}
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                         9876543210

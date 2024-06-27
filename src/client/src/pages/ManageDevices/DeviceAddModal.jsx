@@ -10,6 +10,7 @@ export default function DeviceAddModal({ getDevices }) {
   const params = useParams();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const { Dragger } = Upload;
 
@@ -31,6 +32,7 @@ export default function DeviceAddModal({ getDevices }) {
         setLoading(false);
         getDevices();
         document.getElementById("my_modal_3").close();
+        messageApi.success("Whitlist is Uploaded");
       })
       .catch((err) => {
         setLoading(false);
@@ -76,6 +78,7 @@ export default function DeviceAddModal({ getDevices }) {
 
   return (
     <>
+      {contextHolder}
       <TwoFactAuth handle2FA={handle2FA} />
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box bg-base-200 ">

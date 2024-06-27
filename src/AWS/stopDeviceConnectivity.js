@@ -13,7 +13,8 @@ const stopDeviceConnectivity = async (certificateId) => {
         newStatus: "INACTIVE",
       })
       .promise();
-    console.log("Certificate deactivated successfully.");
+    console.log("Device deactivated successfully.");
+    return "Device deactivated successfully.";
   } catch (err) {
     console.error("Error stopping device connectivity:", err);
   }

@@ -18,7 +18,7 @@ function createThing(thingName, callback) {
     if (err) {
       console.error("Error creating thing:", err);
     } else {
-      console.log("Thing created successfully:", data);
+      // console.log("Thing created successfully:", data);
       callback(data);
     }
   });
@@ -34,7 +34,7 @@ function createCertificate(callback) {
     if (err) {
       console.error("Error creating certificate:", err);
     } else {
-      console.log("Certificate created successfully:", data);
+      // console.log("Certificate created successfully:", data);
       callback(data);
     }
   });
@@ -51,7 +51,7 @@ function attachCertificateToThing(certificateArn, thingName, callback) {
     if (err) {
       console.error("Error attaching certificate to thing:", err);
     } else {
-      console.log("Certificate attached to thing successfully:", data);
+      // console.log("Certificate attached to thing successfully:", data);
       callback();
     }
   });
@@ -68,7 +68,7 @@ function addThingToGroup(thingName, groupName, callback) {
     if (err) {
       console.error("Error adding thing to group:", err);
     } else {
-      console.log("Thing added to group successfully:", data);
+      // console.log("Thing added to group successfully:", data);
       callback();
     }
   });
@@ -89,7 +89,7 @@ function createPolicy(policyName, policyDocument, callback) {
         console.log("Policy already exists:", policyName);
         data = { policyName: policyName }; // Use existing policy
       } else {
-        console.log("Policy created successfully:", data);
+        // console.log("Policy created successfully:", data);
       }
       callback(data);
     }
@@ -107,7 +107,7 @@ function attachPolicyToCertificate(policyName, certificateArn, callback) {
     if (err) {
       console.error("Error attaching policy to certificate:", err);
     } else {
-      console.log("Policy attached to certificate successfully:", data);
+      // console.log("Policy attached to certificate successfully:", data);
       callback();
     }
   });
@@ -133,7 +133,7 @@ function saveCertificates(certificates, thingName) {
     certificates.keyPair.PublicKey
   );
 
-  console.log("Certificates saved to files.");
+  // console.log("Certificates saved to files.");
 }
 
 // Function to download root CA certificate
@@ -180,7 +180,7 @@ function CreateThingAndAddToGroup(thingName, groupName, imei, pgClient) {
                   "UPDATE devices SET certificate_id=$1 WHERE name=$2",
                   [certificates.certificateId, thingName]
                 );
-                console.log(result);
+                console.log("updated", certificates.certificateId, thingName);
               }
             );
           });
