@@ -5,51 +5,6 @@ import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 
-// const validate = (values) => {
-//   const errors = {};
-
-//   if (!values.name) {
-//     errors.name = "Required";
-//   } else if (!/^[0-9a-zA-Z].*/i.test(values.name)) {
-//     errors.name = "Invalid username";
-//   }
-
-//   if (!values.email) {
-//     errors.email = "Required";
-//   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-//     errors.email = "Invalid email address";
-//   }
-
-//   if (!values.phone) {
-//     errors.phone = "Required";
-//   } else if (
-//     !/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/i.test(
-//       values.phone
-//     )
-//   ) {
-//     errors.phone = "Enter max 8 Characters";
-//   }
-
-//   if (!values.password) {
-//     errors.password = "Required";
-//   } else if (values.length < 8) {
-//     errors.password = "*Password must be 8 characters long.";
-//   } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.password)) {
-//     errors.password = "*Invaild Password";
-//   }
-
-//   if (!values.confirmpassword) {
-//     errors.confirmpassword = "Required";
-//   } else if (values.length < 8) {
-//     errors.confirmpassword = "*confirmpassword must be 8 characters long.";
-//   } else if (
-//     !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.confirmpassword)
-//   ) {
-//     errors.confirmpassword = "*Invaild confirmpassword";
-//   }
-//   return errors;
-// };
-
 const validate = (values) => {
   const errors = {};
 

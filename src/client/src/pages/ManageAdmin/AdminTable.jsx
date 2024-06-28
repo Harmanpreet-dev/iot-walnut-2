@@ -46,7 +46,12 @@ export default function AdminTable({ users, handleDeleteAdmin }) {
           </td>
           <td className="bg-base-100 rounded-r-[15px] w-16">
             <div className="flex">
-              <div className="flex items-center justify-start text-[14px] font-[500] landing-[35px] text-neutral-500 mx-3 cursor-pointer">
+              <div
+                className="flex items-center justify-start text-[14px] font-[500] landing-[35px] text-neutral-500 mx-3 cursor-pointer"
+                onClick={() =>
+                  document.getElementById("my_modal_3").showModal()
+                }
+              >
                 Edit
                 <span className="pl-1">
                   <MdOutlineModeEdit />

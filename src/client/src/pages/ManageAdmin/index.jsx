@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { Spin } from "antd";
 import AdminTable from "./AdminTable";
 import AdminAddModal from "./AdminAddModal";
-import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
+import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
 
 export default function ManageAdmin() {
   const [users, setUsers] = useState([]);
@@ -71,22 +71,22 @@ export default function ManageAdmin() {
       .then((res) => {
         console.log(res.data);
         setFormValues(value);
-        document.getElementById("my_modal_2").showModal();
+        document.getElementById("my_modal_2_2").showModal();
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  // const handle2FA = (response) => {
-  //   if (response === true) {
-  //     handleDeleteAdmin(formValues);
-  //   }
-  // };
+  const handle2FA2 = (response) => {
+    if (response === true) {
+      handleDeleteAdmin(formValues);
+    }
+  };
 
   return (
     <>
-      {/* <TwoFactAuth handle2FA={handle2FA} /> */}
+      <TwoFactAuth2 handle2FA={handle2FA2} />
       <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
