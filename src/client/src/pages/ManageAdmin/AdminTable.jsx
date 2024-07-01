@@ -7,11 +7,6 @@ export default function AdminTable({ users, handleDeleteAdmin, handleActive }) {
     return (
       <>
         <tr className="shadow-[0_3.5px_5.5px_0_#00000005]">
-          <th className="shadow-none">
-            <label>
-              <input type="checkbox" className="checkbox" />
-            </label>
-          </th>
           <td className="bg-base-100 rounded-l-[15px]">
             <div className="flex items-center gap-3">
               <div className="avatar">
@@ -82,11 +77,6 @@ export default function AdminTable({ users, handleDeleteAdmin, handleActive }) {
           <table className="table">
             <thead className="border-b-2 border-base-300">
               <tr className="text-[#B1B1B1] text-[15px] font-[700] landing-[35px] ">
-                <th className="w-2">
-                  <label>
-                    <input type="checkbox" className="checkbox" />
-                  </label>
-                </th>
                 <th>Admin</th>
                 <th>Email</th>
                 <th>Admin Phone</th>

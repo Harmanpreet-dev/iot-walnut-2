@@ -15,10 +15,27 @@ export default function ManageAdmin() {
   const [loading, setLoading] = React.useState(false);
   const state = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     getUsers();
   }, []);
+
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filterItems = () => {
+    if (searchQuery.trim() === "") {
+      getUsers();
+    } else {
+      const results = users.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      console.log(results);
+      setUsers(results);
+    }
+  };
 
   const getUsers = () => {
     axios
@@ -105,18 +122,16 @@ export default function ManageAdmin() {
               <li className="text-[18px]">Manage Admin</li>
             </ul>
           </div>
-          <div className="search-adminBox flex items-center justify-between w-96">
-            <div className="searchBtn text-[22px] cursor-pointer">
-              <CiSearch />{" "}
-            </div>
-            <div className="dropMenu">
-              <select className="select select-bordered w-full max-w-xs rounded-[10px] focus:outline-none">
-                <option disabled selected>
-                  View By Category
-                </option>
-                <option>Han Solo</option>
-                <option>Greedo</option>
-              </select>
+          <div className="search-adminBox flex items-center justify-between">
+            <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 mx-4 bg-base-100">
+              <CiSearch className="text-[25px] cursor-pointer" />
+              <input
+                className="input w-full w-40 rounded focus:outline-none focus:border-none focus:outline-offset-none"
+                placeholder="Search Device.."
+                value={searchQuery}
+                onChange={handleInputChange}
+                onKeyUp={filterItems}
+              />
             </div>
             <div className="adminBtn">
               <button

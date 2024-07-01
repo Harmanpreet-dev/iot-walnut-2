@@ -36,7 +36,7 @@ const Sidebar = () => {
 
           <div className="hidden lg:block overflow-x-hidden px-[10px] bg-base-200 h-screen ">
             <ul className="menu mb-6">
-              <li className="menu-title font-medium text-[17px] text-base-content/70 leading-[35px] pt-[30px]">
+              <li className="menu-title font-medium text-[17px] text-base-content leading-[35px] pt-[30px] pl-0 pb-5">
                 Main Menu
               </li>
               {SideBarData.map((x, i) => {
