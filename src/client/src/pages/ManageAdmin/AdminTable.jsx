@@ -2,7 +2,7 @@ import React from "react";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
-export default function AdminTable({ users, handleDeleteAdmin }) {
+export default function AdminTable({ users, handleDeleteAdmin, handleActive }) {
   const TableRow = ({ id, name, email, phone, photo }) => {
     return (
       <>
@@ -48,9 +48,10 @@ export default function AdminTable({ users, handleDeleteAdmin }) {
             <div className="flex">
               <div
                 className="flex items-center justify-start text-[14px] font-[500] landing-[35px] text-neutral-500 mx-3 cursor-pointer"
-                onClick={() =>
-                  document.getElementById("my_modal_3").showModal()
-                }
+                onClick={() => {
+                  handleActive(id);
+                  document.getElementById("my_modal_edit").showModal();
+                }}
               >
                 Edit
                 <span className="pl-1">

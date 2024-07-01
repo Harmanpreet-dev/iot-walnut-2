@@ -7,9 +7,11 @@ import { Spin } from "antd";
 import AdminTable from "./AdminTable";
 import AdminAddModal from "./AdminAddModal";
 import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
+import AdminEditModal from "./AdminEditModal";
 
 export default function ManageAdmin() {
   const [users, setUsers] = useState([]);
+  const [activeUser, setActiveUser] = useState(null);
   const [loading, setLoading] = React.useState(false);
   const state = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState();
@@ -84,6 +86,14 @@ export default function ManageAdmin() {
     }
   };
 
+  const handleActive = (id) => {
+    users.map((x) => {
+      if (x.id === id) {
+        setActiveUser(x);
+      }
+    });
+  };
+
   return (
     <>
       <TwoFactAuth2 handle2FA={handle2FA2} />
@@ -121,8 +131,17 @@ export default function ManageAdmin() {
           </div>
         </div>
         <AdminAddModal getUsers={getUsers} state={state} />
+        <AdminEditModal
+          activeUser={activeUser}
+          getUsers={getUsers}
+          state={state}
+        />
 
-        <AdminTable users={users} handleDeleteAdmin={verifyUser} />
+        <AdminTable
+          users={users}
+          handleDeleteAdmin={verifyUser}
+          handleActive={handleActive}
+        />
       </div>
     </>
   );

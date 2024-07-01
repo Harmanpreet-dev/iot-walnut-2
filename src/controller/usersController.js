@@ -86,6 +86,25 @@ const checkEmail = async (req, res) => {
   }
 };
 
+const checkEmailEdit = async (req, res) => {
+  try {
+    const { email, id } = req.body;
+
+    // Check if the email already exists
+    const emailCheckResult = await pgClient.query(
+      "SELECT * FROM users WHERE email = $1 AND id != $2",
+      [email, id]
+    );
+
+    if (emailCheckResult.rows.length > 0) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+    res.send(true);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -140,16 +159,44 @@ const logoutUser = async (req, res) => {
   }
 };
 
-const updateUsers = async (req, res) => {
-  try {
-    await pgClient.query("UPDATE users SET name = $1 WHERE id = $2", [
-      req.body.name,
-      req.body.id,
-    ]);
-    res.json("User updated");
-  } catch (err) {
-    res.status(500).json(err);
-  }
+const updateAdmin = async (req, res) => {
+  uploadImage(req, res, async function (err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    try {
+      const { id, name, email, phone } = req.body;
+
+      // Check if the email is used by another user
+      const emailCheckResult = await pgClient.query(
+        "SELECT * FROM users WHERE email = $1 AND id != $2",
+        [email, id]
+      );
+
+      if (emailCheckResult.rows.length > 0) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      const photo = req.file ? req.file.filename : null;
+
+      if (photo == null) {
+        let result = await pgClient.query(
+          "UPDATE users SET name=$1, email=$2, phone=$3 WHERE id=$4",
+          [name, email, phone, id]
+        );
+        res.json(result);
+      } else {
+        let result = await pgClient.query(
+          "UPDATE users SET name=$1, email=$2, phone=$3, photo=$4 WHERE id=$5",
+          [name, email, phone, photo, id]
+        );
+        res.json(result);
+      }
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 };
 
 const deleteAdmin = async (req, res) => {
@@ -164,10 +211,11 @@ const deleteAdmin = async (req, res) => {
 module.exports = {
   getAdmins,
   addAdmin,
-  updateUsers,
+  updateAdmin,
   deleteAdmin,
   loginUser,
   logoutUser,
   getSingleAdmins,
   checkEmail,
+  checkEmailEdit,
 };

@@ -3,11 +3,12 @@ const {
   getAdmins,
   addAdmin,
   deleteAdmin,
-  updateUsers,
+  updateAdmin,
   loginUser,
   logoutUser,
   getSingleAdmins,
   checkEmail,
+  checkEmailEdit,
 } = require("../controller/usersController");
 const verifyToken = require("../middleware/authMidleware");
 
@@ -19,8 +20,9 @@ userRouter.post("/logoutUser", logoutUser);
 userRouter.get("/getAdmins", verifyToken, getAdmins);
 userRouter.post("/addAdmin", verifyToken, addAdmin);
 userRouter.post("/deleteAdmin", verifyToken, deleteAdmin);
-userRouter.post("/updateUser", updateUsers);
+userRouter.post("/updateAdmin", updateAdmin);
 userRouter.post("/getSingleAdmin", getSingleAdmins);
 userRouter.post("/checkEmail", checkEmail);
+userRouter.post("/checkEmailEdit", checkEmailEdit);
 
 module.exports = userRouter;
