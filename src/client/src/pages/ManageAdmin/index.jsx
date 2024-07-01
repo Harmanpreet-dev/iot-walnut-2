@@ -12,7 +12,7 @@ import AdminEditModal from "./AdminEditModal";
 export default function ManageAdmin() {
   const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const state = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState();
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,6 +38,7 @@ export default function ManageAdmin() {
   };
 
   const getUsers = () => {
+    setLoading(true);
     axios
       .get(`${process.env.REACT_APP_API_URL}/getAdmins`, {
         headers: {
@@ -46,9 +47,11 @@ export default function ManageAdmin() {
       })
       .then((res) => {
         setUsers(res.data);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
       });
   };
 
@@ -65,7 +68,6 @@ export default function ManageAdmin() {
         }
       )
       .then((res) => {
-        console.log(res);
         getUsers();
         setLoading(false);
       })

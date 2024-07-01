@@ -4,15 +4,20 @@ import { useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import CategoryTable from "./CategoryTable";
 import CategoryAddModal from "./CategoryAddModal";
+import { Spin } from "antd";
 
 export default function ManageCategory() {
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const state = useSelector((state) => state.auth);
+
   useEffect(() => {
     getCategory();
   }, []);
 
   const getCategory = () => {
+    setLoading(true);
     axios
       .get(`${process.env.REACT_APP_API_URL}/getCategories`, {
         headers: {
@@ -20,6 +25,8 @@ export default function ManageCategory() {
         },
       })
       .then((res) => {
+        setLoading(false);
+
         setCategories(res.data);
       })
       .catch((err) => {
@@ -28,6 +35,7 @@ export default function ManageCategory() {
   };
   return (
     <>
+      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200 h-screen">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">

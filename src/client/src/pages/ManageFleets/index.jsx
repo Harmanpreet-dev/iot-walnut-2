@@ -6,11 +6,13 @@ import FleetTable from "./FleetTable";
 import FleetFilter from "./FleetFilter";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { Spin } from "antd";
 
 export default function ManageFleets() {
   const [fleets, setFleets] = useState([]);
   const [admin, setAdmin] = useState([]);
   const [category, setCategory] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [open, setOpen] = useState(false);
 
@@ -29,6 +31,7 @@ export default function ManageFleets() {
   };
 
   const getFleets = () => {
+    setLoading(true);
     axios
       .get(`${process.env.REACT_APP_API_URL}/getFleets`, {
         headers: {
@@ -36,6 +39,8 @@ export default function ManageFleets() {
         },
       })
       .then((res) => {
+        setLoading(false);
+
         setFleets(res.data);
       })
       .catch((err) => {
@@ -61,6 +66,7 @@ export default function ManageFleets() {
 
   return (
     <>
+      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200 h-screen">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
