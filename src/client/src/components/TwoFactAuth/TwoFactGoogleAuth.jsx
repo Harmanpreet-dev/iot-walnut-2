@@ -42,6 +42,11 @@ export default function TwoFactGoogleAuth({ handleSubmitfinal }) {
 
   return (
     <>
+      <form method="dialog">
+        <button className="btn text-[20px] btn-circle btn-ghost absolute right-2 top-2">
+          ✕
+        </button>
+      </form>
       <h3 className="text-center text-[29px] font-[500] text-[#1E2328] landing-[19px] mb-3">
         User Verification
       </h3>

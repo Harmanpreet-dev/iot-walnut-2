@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { Button } from "antd";
+import { Button, Spin, notification } from "antd";
 import OtpInput from "react18-input-otp";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
 export default function TwoFactEmailAuth({ next }) {
   const [code, setCode] = useState("");
-  const [generatedOTP, setGeneratedOTP] = useState(123456);
   const [error, setError] = useState(null);
   const state = useSelector((state) => state.auth);
+  const [api, contextHolder] = notification.useNotification();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
     axios
@@ -36,8 +37,45 @@ export default function TwoFactEmailAuth({ next }) {
 
   const handleChange = (code) => setCode(code);
 
+  const resendEmailOTP = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
+        {
+          email: state.email,
+        },
+        {
+          headers: {
+            Authorization: state.jwt,
+          },
+        }
+      )
+      .then((res) => {
+        setLoading(false);
+
+        openNotification("success", res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const openNotification = (type, message) => {
+    api[type]({
+      message,
+    });
+  };
+
   return (
     <>
+      {contextHolder}
+
+      <form method="dialog">
+        <button className="btn text-[20px] btn-circle btn-ghost absolute right-2 top-2">
+          ✕
+        </button>
+      </form>
       <h3 className="text-center text-[29px] font-[500] text-[#1E2328] landing-[19px] mb-3">
         Email Verification
       </h3>
@@ -49,21 +87,23 @@ export default function TwoFactEmailAuth({ next }) {
           method="dialog"
           className="flex items-center justify-center flex-col"
         >
-          <div className="sets mb-5">
-            <OtpInput
-              className="border p-1 m-1"
-              value={code}
-              onChange={handleChange}
-              numInputs={6}
-              id="myInput"
-              placeholder=""
-              isSuccessed={false}
-              errorStyle="error"
-              successStyle="success"
-              separateAfter={1}
-              shouldAutoFocus
-            />
-          </div>
+          <Spin spinning={loading}>
+            <div className="sets mb-5">
+              <OtpInput
+                className="border p-1 m-1"
+                value={code}
+                onChange={handleChange}
+                numInputs={6}
+                id="myInput"
+                placeholder=""
+                isSuccessed={false}
+                errorStyle="error"
+                successStyle="success"
+                separateAfter={1}
+                shouldAutoFocus
+              />
+            </div>
+          </Spin>
           <div>
             <p className="h-[2px] text-rose-600 text-[12px]">{error}</p>
           </div>
@@ -86,14 +126,17 @@ export default function TwoFactEmailAuth({ next }) {
             <span style={{ "--value": 0 }}></span> */}
           </span>
 
-          {/* <div className="mt-3">
+          <div className="mt-3">
             <h3 className="text-base-content/70  ml-2 font-[500] text-[16px] landing-[19px]">
               Didn’t Received OTP?{" "}
-              <span className="text-base-content ml-2 font-[500] text-[16px] landing-[19px]">
+              <span
+                className="text-base-content ml-2 font-[500] text-[16px] landing-[19px] cursor-pointer"
+                onClick={() => resendEmailOTP()}
+              >
                 Resend
               </span>
             </h3>
-          </div> */}
+          </div>
         </div>
       </div>
     </>

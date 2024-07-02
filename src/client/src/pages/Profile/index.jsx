@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { UPDATE_PROFILE } from "../../redux/actions/AuthActions";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
+import { Spin } from "antd";
 
 const validate = (values) => {
   const errors = {};
@@ -38,6 +39,8 @@ export default function Profile() {
   const state = useSelector((state) => state.auth);
   const [emailError, setEmailError] = useState("");
   const [formValues, setFormValues] = useState();
+  const [loading, setLoading] = useState(false);
+
   let dispatch = useDispatch();
 
   const formik = useFormik({
@@ -53,6 +56,7 @@ export default function Profile() {
   });
 
   const verifyUser = (value) => {
+    setLoading(true);
     axios
       .post(
         `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
@@ -66,6 +70,8 @@ export default function Profile() {
         }
       )
       .then((res) => {
+        setLoading(false);
+
         console.log(res.data);
         setFormValues(value);
         document.getElementById("my_modal_2").showModal();
@@ -110,6 +116,8 @@ export default function Profile() {
 
   return (
     <div>
+      <Spin spinning={loading} fullscreen />
+
       <TwoFactAuth handle2FA={handle2FA} />
       <div className="content-wrapper bg-base-200">
         <div>

@@ -13,6 +13,7 @@ export default function ManageFleets() {
   const [admin, setAdmin] = useState([]);
   const [category, setCategory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [open, setOpen] = useState(false);
 
@@ -22,6 +23,22 @@ export default function ManageFleets() {
     getFleets();
     getUserCategory();
   }, []);
+
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filterItems = () => {
+    if (searchQuery.trim() === "") {
+      getFleets();
+    } else {
+      const results = fleets.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      console.log(results);
+      setFleets(results);
+    }
+  };
 
   const showDrawer = () => {
     setOpen(true);
@@ -83,10 +100,13 @@ export default function ManageFleets() {
             </div>
             <FleetFilter drawerOpen={open} drawerClose={onClose} />
             <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 mx-4 bg-base-100">
-              <CiSearch className="text-[25px]" />
+              <CiSearch className="text-[25px] cursor-pointer" />
               <input
-                className="input w-full w-40 rounded"
-                placeholder="Search Fleet.."
+                className="input w-full w-40 rounded focus:outline-none focus:border-none focus:outline-offset-none"
+                placeholder="Search Device.."
+                value={searchQuery}
+                onChange={handleInputChange}
+                onKeyUp={filterItems}
               />
             </div>
             <div className="adminBtn flex">

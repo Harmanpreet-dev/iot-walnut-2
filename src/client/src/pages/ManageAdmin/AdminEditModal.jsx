@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
-import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 import TwoFactAuth3 from "../../components/TwoFactAuth3/TwoFactAuth3";
 
 const validate = (values) => {
@@ -23,12 +22,8 @@ const validate = (values) => {
 
   if (!values.phone) {
     errors.phone = "Required";
-  } else if (
-    !/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/i.test(
-      values.phone
-    )
-  ) {
-    errors.phone = "Enter max 8 Characters";
+  } else if (!/^\d{8,11}$/.test(values.phone)) {
+    errors.phone = "Enter valid Phone Number";
   }
 
   return errors;
@@ -219,20 +214,54 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
       });
   };
 
+  // const handleFileSelect = (event) => {
+  //   if (event.target.value !== "") {
+  //     const files = event.target.files;
+  //     let myFiles = Array.from(files);
+
+  //     const reader = new FileReader();
+
+  //     reader.onload = (e) => {
+  //       setImageSrc(e.target.result);
+  //     };
+
+  //     reader.readAsDataURL(files[0]);
+
+  //     formik.setFieldValue("image", myFiles);
+  //   }
+  // };
+
   const handleFileSelect = (event) => {
     if (event.target.value !== "") {
       const files = event.target.files;
       let myFiles = Array.from(files);
 
-      const reader = new FileReader();
+      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+      const maxSize = 5 * 1024 * 1024; // 5 MB
 
-      reader.onload = (e) => {
-        setImageSrc(e.target.result);
-      };
+      myFiles = myFiles.filter((file) => {
+        if (!validImageTypes.includes(file.type)) {
+          alert("Invalid file type. Only JPG, PNG, and GIF are allowed.");
+          return false;
+        }
+        if (file.size > maxSize) {
+          alert("File size exceeds the 5MB limit.");
+          return false;
+        }
+        return true;
+      });
 
-      reader.readAsDataURL(files[0]);
+      if (myFiles.length > 0) {
+        const reader = new FileReader();
 
-      formik.setFieldValue("image", myFiles);
+        reader.onload = (e) => {
+          setImageSrc(e.target.result);
+        };
+
+        reader.readAsDataURL(myFiles[0]);
+
+        formik.setFieldValue("image", myFiles);
+      }
     }
   };
 
@@ -476,14 +505,14 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
                     >
                       Submit
                     </button>
-                    <button
+                    {/* <button
                       type="button"
                       style={{ color: "black" }}
                       className="btn mt-4 text-white gap-2 btn btn-block rounded text-[17px] font-[500] landing-[19px]"
                       onClick={() => setPasswordModal(true)}
                     >
                       Change Password
-                    </button>
+                    </button> */}
                   </div>
                 </form>
               </div>

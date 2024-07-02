@@ -6,9 +6,11 @@ import axios from "axios";
 import DevicetAddModal from "./DeviceAddModal";
 import DeviceTable from "./DeviceTable";
 import DeviceAddBlackModal from "./DeviceAddBlackModal";
+import { useParams } from "react-router-dom";
 
 export default function ManageDevices() {
   const [devices, setDevices] = useState([]);
+  let parms = useParams();
 
   const state = useSelector((state) => state.auth);
 
@@ -18,11 +20,15 @@ export default function ManageDevices() {
 
   const getDevices = () => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/getDevices`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+      .post(
+        `${process.env.REACT_APP_API_URL}/getDevices`,
+        { fleet: parms.fleet },
+        {
+          headers: {
+            Authorization: state.jwt,
+          },
+        }
+      )
       .then((res) => {
         setDevices(res.data);
       })

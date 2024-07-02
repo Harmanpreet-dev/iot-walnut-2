@@ -97,14 +97,14 @@ const Login = () => {
           );
           navigate("/manage-admin");
         } else {
-          openNotification("error", "Invalid User");
+          openNotification("error", "Invalid Username or Password");
         }
         setLoading(false);
       })
       .catch((err) => {
         console.log(err);
         setLoading(false);
-        openNotification("error", "Server Error");
+        openNotification("error", "Invalid Username or Password");
       });
   };
 
@@ -269,6 +269,7 @@ const Login = () => {
                         type="checkbox"
                         className="w-4 h-4 text-black-600 bg-black-100 border-gray-300 rounded focus:ring-black-500 dark:focus:ring-black-600 dark:ring-offset-black-800 focus:ring-2 dark:bg-black-700 dark:border-gray-600"
                         name="agreement"
+                        required="true"
                       />
                       <label
                         htmlFor="agreement"
@@ -276,7 +277,12 @@ const Login = () => {
                       >
                         I agree with{" "}
                         <span className="cursor-pointer underline">
-                          terms and conditions
+                          <a
+                            target="_blank"
+                            href="https://www.walnutmedical.in/about"
+                          >
+                            terms and conditions
+                          </a>
                         </span>
                       </label>
                     </div>

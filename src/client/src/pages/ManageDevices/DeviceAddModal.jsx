@@ -105,6 +105,7 @@ export default function DeviceAddModal({ getDevices }) {
                   </p>
                 </Dragger>
               </div>
+              <div>File Supported</div>
               <div>
                 <Button
                   type="primary"

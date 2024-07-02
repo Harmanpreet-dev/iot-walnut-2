@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Steps, theme } from "antd";
-import TwoFactEmailAuth2 from "./TwoFactEmailAuth2";
-import TwoFactGoogleAuth2 from "./TwoFactGoogleAuth2";
 import { SiTicktick } from "react-icons/si";
+import TwoFactEmailAuth from "../TwoFactAuth/TwoFactEmailAuth";
+import TwoFactGoogleAuth from "../TwoFactAuth/TwoFactGoogleAuth";
 
 export default function TwoFactAuth2({ handle2FA }) {
   const [current, setCurrent] = useState(0);
@@ -25,11 +25,11 @@ export default function TwoFactAuth2({ handle2FA }) {
   const steps = [
     {
       title: "",
-      content: <TwoFactEmailAuth2 next={next} />,
+      content: <TwoFactEmailAuth next={next} />,
     },
     {
       title: "",
-      content: <TwoFactGoogleAuth2 handleSubmitfinal={handleSubmitfinal} />,
+      content: <TwoFactGoogleAuth handleSubmitfinal={handleSubmitfinal} />,
     },
   ];
 
