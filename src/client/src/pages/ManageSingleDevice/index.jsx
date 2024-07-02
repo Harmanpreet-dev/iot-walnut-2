@@ -5,6 +5,7 @@ import DeviceGraphData from "./DeviceGraphData";
 import DeviceTabsData from "./DeviceTabsData";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { Spin } from "antd";
 
 export default function ManageSingleDevice() {
   const parms = useParams();
@@ -30,8 +31,8 @@ export default function ManageSingleDevice() {
         }
       )
       .then((res) => {
-        setLoading(false);
         serDevice(res.data[0]);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -40,6 +41,7 @@ export default function ManageSingleDevice() {
 
   return (
     <>
+      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div>
           {loading ? (
@@ -56,7 +58,11 @@ export default function ManageSingleDevice() {
                   </ul>
                 </div>
               </div>
-              <DeviceDetails device={device} state={state} />
+              <DeviceDetails
+                getDeviceDetail={getDeviceDetail}
+                device={device}
+                state={state}
+              />
 
               <div className="mt-10">
                 <DeviceTabsData />

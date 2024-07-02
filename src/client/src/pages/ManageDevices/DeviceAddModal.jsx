@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -10,7 +10,9 @@ export default function DeviceAddModal({ getDevices }) {
   const params = useParams();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [dublicateData, setDublicateData] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
+  const draggerRef = useRef(null); // Create a ref for Dragger
 
   const { Dragger } = Upload;
 
@@ -36,7 +38,10 @@ export default function DeviceAddModal({ getDevices }) {
       })
       .catch((err) => {
         setLoading(false);
-        console.log(err);
+        if (err.response.status == 400) {
+          setDublicateData(err.response.data.duplicates);
+          console.log(err.response.data.duplicates);
+        }
       });
   };
 
@@ -44,6 +49,15 @@ export default function DeviceAddModal({ getDevices }) {
     name: "file",
     multiple: false,
     beforeUpload: (file) => {
+      const isXlsxOrCsv =
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+        file.type === "text/csv";
+      if (!isXlsxOrCsv) {
+        message.error("You can only upload XLSX or CSV file!");
+        handleReset();
+        return false;
+      }
       setFile(file);
       return false;
     },
@@ -76,6 +90,13 @@ export default function DeviceAddModal({ getDevices }) {
     }
   };
 
+  const handleReset = () => {
+    setFile(null); // Clear the file state
+    if (draggerRef.current) {
+      draggerRef.current.onReset(); // Clear the Dragger input
+    }
+  };
+
   return (
     <>
       {contextHolder}
@@ -93,7 +114,7 @@ export default function DeviceAddModal({ getDevices }) {
                 <h1>Add Whitelist</h1>
               </div>
               <div className="mb-3">
-                <Dragger {...props}>
+                <Dragger {...props} ref={draggerRef} maxCount={1}>
                   <p className="ant-upload-drag-icon">
                     {/* <InboxOutlined /> */}
                   </p>
@@ -105,7 +126,31 @@ export default function DeviceAddModal({ getDevices }) {
                   </p>
                 </Dragger>
               </div>
-              <div>File Supported</div>
+              {dublicateData.length == 0 ? (
+                <div className="text-center">
+                  <p>Upload Only xlxs, csv files</p>
+                </div>
+              ) : (
+                <div>
+                  <div className="bg-base-300 collapse collapse-arrow">
+                    <input type="checkbox" className="peer" />
+                    <div className="collapse-title font-medium text-red-400">
+                      Dublicate IMEI Numbers
+                    </div>
+                    <div className="collapse-content">
+                      {dublicateData.map((x, i) => {
+                        return (
+                          <div>
+                            {i + 1}
+                            {". "}
+                            {x}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
               <div>
                 <Button
                   type="primary"

@@ -42,7 +42,7 @@ export default function CategoryTable({ categories }) {
                 <th>
                   <spa className="flex">
                     <GoDotFill className="text-[#FF2002] mr-1" />
-                    nactive Devices
+                    Inactive Devices
                   </spa>
                 </th>
                 <th>Total Devices</th>

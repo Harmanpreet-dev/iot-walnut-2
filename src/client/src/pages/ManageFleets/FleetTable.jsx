@@ -13,11 +13,11 @@ export default function FleetTable({ fleets, admin, category }) {
             {/* head */}
             <thead className="border-b-2 border-base-300">
               <tr className="text-[#B1B1B1] text-[15px] font-[700] landing-[35px]">
-                <th className="w-2">
+                {/* <th className="w-2">
                   <label>
                     <input type="checkbox" className="checkbox" />
                   </label>
-                </th>
+                </th> */}
                 <th>Fleet name</th>
                 <th>Category</th>
                 <th>Admin</th>
@@ -31,11 +31,11 @@ export default function FleetTable({ fleets, admin, category }) {
                 return (
                   <React.Fragment key={x.id}>
                     <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
-                      <th className="shadow-none">
+                      {/* <th className="shadow-none">
                         <label>
                           <input type="checkbox" className="checkbox" />
                         </label>
-                      </th>
+                      </th> */}
                       <td className="bg-base-100 rounded-l-[15px]">
                         <div className="flex items-center gap-3">
                           <div className="text-base-500 font-[700] text-[19px] landing-[35px]">

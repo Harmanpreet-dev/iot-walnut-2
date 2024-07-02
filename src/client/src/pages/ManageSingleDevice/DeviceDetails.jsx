@@ -6,7 +6,7 @@ import { IoCopyOutline } from "react-icons/io5";
 import { message } from "antd";
 import axios from "axios";
 
-export default function DeviceDetails({ device, state }) {
+export default function DeviceDetails({ device, state, getDeviceDetail }) {
   const [messageApi, contextHolder] = message.useMessage();
   const handleRevoke = () => {
     axios
@@ -21,6 +21,7 @@ export default function DeviceDetails({ device, state }) {
       )
       .then((res) => {
         document.getElementById("my_modal_revoke").close();
+        getDeviceDetail();
         messageApi.success(res.data.status);
       })
       .catch((err) => {

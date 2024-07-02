@@ -59,7 +59,7 @@ const addBlackImei = async (req, res) => {
     const data = xlsx.utils.sheet_to_json(sheet);
 
     const imeis = data.map((row) => row.imei_no);
-    const existingImeis = await getExistingImeis();
+    const existingImeis = await getExistingImeisBlack();
 
     const duplicates = imeis.filter((imei) => existingImeis.includes(imei));
     const uniqueImeis = imeis.filter((imei) => !existingImeis.includes(imei));
@@ -94,6 +94,16 @@ const addBlackImei = async (req, res) => {
 const getExistingImeis = async () => {
   try {
     const result = await pgClient.query("SELECT imei FROM devices");
+    return result.rows.map((row) => row.imei);
+  } catch (err) {
+    console.error("Error fetching existing IMEIs:", err);
+    return [];
+  }
+};
+
+const getExistingImeisBlack = async () => {
+  try {
+    const result = await pgClient.query("SELECT imei FROM blacklist");
     return result.rows.map((row) => row.imei);
   } catch (err) {
     console.error("Error fetching existing IMEIs:", err);
@@ -145,6 +155,10 @@ const getDevice = async (req, res) => {
 const revokeDevice = async (req, res) => {
   try {
     let result = await stopDeviceConnectivity(req.body.certificate_id);
+    await pgClient.query(
+      "UPDATE devices SET status=$1 WHERE certificate_id=$2",
+      ["false", req.body.certificate_id]
+    );
     res.status(200).json({ status: result });
   } catch (err) {
     res.status(500).json(err);

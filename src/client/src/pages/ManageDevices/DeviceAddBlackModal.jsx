@@ -12,6 +12,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [dublicateData, setDublicateData] = useState([]);
 
   const { Dragger } = Upload;
 
@@ -37,7 +38,10 @@ export default function DeviceAddBlackModal({ getDevices }) {
       })
       .catch((err) => {
         setLoading(false);
-        console.log(err);
+        if (err.response.status == 400) {
+          setDublicateData(err.response.data.duplicates);
+          console.log(err.response.data.duplicates);
+        }
       });
   };
 
@@ -45,6 +49,14 @@ export default function DeviceAddBlackModal({ getDevices }) {
     name: "file",
     multiple: false,
     beforeUpload: (file) => {
+      const isXlsxOrCsv =
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+        file.type === "text/csv";
+      if (!isXlsxOrCsv) {
+        message.error("You can only upload XLSX or CSV file!");
+        return false;
+      }
       setFile(file);
       return false;
     },
@@ -94,7 +106,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
                 <h1>Add Blacklist</h1>
               </div>
               <div className="mb-3">
-                <Dragger {...props}>
+                <Dragger {...props} maxCount={1}>
                   <p className="ant-upload-drag-icon">
                     {/* <InboxOutlined /> */}
                   </p>
@@ -106,6 +118,31 @@ export default function DeviceAddBlackModal({ getDevices }) {
                   </p>
                 </Dragger>
               </div>
+              {dublicateData.length == 0 ? (
+                <div className="text-center">
+                  <p>Upload Only xlxs, csv files</p>
+                </div>
+              ) : (
+                <div>
+                  <div className="bg-base-300 collapse collapse-arrow">
+                    <input type="checkbox" className="peer" />
+                    <div className="collapse-title font-medium text-red-400">
+                      Dublicate IMEI Numbers
+                    </div>
+                    <div className="collapse-content">
+                      {dublicateData.map((x, i) => {
+                        return (
+                          <div>
+                            {i + 1}
+                            {". "}
+                            {x}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
               <div>
                 <Button
                   type="primary"
