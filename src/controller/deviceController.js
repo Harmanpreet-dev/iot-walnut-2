@@ -120,7 +120,9 @@ const addDevice = async (req, res) => {
 
 const getDevices = async (req, res) => {
   try {
-    let result = await pgClient.query("SELECT * FROM devices");
+    let result = await pgClient.query("SELECT * FROM devices WHERE fleet=$1", [
+      req.body.fleet,
+    ]);
 
     res.status(200).json(result.rows);
   } catch (err) {
