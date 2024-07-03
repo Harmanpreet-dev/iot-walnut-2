@@ -38,7 +38,6 @@ async function sendOtpEmail(to, otp) {
       "X-MSMail-Priority": "High", // High priority for Microsoft email clients
     },
   };
-  // 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
 
   try {
     const response = await sgMail.send(msg);
