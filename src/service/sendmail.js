@@ -27,16 +27,23 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Store your API key in environ
 //   }
 // }
 async function sendOtpEmail(to, otp) {
+  // const msg = {
+  //   to,
+  //   from: "harmanpreet.singh@iamtechie.com", // Your verified sender
+  //   subject: "Hello Welcome",
+  //   text: `Hello`,
+  //   html: `<strong>hello Harman</strong>`,
+  //   headers: {
+  //     "X-Priority": "1", // High priority
+  //     "X-MSMail-Priority": "High", // High priority for Microsoft email clients
+  //   },
+  // };
   const msg = {
     to,
     from: "harmanpreet.singh@iamtechie.com", // Your verified sender
-    subject: "Hello Welcome",
-    text: `Hello`,
-    html: `<strong>hello Harman</strong>`,
-    headers: {
-      "X-Priority": "1", // High priority
-      "X-MSMail-Priority": "High", // High priority for Microsoft email clients
-    },
+    subject: "Your OTP Code",
+    text: `Your OTP code is ${otp}`,
+    html: `<strong>Your OTP code is ${otp}</strong>`,
   };
 
   try {

@@ -20,10 +20,10 @@ export let SideBarData = [
     link: "/manage-fleets",
     svg: <FleetSVG />,
   },
-  // {
-  //   id: 3,
-  //   name: "Jobs",
-  //   link: "/manage-jobs",
-  //   svg: <FleetSVG />,
-  // },
+  {
+    id: 3,
+    name: "Jobs",
+    link: "/manage-jobs",
+    svg: <FleetSVG />,
+  },
 ];
