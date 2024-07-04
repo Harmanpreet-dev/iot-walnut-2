@@ -132,7 +132,7 @@ export default function DeviceAddModal({ getDevices }) {
                 <div>
                   <div className="bg-base-300 collapse collapse-arrow">
                     <input type="checkbox" className="peer" />
-                    <div className="collapse-title font-medium text-red-400">
+                    <div className="collapse-titleAszqw23gy5s font-medium text-red-400">
                       Dublicate IMEI Numbers
                     </div>
                     <div className="collapse-content">

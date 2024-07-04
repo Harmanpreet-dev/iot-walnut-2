@@ -6,14 +6,17 @@ import FleetTable from "./FleetTable";
 import FleetFilter from "./FleetFilter";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { Spin } from "antd";
+import { Breadcrumb, Spin } from "antd";
 
 export default function ManageFleets() {
   const [fleets, setFleets] = useState([]);
+  const [filteredFleets, setFilteredFleets] = useState([]);
   const [admin, setAdmin] = useState([]);
   const [category, setCategory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState("");
+  const [filterData, setFilterData] = useState({ category: [], users: [] });
 
   const [open, setOpen] = useState(false);
 
@@ -24,19 +27,28 @@ export default function ManageFleets() {
     getUserCategory();
   }, []);
 
+  useEffect(() => {
+    filterItems();
+  }, [searchQuery, fleets]);
+
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
   const filterItems = () => {
     if (searchQuery.trim() === "") {
-      getFleets();
+      setFilteredFleets(fleets);
+      setError("");
     } else {
       const results = fleets.filter((item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      console.log(results);
-      setFleets(results);
+      if (results.length === 0) {
+        setError("No matching data found.");
+      } else {
+        setError("");
+      }
+      setFilteredFleets(results);
     }
   };
 
@@ -73,12 +85,58 @@ export default function ManageFleets() {
         },
       })
       .then((res) => {
-        setAdmin(res.data.users);
-        setCategory(res.data.category);
+        let { users, category } = res.data;
+
+        users.map((x) => {
+          x.status = false;
+        });
+
+        setAdmin(users);
+        setCategory(category);
       })
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const handleFilterDataBySider = (checked, id) => {
+    let byAdmin = admin;
+    byAdmin.map((x) => {
+      if (x.id == id) {
+        x.status = checked;
+      }
+    });
+    setAdmin(byAdmin);
+    filterBySider();
+  };
+
+  const filterBySider = () => {
+    let Arr = [];
+
+    let adminFilter = false;
+
+    admin.map((x) => {
+      if (x.status == true) {
+        adminFilter = true;
+      }
+    });
+
+    if (adminFilter) {
+      fleets.map((x) => {
+        admin.map((y) => {
+          if (x.admin == y.id) {
+            if (y.status == true) {
+              Arr.push(x);
+            }
+          }
+        });
+      });
+      setFilteredFleets(Arr);
+    } else {
+      setFilteredFleets(fleets);
+    }
+
+    setSearchQuery("");
   };
 
   return (
@@ -86,11 +144,13 @@ export default function ManageFleets() {
       <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200 h-screen">
         <div className="flex items-center justify-between">
-          <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
-            <ul>
-              <li className="text-[18px]">Fleets</li>
-            </ul>
-          </div>
+          <Breadcrumb
+            items={[
+              {
+                title: "Fleets",
+              },
+            ]}
+          />
           <div className="search-adminBox flex items-center justify-between w-32rem]">
             <div
               className="filtersSet text-[17px] font-[500] flex items-center justify-center cursor-pointer"
@@ -98,15 +158,19 @@ export default function ManageFleets() {
             >
               Filter{" "}
             </div>
-            <FleetFilter drawerOpen={open} drawerClose={onClose} />
+            <FleetFilter
+              admin={admin}
+              drawerOpen={open}
+              drawerClose={onClose}
+              handleFilterDataBySider={handleFilterDataBySider}
+            />
             <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 mx-4 bg-base-100">
               <CiSearch className="text-[25px] cursor-pointer" />
               <input
                 className="input w-full w-40 rounded focus:outline-none focus:border-none focus:outline-offset-none"
-                placeholder="Search Device.."
+                placeholder="Search Fleet.."
                 value={searchQuery}
                 onChange={handleInputChange}
-                onKeyUp={filterItems}
               />
             </div>
             <div className="adminBtn flex">
@@ -129,7 +193,12 @@ export default function ManageFleets() {
           </div>
         </div>
 
-        <FleetTable fleets={fleets} admin={admin} category={category} />
+        <FleetTable
+          error={error}
+          fleets={filteredFleets}
+          admin={admin}
+          category={category}
+        />
       </div>
     </>
   );

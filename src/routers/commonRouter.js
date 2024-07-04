@@ -8,12 +8,14 @@ const {
   generateGoogleOTP,
   verifyGoogleOTP,
   demo,
+  changePassword,
 } = require("../controller/commonController");
 
 const commonRouter = Router();
 
 commonRouter.get("/verifyTokenStatus", verifyToken, vertifyTokenStatus);
 commonRouter.post("/updateProfile", verifyToken, updateProfile);
+commonRouter.post("/changePassword", verifyToken, changePassword);
 commonRouter.get("/demo", demo);
 
 // 2FA

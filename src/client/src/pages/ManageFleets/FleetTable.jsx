@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 
-export default function FleetTable({ fleets, admin, category }) {
+export default function FleetTable({ fleets, admin, category, error }) {
   const navigate = useNavigate();
 
   return (
@@ -27,6 +27,13 @@ export default function FleetTable({ fleets, admin, category }) {
             </thead>
             <br />
             <tbody className="mt-3">
+              {error && (
+                <tr>
+                  <td colSpan="5" className="text-[20px] text-center">
+                    {error}
+                  </td>
+                </tr>
+              )}
               {fleets.map((x) => {
                 return (
                   <React.Fragment key={x.id}>

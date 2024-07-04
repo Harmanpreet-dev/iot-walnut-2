@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import CategoryTable from "./CategoryTable";
 import CategoryAddModal from "./CategoryAddModal";
-import { Spin } from "antd";
+import { Breadcrumb, Spin } from "antd";
 
 export default function ManageCategory() {
   const [categories, setCategories] = useState([]);
@@ -38,11 +38,13 @@ export default function ManageCategory() {
       <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200 h-screen">
         <div className="flex items-center justify-between">
-          <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
-            <ul>
-              <li className="text-[18px]">Categories</li>
-            </ul>
-          </div>
+          <Breadcrumb
+            items={[
+              {
+                title: "Categories",
+              },
+            ]}
+          />
           <div className="search-adminBox flex items-center justify-between">
             <div className="adminBtn flex">
               <div>

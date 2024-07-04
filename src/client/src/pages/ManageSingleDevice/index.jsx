@@ -5,7 +5,7 @@ import DeviceGraphData from "./DeviceGraphData";
 import DeviceTabsData from "./DeviceTabsData";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { Spin } from "antd";
+import { Breadcrumb, Spin } from "antd";
 
 export default function ManageSingleDevice() {
   const parms = useParams();
@@ -49,14 +49,23 @@ export default function ManageSingleDevice() {
           ) : (
             <>
               <div className="flex items-center">
-                <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
-                  <ul>
-                    <li className="text-base-content/70 text-[18px]">
-                      <Link to="/manage-fleets"> {device.fleet}</Link>
-                    </li>
-                    <li className="text-[18px]">{device.name}</li>
-                  </ul>
-                </div>
+                <Breadcrumb
+                  items={[
+                    {
+                      title: <Link to="/manage-fleets">Fleets</Link>,
+                    },
+                    {
+                      title: (
+                        <Link to={`/manage-devices/${device.fleet}`}>
+                          {device.fleet}
+                        </Link>
+                      ),
+                    },
+                    {
+                      title: device.name,
+                    },
+                  ]}
+                />
               </div>
               <DeviceDetails
                 getDeviceDetail={getDeviceDetail}

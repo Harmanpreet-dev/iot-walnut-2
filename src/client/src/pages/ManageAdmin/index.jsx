@@ -3,7 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { Spin } from "antd";
+import { Breadcrumb, Spin } from "antd";
 import AdminTable from "./AdminTable";
 import AdminAddModal from "./AdminAddModal";
 import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
@@ -128,17 +128,19 @@ export default function ManageAdmin() {
       <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
-          <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
-            <ul>
-              <li className="text-[18px]">Manage Admin</li>
-            </ul>
-          </div>
+          <Breadcrumb
+            items={[
+              {
+                title: "Manage Admin",
+              },
+            ]}
+          />
           <div className="search-adminBox flex items-center justify-between">
             <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 mx-4 bg-base-100">
               <CiSearch className="text-[25px] cursor-pointer" />
               <input
                 className="input w-full w-40 rounded focus:outline-none focus:border-none focus:outline-offset-none"
-                placeholder="Search Device.."
+                placeholder="Search Admin.."
                 value={searchQuery}
                 onChange={handleInputChange}
               />

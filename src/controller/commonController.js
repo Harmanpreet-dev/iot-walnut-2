@@ -3,6 +3,7 @@ const { uploadImage } = require("../service/imageUploader");
 const { generateAndSendOtp, verifyOtp } = require("../service/opthandler");
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
+const bcrypt = require("bcrypt");
 
 const vertifyTokenStatus = async (req, res) => {
   try {
@@ -31,6 +32,61 @@ const updateProfile = async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   });
+};
+
+// const changePassword = async (req, res) => {
+//   try {
+//     const { password, new_password, id } = req.body;
+
+//     const hashedPassword = await bcrypt.hash(new_password, 10);
+
+//     let result = await pgClient.query(
+//       "UPDATE users SET password=$1 where password=$2",
+//       [hashedPassword, id]
+//     );
+
+//     res.json(result);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+const changePassword = async (req, res) => {
+  try {
+    const { password, new_password, id } = req.body;
+
+    // Fetch the current password from the database
+    const result = await pgClient.query(
+      "SELECT password FROM users WHERE jwt=$1",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const currentHashedPassword = result.rows[0].password;
+
+    // Compare the provided current password with the stored password
+    const isMatch = await bcrypt.compare(password, currentHashedPassword);
+
+    if (!isMatch) {
+      return res.status(400).json({ error: "Incorrect current password" });
+    }
+
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(new_password, 10);
+
+    // Update the password in the database
+    await pgClient.query("UPDATE users SET password=$1 WHERE jwt=$2", [
+      hashedNewPassword,
+      id,
+    ]);
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 const sendEmailOTP = async (req, res) => {
@@ -83,6 +139,7 @@ const demo = async (req, res) => {
 module.exports = {
   vertifyTokenStatus,
   updateProfile,
+  changePassword,
   sendEmailOTP,
   verifyEmailOTP,
   generateGoogleOTP,
