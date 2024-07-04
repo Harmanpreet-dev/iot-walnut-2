@@ -13,13 +13,19 @@ export default function ManageAdmin() {
   const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const state = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState();
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     getUsers();
   }, []);
+
+  useEffect(() => {
+    filterItems();
+  }, [searchQuery, users]);
 
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
@@ -27,18 +33,22 @@ export default function ManageAdmin() {
 
   const filterItems = () => {
     if (searchQuery.trim() === "") {
-      getUsers();
+      setFilteredUsers(users);
+      setError("");
     } else {
       const results = users.filter((item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      console.log(results);
-      setUsers(results);
+      if (results.length === 0) {
+        setError("No matching data found.");
+      } else {
+        setError("");
+      }
+      setFilteredUsers(results);
     }
   };
 
   const getUsers = () => {
-    setLoading(true);
     axios
       .get(`${process.env.REACT_APP_API_URL}/getAdmins`, {
         headers: {
@@ -47,11 +57,9 @@ export default function ManageAdmin() {
       })
       .then((res) => {
         setUsers(res.data);
-        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
-        setLoading(false);
       });
   };
 
@@ -68,6 +76,7 @@ export default function ManageAdmin() {
         }
       )
       .then((res) => {
+        console.log(res);
         getUsers();
         setLoading(false);
       })
@@ -105,13 +114,13 @@ export default function ManageAdmin() {
     }
   };
 
-  const handleActive = (id) => {
-    users.map((x) => {
-      if (x.id === id) {
-        setActiveUser(x);
-      }
-    });
-  };
+  // const handleActive = (id) => {
+  //   users.map((x) => {
+  //     if (x.id === id) {
+  //       setActiveUser(x);
+  //     }
+  //   });
+  // };
 
   return (
     <>
@@ -132,7 +141,6 @@ export default function ManageAdmin() {
                 placeholder="Search Device.."
                 value={searchQuery}
                 onChange={handleInputChange}
-                onKeyUp={filterItems}
               />
             </div>
             <div className="adminBtn">
@@ -153,11 +161,10 @@ export default function ManageAdmin() {
           getUsers={getUsers}
           state={state}
         />
-
         <AdminTable
-          users={users}
+          users={filteredUsers}
           handleDeleteAdmin={verifyUser}
-          handleActive={handleActive}
+          error={error}
         />
       </div>
     </>

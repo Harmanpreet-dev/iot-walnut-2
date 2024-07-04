@@ -17,6 +17,7 @@ import Settings from "../pages/Profile/Settings";
 import ManageDevices from "../pages/ManageDevices";
 import ManageSingleDevice from "../pages/ManageSingleDevice";
 import IemiUpload from "../components/common/IemiUpload";
+import Joblist from "../pages/ManageJobs/Joblist";
 
 const routerAdmin = createBrowserRouter(
   createRoutesFromElements(
@@ -34,7 +35,7 @@ const routerAdmin = createBrowserRouter(
           element={<ManageDevices />}
         ></Route>
         <Route path="/device/:name" element={<ManageSingleDevice />}></Route>
-        <Route path="/upload" element={<IemiUpload />}></Route>
+        <Route path="/manage-jobs" element={<Joblist />}></Route>
       </Route>
     </>
   )

@@ -2,7 +2,12 @@ import React from "react";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
-export default function AdminTable({ users, handleDeleteAdmin, handleActive }) {
+export default function AdminTable({
+  users,
+  handleDeleteAdmin,
+  handleActive,
+  error,
+}) {
   const TableRow = ({ id, name, email, phone, photo }) => {
     return (
       <>
@@ -85,6 +90,13 @@ export default function AdminTable({ users, handleDeleteAdmin, handleActive }) {
             </thead>
             <br />
             <tbody className="mt-3">
+              {error && (
+                <tr>
+                  <td colSpan="5" className="text-[20px] text-center">
+                    {error}
+                  </td>
+                </tr>
+              )}
               {users.map((x) => {
                 let { id, name, email, phone, photo } = x;
                 return (

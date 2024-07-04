@@ -95,7 +95,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
       <TwoFactAuth2 handle2FA={handle2FA} />
       <dialog id="my_modal_4" className="modal">
         <div className="modal-box bg-base-200 ">
-          <form method="dialog" onSubmit={handleFormSubmit}>
+          <form method="dialog">
             <button className="btn text-[20px] btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
