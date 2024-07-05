@@ -3,7 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { Breadcrumb, Spin } from "antd";
+import { Breadcrumb, Spin, message } from "antd";
 import AdminTable from "./AdminTable";
 import AdminAddModal from "./AdminAddModal";
 import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
@@ -18,6 +18,7 @@ export default function ManageAdmin() {
   const [formValues, setFormValues] = useState();
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     getUsers();
@@ -79,6 +80,7 @@ export default function ManageAdmin() {
         console.log(res);
         getUsers();
         setLoading(false);
+        messageApi.success("Admin Deleted Successfully");
       })
       .catch((err) => {
         setLoading(false);
@@ -124,6 +126,7 @@ export default function ManageAdmin() {
 
   return (
     <>
+      {contextHolder}
       <TwoFactAuth2 handle2FA={handle2FA2} />
       <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">

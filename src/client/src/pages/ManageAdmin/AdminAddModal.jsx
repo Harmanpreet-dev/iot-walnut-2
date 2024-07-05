@@ -4,6 +4,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
+import { message } from "antd";
 
 const validate = (values) => {
   const errors = {};
@@ -64,6 +65,7 @@ export default function AdminAddModal({ getUsers, state }) {
   const [icon, setIcon] = useState(<FaRegEyeSlash />);
   const [emailError, setEmailError] = useState("");
   const [formValues, setFormValues] = useState();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const formik = useFormik({
     initialValues: {
@@ -163,6 +165,7 @@ export default function AdminAddModal({ getUsers, state }) {
       .then((res) => {
         getUsers();
         document.getElementById("my_modal_3").close();
+        messageApi.success("Admin Added Successfully");
       })
       .catch((err) => {
         if (err.response.data.error === "Email already exists") {
@@ -234,6 +237,8 @@ export default function AdminAddModal({ getUsers, state }) {
 
   return (
     <dialog id="my_modal_3" className="modal">
+      {contextHolder}
+
       <TwoFactAuth handle2FA={handle2FA} />
       <div className="modal-box bg-base-200 max-w-[50rem] h-full">
         <form method="dialog">

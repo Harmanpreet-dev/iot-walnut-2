@@ -4,6 +4,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
 import TwoFactAuth3 from "../../components/TwoFactAuth3/TwoFactAuth3";
+import { message } from "antd";
 
 const validate = (values) => {
   const errors = {};
@@ -77,6 +78,7 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
   const [emailError, setEmailError] = useState("");
   const [formValues, setFormValues] = useState();
   const [passwordModal, setPasswordModal] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     if (activeUser !== null) {
@@ -206,6 +208,7 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
       .then((res) => {
         getUsers();
         document.getElementById("my_modal_edit").close();
+        messageApi.success("Admin Updated Successfully");
       })
       .catch((err) => {
         if (err.response.data.error === "Email already exists") {
@@ -374,6 +377,8 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
 
   return (
     <dialog id="my_modal_edit" className="modal">
+      {contextHolder}
+
       <TwoFactAuth3 handle2FA={handle2FA3} />
       <div className="modal-box bg-base-200 max-w-[50rem] ">
         <form method="dialog">

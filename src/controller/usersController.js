@@ -5,7 +5,10 @@ const { uploadImage } = require("../service/imageUploader");
 
 const getAdmins = async (req, res) => {
   try {
-    let data = await pgClient.query("SELECT * FROM users WHERE role=$1", [1]);
+    let data = await pgClient.query(
+      "SELECT * FROM users WHERE role=$1 ORDER BY name ASC",
+      [1]
+    );
     res.status(200).json(data.rows);
   } catch (err) {
     res.status(500).json(err);
