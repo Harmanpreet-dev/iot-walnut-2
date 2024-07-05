@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 
-const Assignfleetjob = () => {
+export default function SchduleTask() {
   // const navigate = useNavigate();
   return (
     <>
@@ -95,6 +95,4 @@ const Assignfleetjob = () => {
       </div>
     </>
   );
-};
-
-export default Assignfleetjob;
+}

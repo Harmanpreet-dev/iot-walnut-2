@@ -16,8 +16,11 @@ import ManageFleets from "../pages/ManageFleets";
 import Settings from "../pages/Profile/Settings";
 import ManageDevices from "../pages/ManageDevices";
 import ManageSingleDevice from "../pages/ManageSingleDevice";
-import IemiUpload from "../components/common/IemiUpload";
-import Joblist from "../pages/ManageJobs/Joblist";
+import ManageScheduler from "../pages/ManageScheduler";
+import SchduleSelectFleet from "../pages/ManageScheduler/SchduleSelectFleet";
+import LayoutWithoutSidebar from "../components/LayoutWithoutSidebar";
+import SchduleSelectDevice from "../pages/ManageScheduler/SchduleSelectDevice";
+import SchduleTask from "../pages/ManageScheduler/SchduleTask";
 
 const routerAdmin = createBrowserRouter(
   createRoutesFromElements(
@@ -35,7 +38,18 @@ const routerAdmin = createBrowserRouter(
           element={<ManageDevices />}
         ></Route>
         <Route path="/device/:name" element={<ManageSingleDevice />}></Route>
-        <Route path="/manage-jobs" element={<Joblist />}></Route>
+        <Route path="/manage-scheduler" element={<ManageScheduler />}></Route>
+      </Route>
+      <Route path="/" element={<LayoutWithoutSidebar />}>
+        <Route
+          path="/schdule-select-fleet"
+          element={<SchduleSelectFleet />}
+        ></Route>
+        <Route
+          path="/schdule-select-device"
+          element={<SchduleSelectDevice />}
+        ></Route>
+        <Route path="/schdule-task" element={<SchduleTask />}></Route>
       </Route>
     </>
   )

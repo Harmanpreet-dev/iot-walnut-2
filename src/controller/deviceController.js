@@ -128,6 +128,16 @@ const addDevice = async (req, res) => {
   }
 };
 
+const getDevicesAll = async (req, res) => {
+  try {
+    let result = await pgClient.query("SELECT * FROM devices");
+
+    res.status(200).json(result.rows);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 const getDevices = async (req, res) => {
   try {
     let result = await pgClient.query("SELECT * FROM devices WHERE fleet=$1", [
@@ -167,6 +177,7 @@ const revokeDevice = async (req, res) => {
 
 module.exports = {
   addDevice,
+  getDevicesAll,
   getDevices,
   getDevice,
   revokeDevice,
