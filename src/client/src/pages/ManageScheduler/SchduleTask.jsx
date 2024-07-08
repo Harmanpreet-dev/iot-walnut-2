@@ -1,9 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 
 export default function SchduleTask() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <>
       <div className="content-wrapper bg-base-200 h-screen">
@@ -84,7 +84,9 @@ export default function SchduleTask() {
 
             <div className="mt-14">
               <button
-                type="submit"
+                // type="submit"
+                type="button"
+                onClick={() => navigate("/manage-scheduler")}
                 className="btn bg-slate-950 gap-2 btn-neutral btn-block rounded text-[17px] font-[500] landing-[19px] hover:bg-slate-950"
               >
                 Submit

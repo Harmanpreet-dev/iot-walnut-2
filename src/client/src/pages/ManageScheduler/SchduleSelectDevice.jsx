@@ -14,10 +14,10 @@ export default function SchduleSelectDevice() {
   const navigate = useNavigate();
   const [devices, setDevices] = useState([]);
   const [fleet, setFleets] = useState([]);
-
   const [loading, setLoading] = useState(false);
+  const [selectedDevices, setSelectedDevices] = useState(false);
 
-  const state = useSelector((state) => state.auth);
+  const state = useSelector((state) => state);
 
   useEffect(() => {
     getDevices();
@@ -27,15 +27,25 @@ export default function SchduleSelectDevice() {
   const getDevices = () => {
     setLoading(true);
     axios
-      .get(`${process.env.REACT_APP_API_URL}/getDevices`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+      .post(
+        `${process.env.REACT_APP_API_URL}/getDevices`,
+        { fleet: state.schdule.fleet.name },
+        {
+          headers: {
+            Authorization: state.auth.jwt,
+          },
+        }
+      )
       .then((res) => {
         setLoading(false);
 
-        setDevices(res.data);
+        let data = res.data;
+
+        data.map((x) => {
+          x.checked = false;
+        });
+
+        setDevices(data);
       })
       .catch((err) => {
         console.log(err);
@@ -57,6 +67,40 @@ export default function SchduleSelectDevice() {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const handleAllSelect = (checked) => {
+    setDevices((oldData) =>
+      oldData.map((device) => ({
+        ...device,
+        checked: checked,
+      }))
+    );
+    if (checked) {
+      setSelectedDevices("all");
+    } else {
+      setSelectedDevices(false);
+    }
+  };
+
+  const handleSingleSelect = (id) => {
+    setDevices((oldData) =>
+      oldData.map((device) =>
+        device.id === id ? { ...device, checked: !device.checked } : device
+      )
+    );
+  };
+
+  const handleSubmit = () => {
+    let deviceArr = [];
+
+    devices.map((device) => {
+      if (device.checked) {
+        console.log(device);
+      }
+    });
+    // console.log(selectedDevices);
+    // navigate("/schdule-task")
   };
 
   return (
@@ -92,7 +136,7 @@ export default function SchduleSelectDevice() {
           <div className="flex items-center justify-end w-full flex-wrap ">
             <button
               className="btn bg-slate-400 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
-              onClick={() => navigate("/schdule-task")}
+              onClick={() => handleSubmit()}
             >
               Continue
             </button>
@@ -107,7 +151,11 @@ export default function SchduleSelectDevice() {
                   <tr className="text-[#B1B1B1] text-[15px] font-[700] landing-[35px] ">
                     <th className="w-2">
                       <label>
-                        <input type="checkbox" className="checkbox" />
+                        <input
+                          type="checkbox"
+                          className="checkbox"
+                          onClick={(e) => handleAllSelect(e.target.checked)}
+                        />
                       </label>
                     </th>
                     <th>Device Name</th>
@@ -120,10 +168,17 @@ export default function SchduleSelectDevice() {
                 <tbody className="mt-3">
                   {devices.map((x) => (
                     <>
-                      <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
+                      <tr
+                        className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3"
+                        onClick={() => handleSingleSelect(x.id)}
+                      >
                         <th className="shadow-none">
                           <label>
-                            <input type="checkbox" className="checkbox" />
+                            <input
+                              type="checkbox"
+                              className="checkbox"
+                              checked={x.checked}
+                            />
                           </label>
                         </th>
                         <td className="bg-base-100 rounded-l-[15px]">

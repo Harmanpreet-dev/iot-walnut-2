@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Spin } from "antd";
+import { SELECT_FLEET } from "../../redux/actions/SchduleAction";
 
 export default function SchduleSelectFleet() {
   const navigate = useNavigate();
@@ -14,6 +15,9 @@ export default function SchduleSelectFleet() {
   const [admin, setAdmin] = useState([]);
   const [category, setCategory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedFleet, setSelectedFleet] = useState();
+
+  const dispatch = useDispatch();
 
   const state = useSelector((state) => state.auth);
 
@@ -33,7 +37,13 @@ export default function SchduleSelectFleet() {
       .then((res) => {
         setLoading(false);
 
-        setFleets(res.data);
+        let data = res.data;
+
+        data.map((x) => {
+          x.checked = false;
+        });
+
+        setFleets(data);
       })
       .catch((err) => {
         console.log(err);
@@ -59,6 +69,26 @@ export default function SchduleSelectFleet() {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const handleCheckStatus = (id) => {
+    setFleets((prevFleets) =>
+      prevFleets.map((fleet) => ({
+        ...fleet,
+        checked: fleet.id === id ? !fleet.checked : false,
+      }))
+    );
+
+    setSelectedFleet(() => {
+      const clickedFleet = fleets.find((fleet) => fleet.id === id);
+      return clickedFleet.checked ? null : clickedFleet;
+    });
+  };
+
+  const handleSubmit = () => {
+    console.log(selectedFleet);
+    dispatch(SELECT_FLEET({ fleetId: selectedFleet.id, fleet: selectedFleet }));
+    navigate("/schdule-select-device");
   };
 
   return (
@@ -94,7 +124,7 @@ export default function SchduleSelectFleet() {
           <div className="flex items-center justify-end w-full flex-wrap ">
             <button
               className="btn bg-slate-400 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
-              onClick={() => navigate("/schdule-select-device")}
+              onClick={() => handleSubmit()}
             >
               Continue
             </button>
@@ -107,11 +137,7 @@ export default function SchduleSelectFleet() {
               <table className="table">
                 <thead className="border-b-2 border-base-300">
                   <tr className="text-[#B1B1B1] text-[15px] font-[700] landing-[35px] ">
-                    <th className="w-2">
-                      <label>
-                        <input type="checkbox" className="checkbox" />
-                      </label>
-                    </th>
+                    <th className="w-2"></th>
                     <th>Fleet Name</th>
                     <th>Category</th>
                     <th>
@@ -134,10 +160,17 @@ export default function SchduleSelectFleet() {
                 <tbody className="mt-3">
                   {fleets.map((x) => (
                     <>
-                      <tr className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20">
+                      <tr
+                        className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20"
+                        onClick={() => handleCheckStatus(x.id)}
+                      >
                         <th className="shadow-none cursor-pointer">
                           <label>
-                            <input type="checkbox" className="checkbox" />
+                            <input
+                              type="checkbox"
+                              className="checkbox"
+                              checked={x.checked}
+                            />
                           </label>
                         </th>
 
