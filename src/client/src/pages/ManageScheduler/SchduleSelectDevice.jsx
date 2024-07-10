@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Spin } from "antd";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { IoIosArrowForward } from "react-icons/io";
+import { SELECT_DEVICE } from "../../redux/actions/SchduleAction";
 
 export default function SchduleSelectDevice() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function SchduleSelectDevice() {
   const [selectedDevices, setSelectedDevices] = useState(false);
 
   const state = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getDevices();
@@ -84,10 +86,16 @@ export default function SchduleSelectDevice() {
   };
 
   const handleSingleSelect = (id) => {
+    setSelectedDevices(false);
     setDevices((oldData) =>
-      oldData.map((device) =>
-        device.id === id ? { ...device, checked: !device.checked } : device
-      )
+      oldData.map((device) => {
+        device =
+          device.id === id ? { ...device, checked: !device.checked } : device;
+        if (device.checked) {
+          setSelectedDevices(true);
+        }
+        return device;
+      })
     );
   };
 
@@ -96,11 +104,11 @@ export default function SchduleSelectDevice() {
 
     devices.map((device) => {
       if (device.checked) {
-        console.log(device);
+        deviceArr.push(device);
       }
     });
-    // console.log(selectedDevices);
-    // navigate("/schdule-task")
+    dispatch(SELECT_DEVICE({ devices: deviceArr }));
+    navigate("/schdule-task");
   };
 
   return (
@@ -135,8 +143,9 @@ export default function SchduleSelectDevice() {
           </div>
           <div className="flex items-center justify-end w-full flex-wrap ">
             <button
-              className="btn bg-slate-400 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
+              className="btn bg-slate-950 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
               onClick={() => handleSubmit()}
+              disabled={!selectedDevices}
             >
               Continue
             </button>

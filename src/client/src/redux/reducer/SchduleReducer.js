@@ -2,6 +2,7 @@ const istate = {
   fleetId: "",
   fleet: "",
   devices: [],
+  totalDeviceNo: 0,
 };
 
 const SchduleReducer = (state = istate, action) => {
@@ -18,6 +19,7 @@ const SchduleReducer = (state = istate, action) => {
       state = {
         ...state,
         devices: action.payload.devices,
+        totalDeviceNo: action.payload.devices.length,
       };
       return state;
     }

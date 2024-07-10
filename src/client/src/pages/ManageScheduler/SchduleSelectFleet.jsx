@@ -15,7 +15,7 @@ export default function SchduleSelectFleet() {
   const [admin, setAdmin] = useState([]);
   const [category, setCategory] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedFleet, setSelectedFleet] = useState();
+  const [selectedFleet, setSelectedFleet] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -123,8 +123,9 @@ export default function SchduleSelectFleet() {
           </div>
           <div className="flex items-center justify-end w-full flex-wrap ">
             <button
-              className="btn bg-slate-400 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
+              className="btn bg-slate-950 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
               onClick={() => handleSubmit()}
+              disabled={selectedFleet == null ? true : false}
             >
               Continue
             </button>
