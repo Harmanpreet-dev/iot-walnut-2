@@ -1,0 +1,29 @@
+{
+  "operation": "update",
+  "firmwareVersion": "1.0.1",
+  "files": [
+    {
+      "fileName": "firmware.bin",
+      "fileLocation": {
+        "s3Location": {
+          "bucket": "your-bucket-name",
+          "key": "firmware/firmware.bin",
+          "version": "version-id"
+        }
+      },
+      "fileSize": 123456,
+      "fileChecksum": "123abc456def",
+      "fileChecksumAlgorithm": "SHA256"
+    }
+  ],
+  "steps": [
+    {
+      "action": {
+        "type": "RUN_COMMAND",
+        "command": {
+          "commandLine": "update-firmware.sh"
+        }
+      }
+    }
+  ]
+}

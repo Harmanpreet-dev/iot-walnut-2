@@ -25,6 +25,7 @@ app.use("/api", require("./routers/commonRouter"));
 app.use("/api", require("./routers/categoryRouter"));
 app.use("/api", require("./routers/FleetRouter"));
 app.use("/api", require("./routers/deviceRouter"));
+app.use("/api", require("./routers/scheduleRouter"));
 app.use("/", require("./routers/certificateRouter"));
 
 // Connect to PostgreSQL and start the server

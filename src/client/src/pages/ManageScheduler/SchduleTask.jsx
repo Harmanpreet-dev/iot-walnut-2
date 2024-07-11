@@ -2,12 +2,27 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { DatePicker, Input, TimePicker } from "antd";
+import { DatePicker, Input, Spin, TimePicker, notification } from "antd";
+import axios from "axios";
 
 export default function SchduleTask() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [rate, setRate] = useState("constant");
+
+  const [name, setName] = useState();
+  const [description, setDescription] = useState();
+  const [json, setJson] = useState();
+  const [date, setDate] = useState();
+  const [time, setTime] = useState();
+  const [maxPerMintue, setMaxPerMintue] = useState();
+
+  const [baseRatePerMinute, setBaseRatePerMinute] = useState();
+  const [incrementFactor, setIncrementFactor] = useState();
+  const [maxPerMintue2, setMaxPerMintue2] = useState();
+  const [loading, setLoading] = useState(false);
+
+  const [api, contextHolder] = notification.useNotification();
 
   const state = useSelector((state) => state);
 
@@ -15,13 +30,53 @@ export default function SchduleTask() {
     setRate(event.target.value);
   };
 
+  const openNotificationWithIcon = (type, message) => {
+    api[type]({
+      message,
+    });
+  };
+
   const handleSubmit = () => {
-    console.log(state.schdule);
-    // navigate("/manage-scheduler")
+    setLoading(true);
+    let dataJson = {
+      fleetId: state.schdule.fleetId,
+      fleet: state.schdule.fleet,
+      devices: state.schdule.devices,
+      name,
+      description,
+      json,
+      isOpen,
+      date,
+      time,
+      rate,
+      maxPerMintue,
+      baseRatePerMinute,
+      incrementFactor,
+      maxPerMintue2,
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/addSchedule`, dataJson, {
+        headers: {
+          Authorization: state.auth.jwt,
+        },
+      })
+      .then((res) => {
+        openNotificationWithIcon("success", "Schedule Task is Added");
+        setTimeout(() => {
+          setLoading(false);
+          navigate("/manage-scheduler");
+        }, 2000);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
     <>
+      <Spin spinning={loading} fullscreen />
+      {contextHolder}
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
@@ -80,7 +135,9 @@ export default function SchduleTask() {
                   <input
                     type="text"
                     className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                    name="fname"
+                    name="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </div>
               </div>
@@ -99,6 +156,8 @@ export default function SchduleTask() {
                       rows="40"
                       cols="50"
                       style={{ height: "150px", resize: "none" }}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
                     />
                   </div>
                 </div>
@@ -116,6 +175,8 @@ export default function SchduleTask() {
                       rows="40"
                       cols="50"
                       style={{ height: "150px", resize: "none" }}
+                      value={json}
+                      onChange={(e) => setJson(e.target.value)}
                     />
                   </div>
                 </div>
@@ -159,7 +220,11 @@ export default function SchduleTask() {
                             Date
                           </span>
                         </label>
-                        <DatePicker size="large" />
+                        <DatePicker
+                          size="large"
+                          // value={date}
+                          onChange={(timestamp, date) => setDate(date)}
+                        />
                       </div>
 
                       <div className="form-control mt-3 w-1/2 ml-4">
@@ -168,7 +233,11 @@ export default function SchduleTask() {
                             Time
                           </span>
                         </label>
-                        <TimePicker size="large" />
+                        <TimePicker
+                          size="large"
+                          // value={time}
+                          onChange={(timestamp, time) => setTime(time)}
+                        />
                       </div>
                     </div>
                     <div className="flex items-center justify-between mt-4">
@@ -221,7 +290,11 @@ export default function SchduleTask() {
                             Maximum Per Minute Rate (1-1000)
                           </span>
                         </label>
-                        <Input size="large" />
+                        <Input
+                          size="large"
+                          value={maxPerMintue}
+                          onChange={(e) => setMaxPerMintue(e.target.value)}
+                        />
                       </div>
                     ) : (
                       <div>
@@ -232,7 +305,13 @@ export default function SchduleTask() {
                                 Base Rate Per Minute (1-1000)
                               </span>
                             </label>
-                            <Input size="large" />
+                            <Input
+                              size="large"
+                              value={baseRatePerMinute}
+                              onChange={(e) =>
+                                setBaseRatePerMinute(e.target.value)
+                              }
+                            />
                           </div>
 
                           <div className="form-control mt-3 w-1/2 ml-4">
@@ -241,7 +320,13 @@ export default function SchduleTask() {
                                 Increment Factor (1.2-5.0)
                               </span>
                             </label>
-                            <Input size="large" />
+                            <Input
+                              size="large"
+                              value={incrementFactor}
+                              onChange={(e) =>
+                                setIncrementFactor(e.target.value)
+                              }
+                            />
                           </div>
                         </div>
                         <div className="flex items-center justify-between mt-4">
@@ -251,7 +336,11 @@ export default function SchduleTask() {
                                 Maximum Per Minute (1-1000)
                               </span>
                             </label>
-                            <Input size="large" />
+                            <Input
+                              size="large"
+                              value={maxPerMintue2}
+                              onChange={(e) => setMaxPerMintue2(e.target.value)}
+                            />
                           </div>
 
                           <div className="form-control mt-3 w-1/2 ml-4">

@@ -1,11 +1,81 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { TfiExport } from "react-icons/tfi";
 import { GoDotFill } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { Tabs } from "antd";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import ScheduleDeatilsTable from "./Details/ScheduleDeatilsTable";
 
-export default function SechdulerDetails() {
-  // const navigate = useNavigate();
+const tabBackgroundColors = {
+  1: "rgb(34 197 94)",
+  2: "rgb(249 115 22)",
+  3: "rgb(220 38 38)",
+};
+
+const tabTextColors = {
+  1: "rgb(220 252 231)",
+  2: "rgb(253 230 138)",
+  3: "rgb(254 202 202)",
+};
+
+const onChange = (key, setActiveTab) => {
+  setActiveTab(key);
+  console.log(key);
+};
+const items = [
+  {
+    key: "1",
+    label: "Success",
+    children: <ScheduleDeatilsTable />,
+  },
+  {
+    key: "2",
+    label: "In Progress",
+    children: <ScheduleDeatilsTable />,
+  },
+  {
+    key: "3",
+    label: "Failed",
+    children: <ScheduleDeatilsTable />,
+  },
+];
+
+const Jobdetail = () => {
+  const [activeTab, setActiveTab] = useState("1");
+  const [task, setTask] = useState();
+
+  const state = useSelector((state) => state);
+  const parms = useParams();
+
+  useEffect(() => {
+    getTaskDetails();
+  }, []);
+
+  const getTaskDetails = () => {
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/getScheduleTask`,
+        {
+          id: parms.id,
+        },
+        {
+          headers: {
+            Authorization: state.auth.jwt,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.length != 0) {
+          setTask(res.data[0]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <>
       <div className="content-wrapper bg-base-200">
@@ -15,7 +85,7 @@ export default function SechdulerDetails() {
               <li className="text-base-content/70 text-[18px]">
                 <Link to="/jobs"> Jobs </Link>
               </li>
-              <li className="text-[18px]">Job 1</li>
+              <li className="text-[18px]">{JSON.stringify(task)}</li>
             </ul>
           </div>
           <div className="search-adminBox flex items-center justify-between w-[28rem]">
@@ -69,65 +139,43 @@ export default function SechdulerDetails() {
         {/* Table Start */}
 
         <div className="mt-6">
-          <div className="col-12">
-            <div className="overflow-x-auto">
-              <table className="table">
-                {/* head */}
-                <thead className="border-b-2 border-base-300">
-                  <tr className="text-[#B1B1B1] text-[15px] font-[700] landing-[35px]">
-                    <th>Device</th>
-                    <th>Job Status</th>
-                  </tr>
-                </thead>
-                <br />
-                <tbody className="mt-3">
-                  {/* row 1 */}
-
-                  <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
-                    <td className="text-[20px] font-[700] landing-[35px] bg-base-100 cursor-pointer rounded-l-[15px] ">
-                      Device 1
-                    </td>
-                    <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-base-content/70">
-                      In progress
-                    </td>
-                  </tr>
-                  <br />
-
-                  <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
-                    <td className="text-[20px] font-[700] landing-[35px] bg-base-100 cursor-pointer rounded-l-[15px] ">
-                      Device 2
-                    </td>
-                    <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-[#FF2002]">
-                      Failed
-                    </td>
-                  </tr>
-                  <br />
-                  <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
-                    <td className="text-[20px] font-[700] landing-[35px] bg-base-100 cursor-pointer rounded-l-[15px] ">
-                      Device 3
-                    </td>
-                    <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-[#14B111]">
-                      Success
-                    </td>
-                  </tr>
-                  <br />
-                  <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
-                    <td className="text-[20px] font-[700] landing-[35px] bg-base-100 cursor-pointer rounded-l-[15px] ">
-                      Device 4
-                    </td>
-                    <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-[#F0A81D]">
-                      In progress
-                    </td>
-                  </tr>
-                  <br />
-                </tbody>
-              </table>
-            </div>
+          <div style={{ width: "100%" }}>
+            <Tabs
+              defaultActiveKey="1"
+              items={items.map((item, index) => ({
+                ...item,
+                label: (
+                  <div
+                    style={{
+                      backgroundColor:
+                        activeTab === item.key
+                          ? tabBackgroundColors[item.key]
+                          : "inherit",
+                      color:
+                        activeTab === item.key
+                          ? tabTextColors[item.key]
+                          : "inherit",
+                      padding: activeTab === item.key ? "16px 0" : "0",
+                      borderTopLeftRadius: index === 0 ? "20px" : "0",
+                      borderRadius:
+                        item.key === "1"
+                          ? "20px 0 0 20px"
+                          : item.key === items[items.length - 1].key
+                          ? "0 20px 20px 0"
+                          : "0",
+                    }}
+                  >
+                    {item.label}
+                  </div>
+                ),
+              }))}
+              onChange={(key) => onChange(key, setActiveTab)}
+            />
           </div>
-
-          {/* Table End */}
         </div>
       </div>
     </>
   );
-}
+};
+
+export default Jobdetail;

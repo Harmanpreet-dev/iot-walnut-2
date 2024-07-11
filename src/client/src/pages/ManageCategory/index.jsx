@@ -36,7 +36,7 @@ export default function ManageCategory() {
   return (
     <>
       <Spin spinning={loading} fullscreen />
-      <div className="content-wrapper bg-base-200 h-screen">
+      <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <Breadcrumb
             items={[
