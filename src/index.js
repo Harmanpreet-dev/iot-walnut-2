@@ -10,7 +10,6 @@ app.use(cors());
 
 // Serve static files from the "profile" directory
 app.use("/profile", express.static("./src/profile"));
-
 app.use("/static", express.static("./src/client/build/static"));
 app.use("/images", express.static("./src/client/build/images"));
 app.use("/certificate", express.static("./src/AWS/certificates"));

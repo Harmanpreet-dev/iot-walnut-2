@@ -18,8 +18,8 @@ function createThing(thingName, callback) {
     if (err) {
       console.error("Error creating thing:", err);
     } else {
-      // console.log("Thing created successfully:", data);
-      callback(data);
+      console.log("Thing created successfully:", data.thingArn);
+      callback(data.thingArn);
     }
   });
 }
@@ -162,7 +162,7 @@ function CreateThingAndAddToGroup(thingName, groupName, imei, pgClient) {
       },
     ],
   };
-  createThing(thingName, () => {
+  createThing(thingName, (thingArn) => {
     createCertificate((certificates) => {
       saveCertificates(certificates, thingName);
       downloadRootCACertificate(thingName);
@@ -173,12 +173,10 @@ function CreateThingAndAddToGroup(thingName, groupName, imei, pgClient) {
               policyData.policyName,
               certificates.certificateArn,
               async () => {
-                console.log(
-                  "Thing created with certificate, added to group, and policy attached successfully."
-                );
+                console.log("thingArn", thingArn);
                 let result = await pgClient.query(
-                  "UPDATE devices SET certificate_id=$1 WHERE name=$2",
-                  [certificates.certificateId, thingName]
+                  "UPDATE devices SET certificate_id=$1, arn=$3 WHERE name=$2",
+                  [certificates.certificateId, thingName, thingArn]
                 );
                 console.log("updated", certificates.certificateId, thingName);
               }

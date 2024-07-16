@@ -43,6 +43,7 @@ export default function FleetAddModal({ getFleets, admin, category }) {
   });
 
   const handleFormSubmit = (values) => {
+    values.name = values.name.replace(" ", "_");
     axios
       .post(`${process.env.REACT_APP_API_URL}/addFleet`, values, {
         headers: {

@@ -325,3 +325,9 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+:where(.css-dev-only-do-not-override-3rel02).ant-tabs
+  .ant-tabs-tab
+  + .ant-tabs-tab {
+  margin: 0;
+}

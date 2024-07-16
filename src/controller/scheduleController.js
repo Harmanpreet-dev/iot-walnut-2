@@ -1,3 +1,4 @@
+const createIoTJob = require("../AWS/CreateJob");
 const { pgClient } = require("../db/connection");
 
 const AddSchedule = async (req, res) => {
@@ -27,8 +28,8 @@ const AddSchedule = async (req, res) => {
       [
         name,
         fleetId,
-        fleet,
-        devices,
+        JSON.stringify(fleet),
+        JSON.stringify(devices),
         description,
         json,
         isOpen,
@@ -41,6 +42,14 @@ const AddSchedule = async (req, res) => {
         maxPerMintue2,
       ]
     );
+
+    let arn = [];
+
+    devices.map((x) => {
+      arn.push(x.arn);
+    });
+
+    createIoTJob(name, arn, json, description);
 
     res.status(200).json(true);
   } catch (err) {
@@ -62,7 +71,16 @@ const getScheduleTaskDetails = async (req, res) => {
     let result = await pgClient.query("SELECT * FROM schedule WHERE id=$1", [
       req.body.id,
     ]);
+
     res.status(200).json(result.rows);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const textJob = async (req, res) => {
+  try {
+    res.status(200).json("result.rows");
   } catch (err) {
     res.status(500).json(err);
   }
@@ -72,4 +90,5 @@ module.exports = {
   AddSchedule,
   getScheduleTask,
   getScheduleTaskDetails,
+  textJob,
 };

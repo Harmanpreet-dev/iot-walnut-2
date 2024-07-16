@@ -3,7 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import { TfiExport } from "react-icons/tfi";
 import { GoDotFill } from "react-icons/go";
 import { Link, useParams } from "react-router-dom";
-import { Tabs } from "antd";
+import { Spin, Tabs } from "antd";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import ScheduleDeatilsTable from "./Details/ScheduleDeatilsTable";
@@ -24,27 +24,15 @@ const onChange = (key, setActiveTab) => {
   setActiveTab(key);
   console.log(key);
 };
-const items = [
-  {
-    key: "1",
-    label: "Success",
-    children: <ScheduleDeatilsTable />,
-  },
-  {
-    key: "2",
-    label: "In Progress",
-    children: <ScheduleDeatilsTable />,
-  },
-  {
-    key: "3",
-    label: "Failed",
-    children: <ScheduleDeatilsTable />,
-  },
-];
 
 const Jobdetail = () => {
   const [activeTab, setActiveTab] = useState("1");
   const [task, setTask] = useState();
+  const [name, setName] = useState();
+  const [description, setDescription] = useState();
+  const [fleetName, setFleetName] = useState();
+  const [devices, setDevices] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const state = useSelector((state) => state);
   const parms = useParams();
@@ -53,7 +41,26 @@ const Jobdetail = () => {
     getTaskDetails();
   }, []);
 
+  const items = [
+    {
+      key: "1",
+      label: "Success",
+      children: <ScheduleDeatilsTable devices={[]} />,
+    },
+    {
+      key: "2",
+      label: "In Progress",
+      children: <ScheduleDeatilsTable devices={devices} />,
+    },
+    {
+      key: "3",
+      label: "Failed",
+      children: <ScheduleDeatilsTable devices={[]} />,
+    },
+  ];
+
   const getTaskDetails = () => {
+    setLoading(true);
     axios
       .post(
         `${process.env.REACT_APP_API_URL}/getScheduleTask`,
@@ -69,6 +76,12 @@ const Jobdetail = () => {
       .then((res) => {
         if (res.data.length != 0) {
           setTask(res.data[0]);
+          let task = res.data[0];
+          setName(task.name);
+          setDescription(task.description);
+          setFleetName(JSON.parse(task.fleet).name);
+          setDevices(JSON.parse(task.devices));
+          setLoading(false);
         }
       })
       .catch((err) => {
@@ -78,6 +91,7 @@ const Jobdetail = () => {
 
   return (
     <>
+      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
@@ -85,7 +99,7 @@ const Jobdetail = () => {
               <li className="text-base-content/70 text-[18px]">
                 <Link to="/jobs"> Jobs </Link>
               </li>
-              <li className="text-[18px]">{JSON.stringify(task)}</li>
+              <li className="text-[18px]">{name}</li>
             </ul>
           </div>
           <div className="search-adminBox flex items-center justify-between w-[28rem]">
@@ -108,14 +122,14 @@ const Jobdetail = () => {
         </div>
 
         <div className="flex items-start justify-start flex-col my-6 border-b-2 pb-4">
-          <div className="text-[22px] font-[700] landing-[35px]">Job 1</div>
+          <div className="text-[22px] font-[700] landing-[35px]">{name}</div>
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center justify-start mt-3">
               <div className="mr-2 text-[14px] font-[500] landing-[35px] text-base-content/70">
                 Descripiton :{" "}
               </div>
               <div className="flex items-center justify-center text-[15px] font-500 landing-[35px] text-base-content/80">
-                <span className="mr-2">Firmware Update V2</span>{" "}
+                <span className="mr-2">{description}</span>{" "}
               </div>
             </div>
 
@@ -123,7 +137,7 @@ const Jobdetail = () => {
               <span className="flex items-center text-base-content/70 font-[500]">
                 Fleet :
                 <span className="ml-2 text-base-content font-[500]">
-                  Fleet Name 1
+                  {fleetName}
                 </span>
               </span>
               <div className="ml-5">

@@ -42,7 +42,7 @@ export default function SchduleTask() {
       fleetId: state.schdule.fleetId,
       fleet: state.schdule.fleet,
       devices: state.schdule.devices,
-      name,
+      name: name.replace(" ", "_"),
       description,
       json,
       isOpen,
@@ -54,7 +54,6 @@ export default function SchduleTask() {
       incrementFactor,
       maxPerMintue2,
     };
-
     axios
       .post(`${process.env.REACT_APP_API_URL}/addSchedule`, dataJson, {
         headers: {
