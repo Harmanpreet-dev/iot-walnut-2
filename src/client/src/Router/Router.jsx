@@ -22,6 +22,7 @@ import LayoutWithoutSidebar from "../components/LayoutWithoutSidebar";
 import SchduleSelectDevice from "../pages/ManageScheduler/SchduleSelectDevice";
 import SchduleTask from "../pages/ManageScheduler/SchduleTask";
 import SechdulerDetails from "../pages/ManageScheduler/SechdulerDetails";
+import Manageuser from "../pages/ManageUser";
 
 const routerAdmin = createBrowserRouter(
   createRoutesFromElements(
@@ -32,6 +33,7 @@ const routerAdmin = createBrowserRouter(
         <Route path="/settings" element={<Settings />}></Route>
         <Route path="/change-password" element={<ChangePassword />}></Route>
         <Route path="/manage-admin" element={<ManageAdmin />}></Route>
+        <Route path="/manage-user" element={<Manageuser />}></Route>
         <Route path="/manage-category" element={<ManageCategory />}></Route>
         <Route path="/manage-fleets" element={<ManageFleets />}></Route>
         <Route
