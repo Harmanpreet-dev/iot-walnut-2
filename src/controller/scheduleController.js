@@ -81,6 +81,7 @@ const getScheduleTaskDetails = async (req, res) => {
 const textJob = async (req, res) => {
   try {
     res.status(200).json("result.rows");
+    aqsdxfegbhnjkmnjik;
   } catch (err) {
     res.status(500).json(err);
   }

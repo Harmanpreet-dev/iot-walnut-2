@@ -33,4 +33,10 @@ export let SideBarData = [
     link: "/manage-scheduler",
     svg: <SchdulerSVG />,
   },
+  // {
+  //   id: 6,
+  //   name: "Logger",
+  //   link: "/manage-logger",
+  //   svg: <FleetSVG />,
+  // },
 ];

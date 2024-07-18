@@ -11,10 +11,10 @@ const addCategory = async (req, res) => {
     );
     const status = result.rowCount > 0 ? "success" : "failed";
 
-    await pgClient.query(
-      "INSERT INTO logger (name, img, status, task, timestamp) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)",
-      [name, img, status, task]
-    );
+    // await pgClient.query(
+    //   "INSERT INTO logger (name, img, status, task, timestamp) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)",
+    //   [name, img, status, task]
+    // );
 
     res.json({
       message: "A new category was created",
@@ -26,11 +26,11 @@ const addCategory = async (req, res) => {
     const task = `Category Add Failed: ${req.body.categoryName}`;
     const status = "error";
 
-    // Log the error to the logger table
-    await pgClient.query(
-      "INSERT INTO logger (name, img, status, task, timestamp) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)",
-      [req.body.name, req.body.img, status, task]
-    );
+    // // Log the error to the logger table
+    // await pgClient.query(
+    //   "INSERT INTO logger (name, img, status, task, timestamp) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)",
+    //   [req.body.name, req.body.img, status, task]
+    // );
 
     res.status(500).json({ error: err.message });
   }

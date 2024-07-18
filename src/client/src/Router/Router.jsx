@@ -23,6 +23,7 @@ import SchduleSelectDevice from "../pages/ManageScheduler/SchduleSelectDevice";
 import SchduleTask from "../pages/ManageScheduler/SchduleTask";
 import SechdulerDetails from "../pages/ManageScheduler/SechdulerDetails";
 import Manageuser from "../pages/ManageUser";
+import Loggers from "../pages/ManageLogger/LoggerTable";
 
 const routerAdmin = createBrowserRouter(
   createRoutesFromElements(
@@ -43,6 +44,7 @@ const routerAdmin = createBrowserRouter(
         <Route path="/device/:name" element={<ManageSingleDevice />}></Route>
         <Route path="/manage-scheduler" element={<ManageScheduler />}></Route>
         <Route path="/scheduler/:id" element={<SechdulerDetails />}></Route>
+        <Route path="/manage-logger" element={<Loggers />}></Route>
       </Route>
       <Route path="/" element={<LayoutWithoutSidebar />}>
         <Route

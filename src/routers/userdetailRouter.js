@@ -5,11 +5,22 @@ const {
   getuserdetail,
   updateuserdetail,
 } = require("../controller/userdetailController");
+const logResponse = require("../middleware/logResponseMidleware");
 
 const userdetailRouter = Router();
 
 userdetailRouter.get("/getuserdetail", verifyToken, getuserdetail);
-userdetailRouter.post("/adduserdetail", verifyToken, adduserdetail);
-userdetailRouter.post("/updateuserdetail", updateuserdetail);
+userdetailRouter.post(
+  "/adduserdetail",
+  verifyToken,
+  logResponse,
+  adduserdetail
+);
+userdetailRouter.post(
+  "/updateuserdetail",
+  verifyToken,
+  logResponse,
+  updateuserdetail
+);
 
 module.exports = userdetailRouter;

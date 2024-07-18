@@ -75,7 +75,6 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
   const [authorname, setAuthorname] = useState();
   const [messageApi, contextHolder] = message.useMessage();
 
-
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -83,8 +82,7 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
       phone: "",
       password: "",
       image: "",
-      admin: ""
-
+      admin: "",
     },
     validate,
     onSubmit: (values) => {
@@ -155,16 +153,13 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
 
   const selectAdminforUser = (e) => {
     const selectedAdminId = e.target.value;
-    const selectedAdmin = admin.find(k => k.id == selectedAdminId);
+    const selectedAdmin = admin.find((k) => k.id == selectedAdminId);
 
-      setAuthorid(selectedAdmin.id);
-      setAuthorname(selectedAdmin.name);
-
-  }
+    setAuthorid(selectedAdmin.id);
+    setAuthorname(selectedAdmin.name);
+  };
 
   const handleFormSubmit = (values) => {
-
-
     values.author_id = authorid;
     values.author_name = authorname;
     // setLoading(true);
@@ -189,9 +184,9 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
         },
       })
       .then((res) => {
-        getuserdetail();
-        document.getElementById("my_modal_3").close();
-        messageApi.success("Admin Added Successfully");
+        // getuserdetail();
+        // document.getElementById("my_modal_3").close();
+        // messageApi.success("Admin Added Successfully");
       })
       .catch((err) => {
         if (err.response.data.error === "Email already exists") {
@@ -299,8 +294,6 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
                 onChange={(event) => handleFileSelect(event)}
               />
               <div>
-
-
                 <div className="form-control">
                   <label className="label">
                     <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">
@@ -333,16 +326,14 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
                     <select
                       className="select focus:outline-none focus:border-none w-full  form-control flex flex-row items-center rounded-[15px] h-14 bg-base-100 px-3 shadow"
                       id="admin"
-                name="admin"
-                onChange={(e) => {
-                  formik.handleChange(e);
-                  selectAdminforUser(e);
-                }}
-                value={formik.values.admin}
+                      name="admin"
+                      onChange={(e) => {
+                        formik.handleChange(e);
+                        selectAdminforUser(e);
+                      }}
+                      value={formik.values.admin}
                     >
-                      <option value="">
-                        Select Admin
-                      </option>
+                      <option value="">Select Admin</option>
                       {admin.map((value, i) => {
                         return (
                           <option value={value.id} key={i}>
