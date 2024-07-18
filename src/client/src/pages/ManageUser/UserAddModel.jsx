@@ -184,9 +184,9 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
         },
       })
       .then((res) => {
-        // getuserdetail();
-        // document.getElementById("my_modal_3").close();
-        // messageApi.success("Admin Added Successfully");
+        getuserdetail();
+        document.getElementById("my_modal_3").close();
+        messageApi.success("Admin Added Successfully");
       })
       .catch((err) => {
         if (err.response.data.error === "Email already exists") {
