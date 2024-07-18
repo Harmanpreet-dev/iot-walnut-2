@@ -116,13 +116,13 @@ export default function ManageAdmin() {
     }
   };
 
-  // const handleActive = (id) => {
-  //   users.map((x) => {
-  //     if (x.id === id) {
-  //       setActiveUser(x);
-  //     }
-  //   });
-  // };
+  const handleActive = (id) => {
+    users.map((x) => {
+      if (x.id === id) {
+        setActiveUser(x);
+      }
+    });
+  };
 
   return (
     <>
@@ -167,6 +167,7 @@ export default function ManageAdmin() {
           state={state}
         />
         <AdminTable
+          handleActive={handleActive}
           users={filteredUsers}
           handleDeleteAdmin={verifyUser}
           error={error}

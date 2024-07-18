@@ -67,7 +67,7 @@ export default function SchdulerTable({ navigate }) {
                         {JSON.parse(x.fleet).name}
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
-                        {x.date} | {x.time}
+                        {new Date(x.date).toLocaleDateString()} | {x.time}
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100 text-gray-500 rounded-r-[15px]">
                         {x.status || "In Progress"}
