@@ -4,6 +4,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { DatePicker, Input, Spin, TimePicker, notification } from "antd";
 import axios from "axios";
+import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 
 export default function SchduleTask() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function SchduleTask() {
   const [incrementFactor, setIncrementFactor] = useState();
   const [maxPerMintue2, setMaxPerMintue2] = useState();
   const [loading, setLoading] = useState(false);
+  // const state = useSelector((state) => state.auth);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -72,9 +74,41 @@ export default function SchduleTask() {
       });
   };
 
+  const verifyUser = (value) => {
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
+        {
+          email: state.auth.email,
+        },
+        {
+          headers: {
+            Authorization: state.auth.jwt,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        document.getElementById("my_modal_2").showModal();
+      })
+      .catch((err) => {
+        if (err.response.data.error === "Email already exists") {
+          // setEmailError(err.response.data.error);
+        }
+      });
+  };
+
+  const handle2FA = (response) => {
+    console.log(response);
+    if (response === true) {
+      handleSubmit();
+    }
+  };
+
   return (
     <>
       <Spin spinning={loading} fullscreen />
+      <TwoFactAuth handle2FA={handle2FA} />
       {contextHolder}
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
@@ -361,7 +395,7 @@ export default function SchduleTask() {
             <div className="mt-14">
               <button
                 type="button"
-                onClick={() => handleSubmit()}
+                onClick={() => verifyUser()}
                 className="btn bg-slate-950 gap-2 btn-neutral btn-block rounded text-[17px] font-[500] landing-[19px] hover:bg-slate-950"
               >
                 Submit

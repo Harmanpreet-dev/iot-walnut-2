@@ -156,7 +156,7 @@ export default function DeviceAddModal({ getDevices }) {
                   block
                   loading={loading}
                   disabled={!file || loading}
-                  onClick={() => handleFormSubmit()}
+                  onClick={() => verifyUser()}
                 >
                   Upload
                 </Button>
