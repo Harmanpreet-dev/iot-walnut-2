@@ -1,9 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
+import { useDispatch } from "react-redux";
+import { ADD_FLEET } from "../../redux/actions/CommonAction";
 
 export default function FleetTable({ fleets, admin, category, error }) {
   const navigate = useNavigate();
+  const dipatch = useDispatch();
+
+  const openFleet = (name) => {
+    navigate(`/manage-devices/${name}`);
+    dipatch(ADD_FLEET({}));
+  };
 
   return (
     <div className="mt-6">
@@ -73,7 +81,7 @@ export default function FleetTable({ fleets, admin, category, error }) {
                       </td>
                       <td
                         className="bg-base-100 rounded-r-[15px] w-8 cursor-pointer cursor-pointer"
-                        onClick={() => navigate(`/manage-devices/${x.name}`)}
+                        onClick={() => openFleet(x.name)}
                       >
                         <div className="text-[20px] font-[500] landing-[35px] text-neutral-500 ">
                           <IoIosArrowForward />

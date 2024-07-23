@@ -331,3 +331,12 @@ input[type="number"] {
   + .ant-tabs-tab {
   margin: 0;
 }
+
+.sample_download {
+  font-sizd: 14px;
+  color: darkslateblue;
+}
+
+.sample_download:hover {
+  color: black;
+}

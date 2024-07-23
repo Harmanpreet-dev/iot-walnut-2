@@ -117,6 +117,11 @@ export default function ManageDevices() {
             </div>
           </div>
         </div>
+        <div style={{ textAlign: "end", margin: "1rem" }}>
+          <a href="#" target="_blank" className="sample_download">
+            Download Sample file
+          </a>
+        </div>
 
         <DeviceTable devices={filteredDevices} error={error} />
       </div>

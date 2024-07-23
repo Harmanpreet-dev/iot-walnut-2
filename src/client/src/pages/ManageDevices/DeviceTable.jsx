@@ -21,7 +21,7 @@ export default function DeviceTable({ devices, error }) {
                 <th>Device name</th>
                 <th>IMEI Number</th>
                 <th>Status</th>
-                <th>Admin Phone</th>
+                {/* <th>Admin Phone</th> */}
                 <th></th>
               </tr>
             </thead>
@@ -56,9 +56,9 @@ export default function DeviceTable({ devices, error }) {
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                         {x.status == "true" ? "Active" : "Revoked"}
                       </td>
-                      <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                      {/* <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                         9876543210
-                      </td>
+                      </td> */}
                       <td
                         className="bg-base-100 rounded-r-[15px] w-8 cursor-pointer cursor-pointer"
                         onClick={() => navigate(`/device/${x.name}`)}
