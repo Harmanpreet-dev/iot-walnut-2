@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
@@ -91,6 +91,14 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
     },
   });
 
+  useEffect(() => {
+    if (state.role == 1) {
+      formik.setValues({
+        admin: state.id,
+      });
+    }
+  }, []);
+
   const checkEmail = (values) => {
     axios
       .post(
@@ -163,6 +171,7 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
     values.author_id = authorid;
     values.author_name = authorname;
     // setLoading(true);
+
     setEmailError("");
 
     const formData = new FormData();
@@ -315,41 +324,43 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
                     ) : null}
                   </span>
                 </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">
-                      Select Admin
-                    </span>
-                  </label>
-                  <div>
-                    <select
-                      className="select focus:outline-none focus:border-none w-full  form-control flex flex-row items-center rounded-[15px] h-14 bg-base-100 px-3 shadow"
-                      id="admin"
-                      name="admin"
-                      onChange={(e) => {
-                        formik.handleChange(e);
-                        selectAdminforUser(e);
-                      }}
-                      value={formik.values.admin}
-                    >
-                      <option value="">Select Admin</option>
-                      {admin.map((value, i) => {
-                        return (
-                          <option value={value.id} key={i}>
-                            {value.name}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                  <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
-                    {formik.errors.admin ? (
-                      <div>{formik.errors.admin}</div>
-                    ) : null}
-                  </span>
-                </div>
-
+                {state.role == 0 ? (
+                  <>
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">
+                          Select Admin
+                        </span>
+                      </label>
+                      <div>
+                        <select
+                          className="select focus:outline-none focus:border-none w-full  form-control flex flex-row items-center rounded-[15px] h-14 bg-base-100 px-3 shadow"
+                          id="admin"
+                          name="admin"
+                          onChange={(e) => {
+                            formik.handleChange(e);
+                            selectAdminforUser(e);
+                          }}
+                          value={formik.values.admin}
+                        >
+                          <option value="">Select Admin</option>
+                          {admin.map((value, i) => {
+                            return (
+                              <option value={value.id} key={i}>
+                                {value.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+                      <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
+                        {formik.errors.admin ? (
+                          <div>{formik.errors.admin}</div>
+                        ) : null}
+                      </span>
+                    </div>
+                  </>
+                ) : null}
                 <div className="flex items-center justify-between">
                   <div className="form-control mt-3 w-1/2 mr-4">
                     <label className="label">

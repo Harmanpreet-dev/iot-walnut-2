@@ -23,7 +23,11 @@ export default function ManageFleets() {
   const state = useSelector((state) => state.auth);
 
   useEffect(() => {
-    getFleets();
+    if (state.role == 0) {
+      getFleets();
+    } else {
+      getFeelByAdmin();
+    }
     getUserCategory();
   }, []);
 
@@ -67,6 +71,28 @@ export default function ManageFleets() {
           Authorization: state.jwt,
         },
       })
+      .then((res) => {
+        setLoading(false);
+
+        setFleets(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getFeelByAdmin = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/getFleet`,
+        { id: state.id },
+        {
+          headers: {
+            Authorization: state.jwt,
+          },
+        }
+      )
       .then((res) => {
         setLoading(false);
 
@@ -175,14 +201,18 @@ export default function ManageFleets() {
             </div>
             <div className="adminBtn flex">
               <div>
-                <button
-                  className="btn btn-neutral font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] mr-4"
-                  onClick={() =>
-                    document.getElementById("my_modal_3").showModal()
-                  }
-                >
-                  Add Fleets <FaPlus className="pl-2 text-[24px]" />
-                </button>
+                {state.role == 0 ? (
+                  <>
+                    <button
+                      className="btn btn-neutral font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] mr-4"
+                      onClick={() =>
+                        document.getElementById("my_modal_3").showModal()
+                      }
+                    >
+                      Add Fleets <FaPlus className="pl-2 text-[24px]" />
+                    </button>
+                  </>
+                ) : null}
                 <FleetAddModal
                   getFleets={getFleets}
                   admin={admin}
@@ -194,6 +224,7 @@ export default function ManageFleets() {
         </div>
 
         <FleetTable
+          role={state.role}
           error={error}
           fleets={filteredFleets}
           admin={admin}

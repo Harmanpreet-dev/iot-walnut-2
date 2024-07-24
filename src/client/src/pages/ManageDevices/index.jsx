@@ -91,37 +91,45 @@ export default function ManageDevices() {
                 onChange={handleInputChange}
               />
             </div>
-            <div className="adminBtn flex">
-              <div>
-                <button
-                  className="btn btn-neutral font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] mr-4"
-                  onClick={() =>
-                    document.getElementById("my_modal_3").showModal()
-                  }
-                >
-                  Add Whitelisting <FaPlus className="pl-2 text-[24px]" />
-                </button>
-                <DevicetAddModal getDevices={getDevices} />
-                <DeviceAddBlackModal getDevices={getDevices} />
-              </div>
-              <div>
-                <button
-                  className="btn btn-neutral font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] mr-4"
-                  onClick={() =>
-                    document.getElementById("my_modal_4").showModal()
-                  }
-                >
-                  Add Blacklisting <FaPlus className="pl-2 text-[24px]" />
-                </button>
-              </div>
-            </div>
+            {state.role == 0 ? (
+              <>
+                <div className="adminBtn flex">
+                  <div>
+                    <button
+                      className="btn btn-neutral font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] mr-4"
+                      onClick={() =>
+                        document.getElementById("my_modal_3").showModal()
+                      }
+                    >
+                      Add Whitelisting <FaPlus className="pl-2 text-[24px]" />
+                    </button>
+                    <DevicetAddModal getDevices={getDevices} />
+                    <DeviceAddBlackModal getDevices={getDevices} />
+                  </div>
+                  <div>
+                    <button
+                      className="btn btn-neutral font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] mr-4"
+                      onClick={() =>
+                        document.getElementById("my_modal_4").showModal()
+                      }
+                    >
+                      Add Blacklisting <FaPlus className="pl-2 text-[24px]" />
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
-        <div style={{ textAlign: "end", margin: "1rem" }}>
-          <a href="#" target="_blank" className="sample_download">
-            Download Sample file
-          </a>
-        </div>
+        {state.role == 0 ? (
+          <>
+            <div style={{ textAlign: "end", margin: "1rem" }}>
+              <a href="#" target="_blank" className="sample_download">
+                Download Sample file
+              </a>
+            </div>
+          </>
+        ) : null}
 
         <DeviceTable devices={filteredDevices} error={error} />
       </div>

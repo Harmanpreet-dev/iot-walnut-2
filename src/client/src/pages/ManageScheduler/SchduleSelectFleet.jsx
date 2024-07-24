@@ -22,7 +22,11 @@ export default function SchduleSelectFleet() {
   const state = useSelector((state) => state.auth);
 
   useEffect(() => {
-    getFleets();
+    if (state.role == 0) {
+      getFleets();
+    } else {
+      getFeelByAdmin();
+    }
     getUserCategory();
   }, []);
 
@@ -49,6 +53,35 @@ export default function SchduleSelectFleet() {
         console.log(err);
       });
   };
+
+  const getFeelByAdmin = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/getFleet`,
+        { id: state.id },
+        {
+          headers: {
+            Authorization: state.jwt,
+          },
+        }
+      )
+      .then((res) => {
+        setLoading(false);
+
+        let data = res.data;
+
+        data.map((x) => {
+          x.checked = false;
+        });
+
+        setFleets(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const getUserCategory = () => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/getUserCategory`, {
@@ -153,8 +186,12 @@ export default function SchduleSelectFleet() {
                         Inactive Devices
                       </span>
                     </th>
-                    <th>Admin</th>
-                    <th>Admin Phone</th>
+                    {state.role == 0 ? (
+                      <>
+                        <th>Admin</th>
+                        <th>Admin Phone</th>
+                      </>
+                    ) : null}
                   </tr>
                 </thead>
                 <br />
@@ -195,20 +232,24 @@ export default function SchduleSelectFleet() {
                         <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
                           0,189
                         </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
-                          {admin.map((y) => {
-                            if (y.id === parseInt(x.admin)) {
-                              return y.name;
-                            }
-                          })}
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px]">
-                          {admin.map((y) => {
-                            if (y.id === parseInt(x.admin)) {
-                              return y.phone;
-                            }
-                          })}
-                        </td>
+                        {state.role == 0 ? (
+                          <>
+                            <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                              {admin.map((y) => {
+                                if (y.id === parseInt(x.admin)) {
+                                  return y.name;
+                                }
+                              })}
+                            </td>
+                            <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px]">
+                              {admin.map((y) => {
+                                if (y.id === parseInt(x.admin)) {
+                                  return y.phone;
+                                }
+                              })}
+                            </td>
+                          </>
+                        ) : null}
                       </tr>
                       <br />
                     </>

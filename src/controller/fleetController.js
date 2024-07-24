@@ -27,6 +27,18 @@ const getFleet = async (req, res) => {
   }
 };
 
+const getFleetByAdmin = async (req, res) => {
+  try {
+    let { id } = req.body;
+    let result = await pgClient.query("SELECT * FROM fleets WHERE admin=$1", [
+      id,
+    ]);
+    res.status(200).json(result.rows);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 const getUserCategory = async (req, res) => {
   try {
     let users = await pgClient.query("SELECT * FROM users WHERE role=$1", [1]);
@@ -41,5 +53,6 @@ const getUserCategory = async (req, res) => {
 module.exports = {
   addFleet,
   getFleet,
+  getFleetByAdmin,
   getUserCategory,
 };

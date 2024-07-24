@@ -133,6 +133,7 @@ const loginUser = async (req, res) => {
 
       res.status(200).json({
         data: {
+          id: userData.id,
           name: userData.name,
           email: userData.email,
           role: userData.role,

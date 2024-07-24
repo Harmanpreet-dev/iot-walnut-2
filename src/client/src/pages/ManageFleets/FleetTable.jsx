@@ -4,7 +4,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { ADD_FLEET } from "../../redux/actions/CommonAction";
 
-export default function FleetTable({ fleets, admin, category, error }) {
+export default function FleetTable({ fleets, admin, category, error, role }) {
   const navigate = useNavigate();
   const dipatch = useDispatch();
 
@@ -28,8 +28,12 @@ export default function FleetTable({ fleets, admin, category, error }) {
                 </th> */}
                 <th>Fleet name</th>
                 <th>Category</th>
-                <th>Admin</th>
-                <th>Admin Phone</th>
+                {role == 0 ? (
+                  <>
+                    <th>Admin</th>
+                    <th>Admin Phone</th>
+                  </>
+                ) : null}
                 <th></th>
               </tr>
             </thead>
@@ -45,7 +49,10 @@ export default function FleetTable({ fleets, admin, category, error }) {
               {fleets.map((x) => {
                 return (
                   <React.Fragment key={x.id}>
-                    <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
+                    <tr
+                      className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 cursor-pointer"
+                      onClick={() => openFleet(x.name)}
+                    >
                       {/* <th className="shadow-none">
                         <label>
                           <input type="checkbox" className="checkbox" />
@@ -65,23 +72,27 @@ export default function FleetTable({ fleets, admin, category, error }) {
                           }
                         })}
                       </td>
-                      <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                        {admin.map((y) => {
-                          if (y.id === parseInt(x.admin)) {
-                            return y.name;
-                          }
-                        })}
-                      </td>
-                      <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                        {admin.map((y) => {
-                          if (y.id === parseInt(x.admin)) {
-                            return y.phone;
-                          }
-                        })}
-                      </td>
+                      {role == 0 ? (
+                        <>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            {admin.map((y) => {
+                              if (y.id === parseInt(x.admin)) {
+                                return y.name;
+                              }
+                            })}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            {admin.map((y) => {
+                              if (y.id === parseInt(x.admin)) {
+                                return y.phone;
+                              }
+                            })}
+                          </td>
+                        </>
+                      ) : null}
                       <td
-                        className="bg-base-100 rounded-r-[15px] w-8 cursor-pointer cursor-pointer"
-                        onClick={() => openFleet(x.name)}
+                        className="bg-base-100 rounded-r-[15px] w-8"
+                        // onClick={() => openFleet(x.name)}
                       >
                         <div className="text-[20px] font-[500] landing-[35px] text-neutral-500 ">
                           <IoIosArrowForward />

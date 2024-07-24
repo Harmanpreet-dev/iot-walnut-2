@@ -80,8 +80,10 @@ const Login = () => {
         let user = res.data;
         if (user.data.length !== 0) {
           openNotification("success", "Login Successful");
+          // console.log(user);
           dipatch(
             LOGIN({
+              id: user.data.id,
               name: user.data.name,
               email: user.data.email,
               role: user.data.role,
@@ -95,7 +97,12 @@ const Login = () => {
                   : JSON.parse(user.data.google_secret).base32,
             })
           );
-          navigate("/manage-admin");
+          if (user.data.role == 0) {
+            navigate("/manage-admin");
+          }
+          if (user.data.role == 1) {
+            navigate("/manage-fleets");
+          }
         } else {
           openNotification("error", "Invalid Username or Password");
         }

@@ -9,7 +9,7 @@ export default function UserTable({
   handleActive,
   error,
 }) {
-  const TableRow = ({ id, name, admin , fleets, active, inactive, photo }) => {
+  const TableRow = ({ id, name, admin, fleets, active, inactive, photo }) => {
     return (
       <>
         <tr className="shadow-[0_3.5px_5.5px_0_#00000005]">
@@ -45,12 +45,12 @@ export default function UserTable({
           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
             Fleet-2
           </td>
-          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+          {/* <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
             16,998
           </td>
           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-           200
-          </td>
+            200
+          </td> */}
           <td className="bg-base-100 rounded-r-[15px] w-16">
             <div className="flex">
               <div
@@ -92,8 +92,6 @@ export default function UserTable({
                 <th>User Name</th>
                 <th>Admin</th>
                 <th>Fleets</th>
-                <th><span className='flex'><GoDotFill className='text-[#51DCA8] mr-1' />Active Devices</span></th>
-                <th><span className='flex'><GoDotFill className='text-[#FF2002] mr-1' />Inactive Devices</span></th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -107,7 +105,7 @@ export default function UserTable({
                 </tr>
               )}
               {users.map((x) => {
-                let { id, name, author_name , fleets, active, inactive } = x;
+                let { id, name, author_name, fleets, active, inactive } = x;
                 return (
                   <TableRow
                     id={id}

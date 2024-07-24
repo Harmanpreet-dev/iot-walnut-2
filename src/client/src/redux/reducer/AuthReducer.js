@@ -1,4 +1,5 @@
 const istate = {
+  id: "",
   name: "",
   email: "",
   role: "",
@@ -14,6 +15,7 @@ const AuthReducer = (state = istate, action) => {
     case "LOGIN": {
       state = {
         ...state,
+        id: action.payload.id,
         name: action.payload.name,
         email: action.payload.email,
         phone: action.payload.phone,
@@ -28,6 +30,7 @@ const AuthReducer = (state = istate, action) => {
     case "LOGOUT": {
       state = {
         ...state,
+        id: "",
         name: "",
         email: "",
         role: "",

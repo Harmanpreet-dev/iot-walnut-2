@@ -53,6 +53,7 @@ export default function SchduleSelectDevice() {
         console.log(err);
       });
   };
+
   const getFleets = () => {
     setLoading(true);
     axios

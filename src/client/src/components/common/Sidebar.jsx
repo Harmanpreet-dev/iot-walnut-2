@@ -1,8 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { SideBarData } from "./SideBarData";
+import { SideBarDataSuperAdmin } from "./SideBarDataSuperAdmin";
+import { useSelector } from "react-redux";
+import { SideBarDataAdmin } from "./SideBarDataAdmin";
 
 const Sidebar = () => {
+  const [sideBarDataState, setSideBarDataState] = useState([]);
+
+  const state = useSelector((state) => state);
+
+  useEffect(() => {
+    if (state.auth.role == 0) {
+      setSideBarDataState(SideBarDataSuperAdmin);
+    }
+    if (state.auth.role == 1) {
+      setSideBarDataState(SideBarDataAdmin);
+    }
+  }, []);
+
   return (
     <div>
       <div className="hidden lg:block">
@@ -39,7 +54,8 @@ const Sidebar = () => {
               <li className="menu-title font-medium text-[17px] text-base-content leading-[35px] pt-[30px] pl-0 pb-5">
                 Main Menu
               </li>
-              {SideBarData.map((x, i) => {
+
+              {sideBarDataState.map((x, i) => {
                 let { name, link, svg } = x;
                 return (
                   <li className="mb-0.5 effect" key={i}>

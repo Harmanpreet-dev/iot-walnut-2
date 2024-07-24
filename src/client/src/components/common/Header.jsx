@@ -75,8 +75,6 @@ const Header = ({ handleToggle }) => {
       return "Super Admin";
     }
     if (role === "1") {
-      console.log("role");
-
       return "Admin";
     }
     if (role === "2") {
@@ -294,11 +292,19 @@ const Header = ({ handleToggle }) => {
                     className="mask mask-squircle "
                     style={{ width: "44px", height: "44px", objectFit: "fit" }}
                   >
-                    <img
-                      src={`${process.env.REACT_APP_PROFILE_URL}/profile/${state.image}`}
-                      alt="admin-avtar"
-                      className="object-cover"
-                    />
+                    {state.image == null ? (
+                      <img
+                        src="./images/default.jpeg"
+                        alt="admin-avtar"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={`${process.env.REACT_APP_PROFILE_URL}/profile/${state.image}`}
+                        alt="admin-avtar"
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                 </div>
               </div>
