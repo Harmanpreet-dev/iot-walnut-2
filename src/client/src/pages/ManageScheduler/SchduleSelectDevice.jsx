@@ -8,7 +8,6 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Spin } from "antd";
 import { MdOutlineContentCopy } from "react-icons/md";
-import { IoIosArrowForward } from "react-icons/io";
 import { SELECT_DEVICE } from "../../redux/actions/SchduleAction";
 
 export default function SchduleSelectDevice() {
