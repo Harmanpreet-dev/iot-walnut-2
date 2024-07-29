@@ -3,10 +3,11 @@ import { CiSearch } from "react-icons/ci";
 import { TfiExport } from "react-icons/tfi";
 import { GoDotFill } from "react-icons/go";
 import { Link, useParams } from "react-router-dom";
-import { Spin, Tabs } from "antd";
+import { Spin, Tabs, message } from "antd";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import ScheduleDeatilsTable from "./Details/ScheduleDeatilsTable";
+import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 
 const tabBackgroundColors = {
   1: "rgb(34 197 94)",
@@ -32,7 +33,10 @@ const Jobdetail = () => {
   const [description, setDescription] = useState();
   const [fleetName, setFleetName] = useState();
   const [devices, setDevices] = useState([]);
+  const [jobArn, setJobArn] = useState("");
+  const [jobStatus, setJobStatus] = useState("true");
   const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const state = useSelector((state) => state);
   const parms = useParams();
@@ -81,6 +85,8 @@ const Jobdetail = () => {
           setDescription(task.description);
           setFleetName(JSON.parse(task.fleet).name);
           setDevices(JSON.parse(task.devices));
+          setJobArn(task.arn);
+          setJobStatus(task.status);
           setLoading(false);
         }
       })
@@ -89,9 +95,69 @@ const Jobdetail = () => {
       });
   };
 
+  const handleStopJob = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/stopJob`,
+        {
+          id: parms.id,
+          arn: jobArn,
+        },
+        {
+          headers: {
+            Authorization: state.auth.jwt,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        setLoading(false);
+        setJobStatus("false");
+        messageApi.success("Job Stoped Successfully");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const verifyUser = (value) => {
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
+        {
+          email: state.auth.email,
+        },
+        {
+          headers: {
+            Authorization: state.auth.jwt,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        document.getElementById("my_modal_2").showModal();
+      })
+      .catch((err) => {
+        if (err.response.data.error === "Email already exists") {
+          // setEmailError(err.response.data.error);
+        }
+      });
+  };
+
+  const handle2FA = (response) => {
+    console.log(response);
+    if (response === true) {
+      handleStopJob();
+    }
+  };
+
   return (
     <>
+      {contextHolder}
       <Spin spinning={loading} fullscreen />
+      <TwoFactAuth handle2FA={handle2FA} />
+
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
@@ -141,7 +207,11 @@ const Jobdetail = () => {
                 </span>
               </span>
               <div className="ml-5">
-                <button className="btn bg-gray-200 text-gray-900 border rounded-[18px] border-gray-300 mr-3 mb-3 text-zinc-800 min-h-[36px] h-[40px] text-[16px] font-[500] landing-[35px] px-2 hover:bg-gray-300">
+                <button
+                  className="btn bg-gray-200 text-gray-900 border rounded-[18px] border-gray-300 mr-3 mb-3 text-zinc-800 min-h-[36px] h-[40px] text-[16px] font-[500] landing-[35px] px-2 hover:bg-gray-300"
+                  onClick={() => verifyUser()}
+                  disabled={jobStatus == "true" ? false : true}
+                >
                   Stop{" "}
                   <GoDotFill className="ml-2 text-[32px] text-[#FF2002] stroke-[5px] stroke-[#FF20024D]" />
                 </button>

@@ -9,7 +9,17 @@ export default function UserTable({
   handleActive,
   error,
 }) {
-  const TableRow = ({ id, name, admin, fleets, active, inactive, photo }) => {
+  const TableRow = ({
+    id,
+    name,
+    admin,
+    email,
+    fleets,
+    active,
+    inactive,
+    photo,
+  }) => {
+    console.log(photo);
     return (
       <>
         <tr className="shadow-[0_3.5px_5.5px_0_#00000005]">
@@ -40,17 +50,14 @@ export default function UserTable({
             </div>
           </td>
           <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
+            {email}
+          </td>
+          <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
             {admin}
           </td>
           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
             Fleet-2
           </td>
-          {/* <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-            16,998
-          </td>
-          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-            200
-          </td> */}
           <td className="bg-base-100 rounded-r-[15px] w-16">
             <div className="flex">
               <div
@@ -90,6 +97,7 @@ export default function UserTable({
             <thead className="border-b-2 border-base-300">
               <tr className="text-[#B1B1B1] text-[15px] font-[700] landing-[35px] ">
                 <th>User Name</th>
+                <th>Email</th>
                 <th>Admin</th>
                 <th>Fleets</th>
                 <th>Action</th>
@@ -105,11 +113,22 @@ export default function UserTable({
                 </tr>
               )}
               {users.map((x) => {
-                let { id, name, author_name, fleets, active, inactive } = x;
+                let {
+                  id,
+                  name,
+                  email,
+                  author_name,
+                  fleets,
+                  active,
+                  inactive,
+                  photo,
+                } = x;
                 return (
                   <TableRow
                     id={id}
+                    photo={photo}
                     name={name}
+                    email={email}
                     admin={author_name}
                     fleets={fleets}
                     active={active}

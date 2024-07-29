@@ -7,7 +7,7 @@ AWS.config.update({ region: "us-east-1" });
 const iot = new AWS.Iot();
 
 // Function to create a job
-function createIoTJob(id, arn, json, description) {
+function createIoTJob(id, arn, json, description, insertedId, pgClient) {
   const params = {
     jobId: id, // Unique job ID
     targets: arn, // List of target ARNs (e.g., thing ARN)
@@ -17,11 +17,15 @@ function createIoTJob(id, arn, json, description) {
     // documentType: "JSON", // Document type
   };
 
-  iot.createJob(params, (err, data) => {
+  iot.createJob(params, async (err, data) => {
     if (err) {
       console.error("Error creating job:", err);
     } else {
-      console.log("Job created successfully:", data);
+      await pgClient.query("UPDATE schedule SET arn=$1 WHERE id=$2", [
+        data.jobArn,
+        insertedId,
+      ]);
+      console.log("Job created successfully:", data.jobArn);
     }
   });
 }

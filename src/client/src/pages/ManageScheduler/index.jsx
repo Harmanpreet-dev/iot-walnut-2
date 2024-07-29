@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
 import { Breadcrumb, DatePicker, Space } from "antd";
@@ -11,6 +11,8 @@ const onChange = (date, dateString) => {
 
 export default function ManageScheduler() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <>
       <div className="content-wrapper bg-base-200">
@@ -37,6 +39,8 @@ export default function ManageScheduler() {
               <input
                 className="input w-full w-40 rounded focus:outline-none focus:border-none focus:outline-offset-none"
                 placeholder="Search Fleet or Device.."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <div className="adminBtn flex">
@@ -52,7 +56,7 @@ export default function ManageScheduler() {
           </div>
         </div>
 
-        <SchdulerTable navigate={navigate} />
+        <SchdulerTable navigate={navigate} searchQuery={searchQuery} />
       </div>
     </>
   );

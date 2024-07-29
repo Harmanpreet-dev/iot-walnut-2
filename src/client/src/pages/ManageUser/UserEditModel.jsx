@@ -105,8 +105,8 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
     },
     validate,
     onSubmit: (values) => {
-      // checkEmail(values);
-      handleFormSubmit(values);
+      checkEmail(values);
+      // handleFormSubmit(values);
     },
   });
 
@@ -119,8 +119,8 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
     // validate2,
     onSubmit: (values) => {
       console.log(values);
-      // checkEmail(values);
-      handleFormSubmit(values);
+      checkEmail(values);
+      // handleFormSubmit(values);
     },
   });
 

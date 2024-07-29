@@ -206,9 +206,12 @@ export default function SchduleSelectDevice() {
                           </div>
                         </td>
                         <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                          <span className="flex">
-                            <GoDotFill className="text-[#FF2002] mr-1" />
-                            Inactive Devices
+                          <span
+                            className="flex"
+                            style={{ alignItems: "center" }}
+                          >
+                            <GoDotFill className="text-[#51DCA8] mr-1" />
+                            Active
                           </span>
                         </td>
                         <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">

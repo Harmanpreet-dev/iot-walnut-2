@@ -1,4 +1,5 @@
 const createIoTJob = require("../AWS/CreateJob");
+const StopAWSJob = require("../AWS/StopAWSJob");
 const { pgClient } = require("../db/connection");
 
 const AddSchedule = async (req, res) => {
@@ -22,9 +23,9 @@ const AddSchedule = async (req, res) => {
 
     let result = await pgClient.query(
       `INSERT INTO schedule 
-      (name, fleetId, fleet, devices, description, json, isOpen, date, time, rate, maxPerMinute, baseRatePerMinute, incrementFactor, maxPerMinute2) 
+      (name, fleetId, fleet, devices, description, json, isOpen, date, time, rate, maxPerMinute, baseRatePerMinute, incrementFactor, maxPerMinute2,status) 
       VALUES 
-      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id`,
       [
         name,
         fleetId,
@@ -40,18 +41,35 @@ const AddSchedule = async (req, res) => {
         baseRatePerMinute,
         incrementFactor,
         maxPerMintue2,
+        true,
       ]
     );
 
     let arn = [];
+    let insertedId = result.rows[0].id;
 
     devices.map((x) => {
       arn.push(x.arn);
     });
 
-    createIoTJob(name, arn, json, description);
+    createIoTJob(name, arn, json, description, insertedId, pgClient);
 
-    res.status(200).json(true);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const StopJob = async (req, res) => {
+  try {
+    let result = await pgClient.query(
+      "UPDATE schedule SET status=$1 WHERE id=$2",
+      [false, req.body.id]
+    );
+
+    StopAWSJob(req.body.arn);
+
+    res.status(200).json(result.rows);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -92,4 +110,5 @@ module.exports = {
   getScheduleTask,
   getScheduleTaskDetails,
   textJob,
+  StopJob,
 };

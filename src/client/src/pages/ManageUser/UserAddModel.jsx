@@ -86,8 +86,8 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
     },
     validate,
     onSubmit: (values) => {
-      // checkEmail(values);
-      handleFormSubmit(values);
+      checkEmail(values);
+      // handleFormSubmit(values);
     },
   });
 
@@ -381,7 +381,9 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
                       {formik.errors.email ? (
                         <div>{formik.errors.email}</div>
                       ) : null}
-                      {emailError !== "" ? <div>{emailError}</div> : null}
+                      {formik.errors.email ? null : emailError !== "" ? (
+                        <div>{emailError}</div>
+                      ) : null}
                     </span>
                   </div>
 

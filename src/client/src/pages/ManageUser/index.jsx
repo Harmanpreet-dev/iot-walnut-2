@@ -8,6 +8,7 @@ import UserAddModal from "./UserAddModel";
 import UserTable from "./UserTable";
 import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
 import UserEditModal from "./UserEditModel";
+import UserFilter from "./UserFilter";
 
 const Manageuser = () => {
   const [userdetail, setUserdetail] = useState([]);
@@ -44,7 +45,14 @@ const Manageuser = () => {
       })
       .then((res) => {
         setLoading(false);
-        setAdmin(res.data);
+
+        let users = res.data;
+
+        users.map((x) => {
+          x.status = false;
+        });
+
+        setAdmin(users);
       })
       .catch((err) => {
         console.log(err);
@@ -154,6 +162,47 @@ const Manageuser = () => {
     });
   };
 
+  const handleFilterDataBySider = (checked, id) => {
+    let byAdmin = admin;
+    byAdmin.map((x) => {
+      if (x.id == id) {
+        x.status = checked;
+      }
+    });
+    setAdmin(byAdmin);
+
+    filterBySider();
+  };
+
+  const filterBySider = () => {
+    let Arr = [];
+
+    let adminFilter = false;
+
+    admin.map((x) => {
+      if (x.status == true) {
+        adminFilter = true;
+      }
+    });
+
+    if (adminFilter) {
+      userdetail.map((x) => {
+        admin.map((y) => {
+          if (x.author_id == y.id) {
+            if (y.status == true) {
+              Arr.push(x);
+            }
+          }
+        });
+      });
+      setFilteredUsers(Arr);
+    } else {
+      setFilteredUsers(userdetail);
+    }
+
+    setSearchQuery("");
+  };
+
   return (
     <>
       <TwoFactAuth2 handle2FA={handle2FA2} />
@@ -174,7 +223,13 @@ const Manageuser = () => {
             >
               Filter{" "}
             </div>
-            <Drawer title="FILTER" onClose={onClose} open={open}>
+            <UserFilter
+              admin={admin}
+              drawerOpen={open}
+              drawerClose={onClose}
+              handleFilterDataBySider={handleFilterDataBySider}
+            />
+            {/* <Drawer title="FILTER" onClose={onClose} open={open}>
               <div className="collapse collapse-plus">
                 <input type="radio" name="my-accordion-3" defaultChecked />
                 <div className="collapse-title text-[20px] font-[600]">
@@ -281,7 +336,7 @@ const Manageuser = () => {
                   </div>
                 </div>
               </div>
-            </Drawer>
+            </Drawer> */}
             <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 mx-4 bg-base-100">
               <CiSearch className="text-[25px]" />
               <input
@@ -294,7 +349,7 @@ const Manageuser = () => {
             <div className="adminBtn flex">
               <div>
                 <button
-                  className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] mr-4 hover:bg-slate-950 hover:bg-slate-950"
+                  className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[14px] hover:bg-slate-950 hover:bg-slate-950"
                   onClick={() =>
                     document.getElementById("my_modal_3").showModal()
                   }
