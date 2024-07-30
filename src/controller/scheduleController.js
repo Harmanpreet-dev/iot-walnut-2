@@ -62,14 +62,23 @@ const AddSchedule = async (req, res) => {
 
 const StopJob = async (req, res) => {
   try {
-    let result = await pgClient.query(
-      "UPDATE schedule SET status=$1 WHERE id=$2",
-      [false, req.body.id]
-    );
+    if (req.body.type == "SCH") {
+      let result = await pgClient.query(
+        "UPDATE schedule SET status=$1 WHERE id=$2",
+        [false, req.body.id]
+      );
 
-    StopAWSJob(req.body.arn);
+      StopAWSJob(req.body.arn);
+      res.status(200).json(result.rows);
+    } else {
+      let result = await pgClient.query(
+        "UPDATE ota_update SET status=$1 WHERE id=$2",
+        [false, req.body.id]
+      );
 
-    res.status(200).json(result.rows);
+      StopAWSJob(req.body.arn);
+      res.status(200).json(result.rows);
+    }
   } catch (err) {
     res.status(500).json(err);
   }

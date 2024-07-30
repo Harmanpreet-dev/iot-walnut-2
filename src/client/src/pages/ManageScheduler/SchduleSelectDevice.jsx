@@ -16,6 +16,7 @@ export default function SchduleSelectDevice() {
   const [fleet, setFleets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState(false);
+  const [filteredDevices, setFilteredDevices] = useState([]);
 
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
@@ -47,7 +48,9 @@ export default function SchduleSelectDevice() {
         });
 
         setDevices(data);
+        setFilteredDevices(data);
       })
+
       .catch((err) => {
         console.log(err);
       });
@@ -72,33 +75,31 @@ export default function SchduleSelectDevice() {
   };
 
   const handleAllSelect = (checked) => {
-    setDevices((oldData) =>
-      oldData.map((device) => ({
-        ...device,
-        checked: checked,
-      }))
-    );
+    const selectedDevices = devices.map((device) => {
+      device.checked = checked;
+      return device;
+    });
+    setDevices(selectedDevices);
+    setFilteredDevices(selectedDevices);
     if (checked) {
-      setSelectedDevices("all");
+      setSelectedDevices(selectedDevices);
     } else {
-      setSelectedDevices(false);
+      setSelectedDevices([]);
     }
   };
 
   const handleSingleSelect = (id) => {
-    setSelectedDevices(false);
-    setDevices((oldData) =>
-      oldData.map((device) => {
-        device =
-          device.id === id ? { ...device, checked: !device.checked } : device;
-        if (device.checked) {
-          setSelectedDevices(true);
-        }
-        return device;
-      })
-    );
+    const selectedDevices = [];
+    const updatedDevices = devices.map((device) => {
+      if (device.id === id) {
+        device.checked = !device.checked;
+      }
+      if (device.checked) selectedDevices.push(device);
+      return device;
+    });
+    setDevices(updatedDevices);
+    setSelectedDevices(selectedDevices);
   };
-
   const handleSubmit = () => {
     let deviceArr = [];
 
@@ -109,6 +110,20 @@ export default function SchduleSelectDevice() {
     });
     dispatch(SELECT_DEVICE({ devices: deviceArr }));
     navigate("/schdule-task");
+  };
+
+  const handleSearch = (e) => {
+    const { value } = e.target;
+    if (!value?.trim()) {
+      setFilteredDevices(devices);
+    } else {
+      const results = devices.filter(
+        (device) =>
+          device.name.toLowerCase().includes(value.toLowerCase()) ||
+          device.imei.includes(value)
+      );
+      setFilteredDevices(results);
+    }
   };
 
   return (
@@ -138,6 +153,7 @@ export default function SchduleSelectDevice() {
               <input
                 className="input rounded w-[23rem] text-[16px] focus:outline-none focus:border-none focus:outline-offset-none"
                 placeholder="Search Device.."
+                onChange={handleSearch}
               />
             </div>
           </div>
@@ -175,7 +191,7 @@ export default function SchduleSelectDevice() {
                 </thead>
                 <br />
                 <tbody className="mt-3">
-                  {devices.map((x) => (
+                  {filteredDevices.map((x) => (
                     <>
                       <tr
                         className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3"

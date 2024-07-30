@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
 import { Breadcrumb, DatePicker, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import SchdulerTable from "./SchdulerTable";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 const onChange = (date, dateString) => {
   console.log(date, dateString);
@@ -11,7 +13,67 @@ const onChange = (date, dateString) => {
 
 export default function ManageScheduler() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState([]);
+  const [filteredUpdates, setFilteredUpdates] = useState([]);
+
+  const state = useSelector((state) => state);
+
+  useEffect(() => {
+    getScheduleTask();
+  }, []);
+
+  const getScheduleTask = () => {
+    setLoading(true);
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/getScheduleTask`, {
+        headers: {
+          Authorization: state.auth.jwt,
+        },
+      })
+      .then((res) => {
+        setLoading(false);
+        setTasks(res.data);
+        setFilteredUpdates(res.data);
+        // console.log(res.data);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setError("Failed to load tasks");
+        console.log(err);
+      });
+  };
+
+  const handleSearchByDate = (_, dateString) => {
+    if (dateString) {
+      const results = tasks.filter(
+        (task) =>
+          new Date(task.date).toLocaleDateString() ===
+          new Date(dateString).toLocaleDateString()
+      );
+      setFilteredUpdates(results);
+    } else {
+      setFilteredUpdates(tasks);
+    }
+  };
+
+  const handleSearch = (e) => {
+    const { value } = e.target;
+    if (!value?.trim()) {
+      setFilteredUpdates(tasks);
+    } else {
+      const results = tasks.filter(
+        (task) =>
+          task.name.toLowerCase().includes(value.toLowerCase()) ||
+          JSON.parse(task.fleet)
+            .name.toLowerCase()
+            .includes(value.toLowerCase())
+      );
+      setFilteredUpdates(results);
+    }
+  };
 
   return (
     <>
@@ -28,7 +90,7 @@ export default function ManageScheduler() {
             <div className="border px-4 py-2 rounded-[20px] bg-base-100 border border-base-content/20">
               <Space direction="vertical">
                 <DatePicker
-                  onChange={onChange}
+                  onChange={handleSearchByDate}
                   variant="borderless"
                   className="cursor-pointer"
                 />
@@ -39,8 +101,7 @@ export default function ManageScheduler() {
               <input
                 className="input w-full w-40 rounded focus:outline-none focus:border-none focus:outline-offset-none"
                 placeholder="Search Fleet or Device.."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearch}
               />
             </div>
             <div className="adminBtn flex">
@@ -56,7 +117,12 @@ export default function ManageScheduler() {
           </div>
         </div>
 
-        <SchdulerTable navigate={navigate} searchQuery={searchQuery} />
+        <SchdulerTable
+          loading={loading}
+          error={error}
+          navigate={navigate}
+          filteredTasks={filteredUpdates}
+        />
       </div>
     </>
   );

@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "front": "cd src/client/ && yarn start"
+    "web": "cd src/client/ && yarn start"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.3",

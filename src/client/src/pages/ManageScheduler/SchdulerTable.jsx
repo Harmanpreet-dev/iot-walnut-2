@@ -3,45 +3,50 @@ import axios from "axios";
 import { Spin } from "antd";
 import { useSelector } from "react-redux";
 
-export default function SchdulerTable({ navigate, searchQuery }) {
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+export default function SchdulerTable({
+  navigate,
+  filteredTasks,
+  loading,
+  error,
+}) {
+  // const [tasks, setTasks] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState("");
 
-  const state = useSelector((state) => state);
+  // const state = useSelector((state) => state);
 
-  useEffect(() => {
-    getScheduleTask();
-  }, []);
+  // useEffect(() => {
+  //   getScheduleTask();
+  // }, []);
 
-  const getScheduleTask = () => {
-    setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getScheduleTask`, {
-        headers: {
-          Authorization: state.auth.jwt,
-        },
-      })
-      .then((res) => {
-        setLoading(false);
-        setTasks(res.data);
-        // console.log(res.data);
-      })
-      .catch((err) => {
-        setLoading(false);
-        setError("Failed to load tasks");
-        console.log(err);
-      });
-  };
+  // const getScheduleTask = () => {
+  //   setLoading(true);
+  //   axios
+  //     .get(`${process.env.REACT_APP_API_URL}/getScheduleTask`, {
+  //       headers: {
+  //         Authorization: state.auth.jwt,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       setLoading(false);
+  //       setTasks(res.data);
+  //       // console.log(res.data);
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //       setError("Failed to load tasks");
+  //       console.log(err);
+  //     });
+  // };
 
-  const filteredTasks = tasks.filter(
-    (task) =>
-      task.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      JSON.parse(task.fleet)
-        .name.toLowerCase()
-        .includes(searchQuery.toLowerCase())
-  );
+  // const filteredTasks = tasks.filter(
+  //   (task) =>
+  //     task.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     JSON.parse(task.fleet)
+  //       .name.toLowerCase()
+  //       .includes(searchQuery.toLowerCase())
+  // );
 
   return (
     <>

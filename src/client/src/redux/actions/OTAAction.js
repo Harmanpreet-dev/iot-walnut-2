@@ -11,3 +11,9 @@ export const SELECT_DEVICE = (data) => {
     payload: data,
   };
 };
+
+export const RESET = () => {
+  return {
+    type: "RESET",
+  };
+};

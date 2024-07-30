@@ -16,6 +16,7 @@ export default function SchduleSelectFleet() {
   const [category, setCategory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
+  const [filteredFleets, setFilteredFleets] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -48,6 +49,7 @@ export default function SchduleSelectFleet() {
         });
 
         setFleets(data);
+        setFilteredFleets(data);
       })
       .catch((err) => {
         console.log(err);
@@ -76,6 +78,7 @@ export default function SchduleSelectFleet() {
         });
 
         setFleets(data);
+        setFilteredFleets(data);
       })
       .catch((err) => {
         console.log(err);
@@ -105,7 +108,7 @@ export default function SchduleSelectFleet() {
   };
 
   const handleCheckStatus = (id) => {
-    setFleets((prevFleets) =>
+    setFilteredFleets((prevFleets) =>
       prevFleets.map((fleet) => ({
         ...fleet,
         checked: fleet.id === id ? !fleet.checked : false,
@@ -113,7 +116,7 @@ export default function SchduleSelectFleet() {
     );
 
     setSelectedFleet(() => {
-      const clickedFleet = fleets.find((fleet) => fleet.id === id);
+      const clickedFleet = filteredFleets.find((fleet) => fleet.id === id);
       return clickedFleet.checked ? null : clickedFleet;
     });
   };
@@ -122,6 +125,18 @@ export default function SchduleSelectFleet() {
     console.log(selectedFleet);
     dispatch(SELECT_FLEET({ fleetId: selectedFleet.id, fleet: selectedFleet }));
     navigate("/schdule-select-device");
+  };
+
+  const handleSearch = (e) => {
+    const { value } = e.target;
+    if (!value?.trim()) {
+      setFilteredFleets(fleets);
+    } else {
+      const results = fleets.filter((fleet) =>
+        fleet.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredFleets(results);
+    }
   };
 
   return (
@@ -151,6 +166,7 @@ export default function SchduleSelectFleet() {
               <input
                 className="input rounded w-[23rem] text-[16px] focus:outline-none focus:border-none focus:outline-offset-none"
                 placeholder="Search Fleet.."
+                onChange={handleSearch}
               />
             </div>
           </div>
@@ -196,7 +212,7 @@ export default function SchduleSelectFleet() {
                 </thead>
                 <br />
                 <tbody className="mt-3">
-                  {fleets.map((x) => (
+                  {filteredFleets.map((x) => (
                     <>
                       <tr
                         className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20"

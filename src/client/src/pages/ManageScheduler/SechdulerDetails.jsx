@@ -103,6 +103,7 @@ const Jobdetail = () => {
         {
           id: parms.id,
           arn: jobArn,
+          type: "SCH",
         },
         {
           headers: {
