@@ -4,10 +4,20 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { MdErrorOutline } from "react-icons/md";
 import { IoCopyOutline } from "react-icons/io5";
 import { message } from "antd";
+import copy from "copy-to-clipboard";
 import axios from "axios";
 
 export default function DeviceDetails({ device, state, getDeviceDetail }) {
   const [messageApi, contextHolder] = message.useMessage();
+
+  const handleCopy = (imei) => {
+    copy(imei);
+    messageApi.open({
+      type: "success",
+      content: "Text copied to clipboard!",
+    });
+  };
+
   const handleRevoke = () => {
     axios
       .post(
@@ -41,7 +51,11 @@ export default function DeviceDetails({ device, state, getDeviceDetail }) {
             <div className="mr-2 text-[14px] font-500 landing-[35px] text-base-content/70">
               IMEI Number :
             </div>
-            <div className="flex items-center justify-center text-[15px] font-500 landing-[35px]">
+
+            <div
+              className="flex items-center justify-center text-[15px] font-500 landing-[35px] cursor-pointer"
+              onClick={() => handleCopy(device.imei)}
+            >
               <span className="mr-2">{device.imei}</span> <IoCopyOutline />
             </div>
           </div>

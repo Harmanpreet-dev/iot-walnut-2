@@ -13,6 +13,8 @@ export default function OTAUpdate() {
   const [name, setName] = useState();
   const [description, setDescription] = useState();
   const [json, setJson] = useState();
+  const [isValid, setIsValid] = useState(true);
+  const [error, setError] = useState("");
   const [date, setDate] = useState();
   const [time, setTime] = useState();
   const [maxPerMinute, setMaxPerMinute] = useState();
@@ -108,6 +110,23 @@ export default function OTAUpdate() {
       });
   };
 
+  const validateJson = (value) => {
+    try {
+      JSON.parse(value);
+      setIsValid(true);
+      setError("");
+    } catch (e) {
+      setIsValid(false);
+      setError(e.message);
+    }
+  };
+
+  const handleJsonChange = (e) => {
+    const value = e.target.value;
+    setJson(value);
+    validateJson(value);
+  };
+
   return (
     <>
       <Spin spinning={loading} fullscreen />
@@ -194,6 +213,9 @@ export default function OTAUpdate() {
                       onChange={(e) => setDescription(e.target.value)}
                     />
                   </div>
+                  <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
+                    {/* {!isValid && <p className="text-red-500 mt-2">{error}</p>} */}
+                  </span>
                 </div>
 
                 <div className="form-control mt-3 w-1/2 ml-4">
@@ -210,9 +232,13 @@ export default function OTAUpdate() {
                       cols="50"
                       style={{ height: "150px", resize: "none" }}
                       value={json}
-                      onChange={(e) => setJson(e.target.value)}
+                      // onChange={(e) => setJson(e.target.value)}
+                      onChange={handleJsonChange}
                     />
                   </div>
+                  <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
+                    {!isValid && <p className="text-red-500 mt-2">{error}</p>}
+                  </span>
                 </div>
               </div>
 

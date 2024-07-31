@@ -214,50 +214,48 @@ export default function SchduleSelectFleet() {
                 <tbody className="mt-3">
                   {filteredFleets.map((x) => (
                     <>
-                      <tr
-                        className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20"
-                        onClick={() => handleCheckStatus(x.id)}
-                      >
+                      <tr className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20">
                         <th className="shadow-none cursor-pointer">
                           <label>
                             <input
                               type="checkbox"
                               className="checkbox"
                               checked={x.checked}
+                              onClick={() => handleCheckStatus(x.id)}
                             />
                           </label>
                         </th>
 
-                        <td className="bg-base-100 rounded-l-[15px] cursor-pointer">
+                        <td className="bg-base-100 rounded-l-[15px] ">
                           <div className="flex items-center gap-3">
                             <div className="font-bold text-base-500 font-[900] text-[19px] landing-[35px]">
                               {x.name}
                             </div>
                           </div>
                         </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                           {category.map((y) => {
                             if (y.id === parseInt(x.category)) {
                               return y.name;
                             }
                           })}
                         </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                           19,899
                         </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                           0,189
                         </td>
                         {state.role == 0 ? (
                           <>
-                            <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                            <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                               {admin.map((y) => {
                                 if (y.id === parseInt(x.admin)) {
                                   return y.name;
                                 }
                               })}
                             </td>
-                            <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px]">
+                            <td className="text-[16px] font-[500] landing-[35px] bg-base-100  rounded-r-[15px]">
                               {admin.map((y) => {
                                 if (y.id === parseInt(x.admin)) {
                                   return y.phone;

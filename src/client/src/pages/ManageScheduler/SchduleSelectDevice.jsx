@@ -6,9 +6,10 @@ import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { Spin } from "antd";
+import { Spin, message } from "antd";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { SELECT_DEVICE } from "../../redux/actions/SchduleAction";
+import copy from "copy-to-clipboard";
 
 export default function SchduleSelectDevice() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function SchduleSelectDevice() {
   const [loading, setLoading] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState(false);
   const [filteredDevices, setFilteredDevices] = useState([]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
@@ -25,6 +27,14 @@ export default function SchduleSelectDevice() {
     getDevices();
     getFleets();
   }, []);
+
+  const handleCopy = (imei) => {
+    copy(imei);
+    messageApi.open({
+      type: "success",
+      content: "Text copied to clipboard!",
+    });
+  };
 
   const getDevices = () => {
     setLoading(true);
@@ -128,6 +138,7 @@ export default function SchduleSelectDevice() {
 
   return (
     <>
+      {contextHolder}
       <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
@@ -193,16 +204,14 @@ export default function SchduleSelectDevice() {
                 <tbody className="mt-3">
                   {filteredDevices.map((x) => (
                     <>
-                      <tr
-                        className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3"
-                        onClick={() => handleSingleSelect(x.id)}
-                      >
+                      <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
                         <th className="shadow-none">
                           <label>
                             <input
                               type="checkbox"
                               className="checkbox"
                               checked={x.checked}
+                              onClick={() => handleSingleSelect(x.id)}
                             />
                           </label>
                         </th>
@@ -214,7 +223,10 @@ export default function SchduleSelectDevice() {
                           </div>
                         </td>
                         <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
-                          <div className="flex items-center justify-start">
+                          <div
+                            className="flex items-center justify-start cursor-pointer"
+                            onClick={() => handleCopy(x.imei)}
+                          >
                             {x.imei}{" "}
                             <span className="ml-2 text-slate-400">
                               <MdOutlineContentCopy />

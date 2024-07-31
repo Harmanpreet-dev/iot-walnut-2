@@ -16,6 +16,8 @@ export default function SchduleTask() {
   const [json, setJson] = useState();
   const [date, setDate] = useState();
   const [time, setTime] = useState();
+  const [isValid, setIsValid] = useState(true);
+  const [error, setError] = useState("");
   const [maxPerMintue, setMaxPerMintue] = useState();
 
   const [baseRatePerMinute, setBaseRatePerMinute] = useState();
@@ -103,6 +105,23 @@ export default function SchduleTask() {
     if (response === true) {
       handleSubmit();
     }
+  };
+
+  const validateJson = (value) => {
+    try {
+      JSON.parse(value);
+      setIsValid(true);
+      setError("");
+    } catch (e) {
+      setIsValid(false);
+      setError(e.message);
+    }
+  };
+
+  const handleJsonChange = (e) => {
+    const value = e.target.value;
+    setJson(value);
+    validateJson(value);
   };
 
   return (
@@ -193,6 +212,7 @@ export default function SchduleTask() {
                       onChange={(e) => setDescription(e.target.value)}
                     />
                   </div>
+                  <span className="h-[2px] mt-2 text-rose-600 text-[12px]"></span>
                 </div>
 
                 <div className="form-control mt-3 w-1/2 ml-4">
@@ -209,9 +229,13 @@ export default function SchduleTask() {
                       cols="50"
                       style={{ height: "150px", resize: "none" }}
                       value={json}
-                      onChange={(e) => setJson(e.target.value)}
+                      onChange={handleJsonChange}
+                      // onChange={(e) => setJson(e.target.value)}
                     />
                   </div>
+                  <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
+                    {!isValid && <p className="text-red-500 mt-2">{error}</p>}
+                  </span>
                 </div>
               </div>
 

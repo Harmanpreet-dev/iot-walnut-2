@@ -61,7 +61,7 @@ export default function UserTable({
           <td className="bg-base-100 rounded-r-[15px] w-16">
             <div className="flex">
               <div
-                className="flex items-center justify-start text-[14px] font-[500] landing-[35px] text-neutral-500 mx-3 cursor-pointer"
+                className="flex items-center justify-start text-[14px] font-[500] landing-[35px] text-neutral-500 mr-3 cursor-pointer"
                 onClick={() => {
                   handleActive(id);
                   document.getElementById("my_modal_edit").showModal();

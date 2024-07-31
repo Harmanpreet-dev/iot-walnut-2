@@ -6,10 +6,11 @@ import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { Spin } from "antd";
+import { Spin, message } from "antd";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { SELECT_DEVICE } from "../../redux/actions/OTAAction";
 import axiosInstance from "../../utils/axiosInstance";
+import copy from "copy-to-clipboard";
 
 export default function OTASelectDevice() {
   const navigate = useNavigate();
@@ -20,12 +21,20 @@ export default function OTASelectDevice() {
   const [selectedDevices, setSelectedDevices] = useState([]);
   const { schdule } = useSelector((state) => state);
   const dispatch = useDispatch();
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     getDevices();
     getFleets();
   }, []);
 
+  const handleCopy = (imei) => {
+    copy(imei);
+    messageApi.open({
+      type: "success",
+      content: "Text copied to clipboard!",
+    });
+  };
   const getDevices = () => {
     setLoading(true);
     axiosInstance
@@ -104,6 +113,7 @@ export default function OTASelectDevice() {
 
   return (
     <>
+      {contextHolder}
       <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
@@ -173,16 +183,14 @@ export default function OTASelectDevice() {
                 <tbody className="mt-3">
                   {filteredDevices.map((device) => (
                     <>
-                      <tr
-                        className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3"
-                        onClick={() => handleSingleSelect(device.id)}
-                      >
+                      <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
                         <th className="shadow-none">
                           <label>
                             <input
                               type="checkbox"
                               className="checkbox"
                               checked={device.checked}
+                              onClick={() => handleSingleSelect(device.id)}
                             />
                           </label>
                         </th>
@@ -194,7 +202,10 @@ export default function OTASelectDevice() {
                           </div>
                         </td>
                         <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
-                          <div className="flex items-center justify-start">
+                          <div
+                            className="flex items-center justify-start cursor-pointer"
+                            onClick={() => handleCopy(device.imei)}
+                          >
                             {device.imei}{" "}
                             <span className="ml-2 text-slate-400">
                               <MdOutlineContentCopy />

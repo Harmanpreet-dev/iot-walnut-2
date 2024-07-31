@@ -183,49 +183,47 @@ export default function OTASelectFleet() {
                   {filteredFleets.length ? (
                     filteredFleets.map((fleet) => (
                       <>
-                        <tr
-                          className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20"
-                          onClick={() => handleCheckStatus(fleet.id)}
-                        >
-                          <td className="shadow-none cursor-pointer">
+                        <tr className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20">
+                          <td className="shadow-none ">
                             <label>
                               <input
                                 type="checkbox"
                                 className="checkbox"
                                 checked={fleet.checked}
+                                onClick={() => handleCheckStatus(fleet.id)}
                               />
                             </label>
                           </td>
-                          <td className="bg-base-100 rounded-l-[15px] cursor-pointer">
+                          <td className="bg-base-100 rounded-l-[15px] ">
                             <div className="flex items-center gap-3">
                               <div className="font-bold text-base-500 font-[900] text-[19px] landing-[35px]">
                                 {fleet.name}
                               </div>
                             </div>
                           </td>
-                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                             {
                               category.find(
                                 (y) => y.id === parseInt(fleet.category)
                               )?.name
                             }
                           </td>
-                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                             19,899
                           </td>
-                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                             0,189
                           </td>
                           {role == 0 ? (
                             <>
-                              <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer">
+                              <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                                 {admin.map((y) => {
                                   if (y.id === parseInt(fleet.admin)) {
                                     return y.name;
                                   }
                                 })}
                               </td>
-                              <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px]">
+                              <td className="text-[16px] font-[500] landing-[35px] bg-base-100  rounded-r-[15px]">
                                 {admin.map((y) => {
                                   if (y.id === parseInt(fleet.admin)) {
                                     return y.phone;
