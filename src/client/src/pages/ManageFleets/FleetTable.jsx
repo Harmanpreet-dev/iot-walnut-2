@@ -39,12 +39,21 @@ export default function FleetTable({ fleets, admin, category, error, role }) {
             </thead>
             <br />
             <tbody className="mt-3">
-              {error && (
+              {/* {error && (
                 <tr>
                   <td colSpan="5" className="text-[20px] text-center">
                     {error}
                   </td>
                 </tr>
+              )} */}
+              {fleets.length == 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-[20px] text-center">
+                    No matching data found
+                  </td>
+                </tr>
+              ) : (
+                ""
               )}
               {fleets.map((x) => {
                 return (

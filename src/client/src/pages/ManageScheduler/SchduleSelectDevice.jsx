@@ -6,7 +6,7 @@ import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { Spin, message } from "antd";
+import { Empty, Spin, message } from "antd";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { SELECT_DEVICE } from "../../redux/actions/SchduleAction";
 import copy from "copy-to-clipboard";
@@ -19,6 +19,7 @@ export default function SchduleSelectDevice() {
   const [selectedDevices, setSelectedDevices] = useState(false);
   const [filteredDevices, setFilteredDevices] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
+  const [Continue, setContinue] = useState(true);
 
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
@@ -91,11 +92,14 @@ export default function SchduleSelectDevice() {
     });
     setDevices(selectedDevices);
     setFilteredDevices(selectedDevices);
-    if (checked) {
-      setSelectedDevices(selectedDevices);
-    } else {
-      setSelectedDevices([]);
-    }
+
+    setContinue(!checked);
+
+    // if (checked) {
+    //   setSelectedDevices(selectedDevices);
+    // } else {
+    //   setSelectedDevices([]);
+    // }
   };
 
   const handleSingleSelect = (id) => {
@@ -108,7 +112,10 @@ export default function SchduleSelectDevice() {
       return device;
     });
     setDevices(updatedDevices);
-    setSelectedDevices(selectedDevices);
+
+    setContinue(selectedDevices.length == 0);
+
+    // setSelectedDevices(selectedDevices);
   };
   const handleSubmit = () => {
     let deviceArr = [];
@@ -172,7 +179,7 @@ export default function SchduleSelectDevice() {
             <button
               className="btn bg-slate-950 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
               onClick={() => handleSubmit()}
-              disabled={!selectedDevices}
+              disabled={Continue}
             >
               Continue
             </button>
@@ -202,57 +209,65 @@ export default function SchduleSelectDevice() {
                 </thead>
                 <br />
                 <tbody className="mt-3">
-                  {filteredDevices.map((x) => (
-                    <>
-                      <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
-                        <th className="shadow-none">
-                          <label>
-                            <input
-                              type="checkbox"
-                              className="checkbox"
-                              checked={x.checked}
-                              onClick={() => handleSingleSelect(x.id)}
-                            />
-                          </label>
-                        </th>
-                        <td className="bg-base-100 rounded-l-[15px]">
-                          <div className="flex items-center gap-3">
-                            <div className="text-base-500 font-[700] text-[19px] landing-[35px]">
-                              {x.name}
+                  {filteredDevices.length ? (
+                    filteredDevices.map((x) => (
+                      <>
+                        <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
+                          <th className="shadow-none">
+                            <label>
+                              <input
+                                type="checkbox"
+                                className="checkbox"
+                                checked={x.checked}
+                                onClick={() => handleSingleSelect(x.id)}
+                              />
+                            </label>
+                          </th>
+                          <td className="bg-base-100 rounded-l-[15px]">
+                            <div className="flex items-center gap-3">
+                              <div className="text-base-500 font-[700] text-[19px] landing-[35px]">
+                                {x.name}
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
-                          <div
-                            className="flex items-center justify-start cursor-pointer"
-                            onClick={() => handleCopy(x.imei)}
-                          >
-                            {x.imei}{" "}
-                            <span className="ml-2 text-slate-400">
-                              <MdOutlineContentCopy />
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
+                            <div
+                              className="flex items-center justify-start cursor-pointer"
+                              onClick={() => handleCopy(x.imei)}
+                            >
+                              {x.imei}{" "}
+                              <span className="ml-2 text-slate-400">
+                                <MdOutlineContentCopy />
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            <span
+                              className="flex"
+                              style={{ alignItems: "center" }}
+                            >
+                              <GoDotFill className="text-[#51DCA8] mr-1" />
+                              Active
                             </span>
-                          </div>
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                          <span
-                            className="flex"
-                            style={{ alignItems: "center" }}
-                          >
-                            <GoDotFill className="text-[#51DCA8] mr-1" />
-                            Active
-                          </span>
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                          {fleet.map((y) => {
-                            if (y.name == x.fleet) {
-                              return y.name;
-                            }
-                          })}
-                        </td>
-                      </tr>
-                      <br />
-                    </>
-                  ))}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            {fleet.map((y) => {
+                              if (y.name == x.fleet) {
+                                return y.name;
+                              }
+                            })}
+                          </td>
+                        </tr>
+                        <br />
+                      </>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-[20px] text-center">
+                        {loading || <Empty />}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

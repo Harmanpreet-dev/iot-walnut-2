@@ -6,22 +6,23 @@ import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { Spin, message } from "antd";
+import { Empty, Spin, message } from "antd";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { SELECT_DEVICE } from "../../redux/actions/OTAAction";
-import axiosInstance from "../../utils/axiosInstance";
 import copy from "copy-to-clipboard";
 
-export default function OTASelectDevice() {
+export default function SchduleSelectDevice() {
   const navigate = useNavigate();
   const [devices, setDevices] = useState([]);
-  const [filteredDevices, setFilteredDevices] = useState([]);
   const [fleet, setFleets] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedDevices, setSelectedDevices] = useState([]);
-  const { schdule } = useSelector((state) => state);
-  const dispatch = useDispatch();
+  const [selectedDevices, setSelectedDevices] = useState(false);
+  const [filteredDevices, setFilteredDevices] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
+  const [Continue, setContinue] = useState(true);
+
+  const state = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getDevices();
@@ -35,33 +36,52 @@ export default function OTASelectDevice() {
       content: "Text copied to clipboard!",
     });
   };
+
   const getDevices = () => {
     setLoading(true);
-    axiosInstance
-      .post(`/getDevices`, { fleet: schdule.fleet.name })
-      .then(({ data }) => {
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/getDevices`,
+        { fleet: state.schdule.fleet.name },
+        {
+          headers: {
+            Authorization: state.auth.jwt,
+          },
+        }
+      )
+      .then((res) => {
         setLoading(false);
-        data.map((device) => {
-          device.checked = false;
+
+        let data = res.data;
+
+        data.map((x) => {
+          x.checked = false;
         });
+
         setDevices(data);
         setFilteredDevices(data);
       })
-      .catch(() => {
-        setLoading(false);
+
+      .catch((err) => {
+        console.log(err);
       });
   };
 
   const getFleets = () => {
     setLoading(true);
     axios
-      .get(`/getFleets`)
-      .then(({ data }) => {
-        setLoading(false);
-        setFleets(data);
+      .get(`${process.env.REACT_APP_API_URL}/getFleets`, {
+        headers: {
+          Authorization: state.jwt,
+        },
       })
-      .catch(() => {
+      .then((res) => {
         setLoading(false);
+
+        setFleets(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -72,11 +92,14 @@ export default function OTASelectDevice() {
     });
     setDevices(selectedDevices);
     setFilteredDevices(selectedDevices);
-    if (checked) {
-      setSelectedDevices(selectedDevices);
-    } else {
-      setSelectedDevices([]);
-    }
+
+    setContinue(!checked);
+
+    // if (checked) {
+    //   setSelectedDevices(selectedDevices);
+    // } else {
+    //   setSelectedDevices([]);
+    // }
   };
 
   const handleSingleSelect = (id) => {
@@ -89,12 +112,21 @@ export default function OTASelectDevice() {
       return device;
     });
     setDevices(updatedDevices);
-    setSelectedDevices(selectedDevices);
-  };
 
+    setContinue(selectedDevices.length == 0);
+
+    // setSelectedDevices(selectedDevices);
+  };
   const handleSubmit = () => {
-    dispatch(SELECT_DEVICE({ devices: selectedDevices }));
-    navigate("/ota-update");
+    let deviceArr = [];
+
+    devices.map((device) => {
+      if (device.checked) {
+        deviceArr.push(device);
+      }
+    });
+    dispatch(SELECT_DEVICE({ devices: deviceArr }));
+    navigate("/schdule-task");
   };
 
   const handleSearch = (e) => {
@@ -120,9 +152,9 @@ export default function OTASelectDevice() {
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
             <ul>
               <li className="text-base-content text-[18px]">
-                <Link to="/ota-select-fleet">
+                <Link to="/schdule-select-fleet">
                   <IoIosArrowBack className="mr-3" />
-                  Go Back
+                  Go Back{" "}
                 </Link>
               </li>
             </ul>
@@ -131,14 +163,14 @@ export default function OTASelectDevice() {
 
         <div className="flex items-center justify-between flex-col my-10">
           <div className="text-[29px] font-[500] landing-[29px] text-center">
-            Select Device for OTA Update
+            Select Device for Schedule a Task
           </div>
           <div className="flex items-center">
             <div className="form-control flex flex-row items-center rounded-[10px] border border-base-content/20 px-2 mx-4  my-10 bg-base-100">
               <CiSearch className="text-[25px]" />
               <input
                 className="input rounded w-[23rem] text-[16px] focus:outline-none focus:border-none focus:outline-offset-none"
-                placeholder="Search Device..."
+                placeholder="Search Device.."
                 onChange={handleSearch}
               />
             </div>
@@ -147,7 +179,7 @@ export default function OTASelectDevice() {
             <button
               className="btn bg-slate-950 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
               onClick={() => handleSubmit()}
-              disabled={!selectedDevices}
+              disabled={Continue}
             >
               Continue
             </button>
@@ -165,10 +197,6 @@ export default function OTASelectDevice() {
                         <input
                           type="checkbox"
                           className="checkbox"
-                          checked={
-                            selectedDevices.length &&
-                            selectedDevices.length === devices.length
-                          }
                           onClick={(e) => handleAllSelect(e.target.checked)}
                         />
                       </label>
@@ -181,50 +209,65 @@ export default function OTASelectDevice() {
                 </thead>
                 <br />
                 <tbody className="mt-3">
-                  {filteredDevices.map((device) => (
-                    <>
-                      <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
-                        <th className="shadow-none">
-                          <label>
-                            <input
-                              type="checkbox"
-                              className="checkbox"
-                              checked={device.checked}
-                              onClick={() => handleSingleSelect(device.id)}
-                            />
-                          </label>
-                        </th>
-                        <td className="bg-base-100 rounded-l-[15px]">
-                          <div className="flex items-center gap-3">
-                            <div className="text-base-500 font-[700] text-[19px] landing-[35px]">
-                              {device.name}
+                  {filteredDevices.length ? (
+                    filteredDevices.map((x) => (
+                      <>
+                        <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
+                          <th className="shadow-none">
+                            <label>
+                              <input
+                                type="checkbox"
+                                className="checkbox"
+                                checked={x.checked}
+                                onClick={() => handleSingleSelect(x.id)}
+                              />
+                            </label>
+                          </th>
+                          <td className="bg-base-100 rounded-l-[15px]">
+                            <div className="flex items-center gap-3">
+                              <div className="text-base-500 font-[700] text-[19px] landing-[35px]">
+                                {x.name}
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
-                          <div
-                            className="flex items-center justify-start cursor-pointer"
-                            onClick={() => handleCopy(device.imei)}
-                          >
-                            {device.imei}{" "}
-                            <span className="ml-2 text-slate-400">
-                              <MdOutlineContentCopy />
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
+                            <div
+                              className="flex items-center justify-start cursor-pointer"
+                              onClick={() => handleCopy(x.imei)}
+                            >
+                              {x.imei}{" "}
+                              <span className="ml-2 text-slate-400">
+                                <MdOutlineContentCopy />
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            <span
+                              className="flex"
+                              style={{ alignItems: "center" }}
+                            >
+                              <GoDotFill className="text-[#51DCA8] mr-1" />
+                              Active
                             </span>
-                          </div>
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                          <span className="flex">
-                            <GoDotFill className="text-[#FF2002] mr-1" />
-                            Inactive
-                          </span>
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                          {fleet.find((f) => f.name == device.fleet)?.name}
-                        </td>
-                      </tr>
-                      <br />
-                    </>
-                  ))}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            {fleet.map((y) => {
+                              if (y.name == x.fleet) {
+                                return y.name;
+                              }
+                            })}
+                          </td>
+                        </tr>
+                        <br />
+                      </>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-[20px] text-center">
+                        {loading || <Empty />}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

@@ -6,7 +6,7 @@ import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { Spin } from "antd";
+import { Empty, Spin } from "antd";
 import { SELECT_FLEET } from "../../redux/actions/SchduleAction";
 
 export default function SchduleSelectFleet() {
@@ -212,62 +212,70 @@ export default function SchduleSelectFleet() {
                 </thead>
                 <br />
                 <tbody className="mt-3">
-                  {filteredFleets.map((x) => (
-                    <>
-                      <tr className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20">
-                        <th className="shadow-none cursor-pointer">
-                          <label>
-                            <input
-                              type="checkbox"
-                              className="checkbox"
-                              checked={x.checked}
-                              onClick={() => handleCheckStatus(x.id)}
-                            />
-                          </label>
-                        </th>
+                  {filteredFleets.length ? (
+                    filteredFleets.map((x) => (
+                      <>
+                        <tr className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20">
+                          <th className="shadow-none cursor-pointer">
+                            <label>
+                              <input
+                                type="checkbox"
+                                className="checkbox"
+                                checked={x.checked}
+                                onClick={() => handleCheckStatus(x.id)}
+                              />
+                            </label>
+                          </th>
 
-                        <td className="bg-base-100 rounded-l-[15px] ">
-                          <div className="flex items-center gap-3">
-                            <div className="font-bold text-base-500 font-[900] text-[19px] landing-[35px]">
-                              {x.name}
+                          <td className="bg-base-100 rounded-l-[15px] ">
+                            <div className="flex items-center gap-3">
+                              <div className="font-bold text-base-500 font-[900] text-[19px] landing-[35px]">
+                                {x.name}
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                          {category.map((y) => {
-                            if (y.id === parseInt(x.category)) {
-                              return y.name;
-                            }
-                          })}
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                          19,899
-                        </td>
-                        <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                          0,189
-                        </td>
-                        {state.role == 0 ? (
-                          <>
-                            <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                              {admin.map((y) => {
-                                if (y.id === parseInt(x.admin)) {
-                                  return y.name;
-                                }
-                              })}
-                            </td>
-                            <td className="text-[16px] font-[500] landing-[35px] bg-base-100  rounded-r-[15px]">
-                              {admin.map((y) => {
-                                if (y.id === parseInt(x.admin)) {
-                                  return y.phone;
-                                }
-                              })}
-                            </td>
-                          </>
-                        ) : null}
-                      </tr>
-                      <br />
-                    </>
-                  ))}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            {category.map((y) => {
+                              if (y.id === parseInt(x.category)) {
+                                return y.name;
+                              }
+                            })}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            19,899
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                            0,189
+                          </td>
+                          {state.role == 0 ? (
+                            <>
+                              <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+                                {admin.map((y) => {
+                                  if (y.id === parseInt(x.admin)) {
+                                    return y.name;
+                                  }
+                                })}
+                              </td>
+                              <td className="text-[16px] font-[500] landing-[35px] bg-base-100  rounded-r-[15px]">
+                                {admin.map((y) => {
+                                  if (y.id === parseInt(x.admin)) {
+                                    return y.phone;
+                                  }
+                                })}
+                              </td>
+                            </>
+                          ) : null}
+                        </tr>
+                        <br />
+                      </>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-[20px] text-center">
+                        {loading || <Empty />}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

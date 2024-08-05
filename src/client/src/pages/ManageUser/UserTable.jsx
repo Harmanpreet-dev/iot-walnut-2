@@ -55,9 +55,9 @@ export default function UserTable({
           <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
             {admin}
           </td>
-          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
+          {/* <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
             Fleet-2
-          </td>
+          </td> */}
           <td className="bg-base-100 rounded-r-[15px] w-16">
             <div className="flex">
               <div
@@ -99,18 +99,27 @@ export default function UserTable({
                 <th>User Name</th>
                 <th>Email</th>
                 <th>Admin</th>
-                <th>Fleets</th>
+                {/* <th>Fleets</th> */}
                 <th>Action</th>
               </tr>
             </thead>
             <br />
             <tbody className="mt-3">
-              {error && (
+              {/* {error && (
                 <tr>
                   <td colSpan="5" className="text-[20px] text-center">
                     {error}
                   </td>
                 </tr>
+              )} */}
+              {users.length == 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-[20px] text-center">
+                    No matching data found
+                  </td>
+                </tr>
+              ) : (
+                ""
               )}
               {users.map((x) => {
                 let {
