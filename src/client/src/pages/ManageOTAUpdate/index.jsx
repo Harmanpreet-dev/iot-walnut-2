@@ -7,6 +7,9 @@ import OTATable from "./OTATable";
 import axiosInstance from "../../utils/axiosInstance";
 import { RESET } from "../../redux/actions/OTAAction";
 import { useDispatch } from "react-redux";
+import { Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import exportToExcel from "../../utils/exportToExcel";
 
 export default function ManageOTAUpdate() {
   const navigate = useNavigate();
@@ -63,6 +66,36 @@ export default function ManageOTAUpdate() {
     }
   };
 
+  const ExportData = () => {
+    setLoading(true);
+    const flattenedData = [];
+
+    OTAUpdates.forEach(
+      ({ name, fleet, devices, description, json, created_at, status }) => {
+        const tempDevices = JSON.parse(devices);
+        let i = 0;
+        tempDevices.forEach((device) => {
+          flattenedData.push({
+            name: i ? "" : name,
+            fleet: i ? "" : JSON.parse(fleet).name,
+            device_name: device.name,
+            device_status: device.status,
+            description: i ? "" : description,
+            json: i ? "" : json,
+            created_at: i ? "" : new Date(created_at).toLocaleString(),
+            status: i ? "" : status,
+          });
+          i = i + 1;
+        });
+      }
+    );
+    exportToExcel({
+      data: flattenedData,
+      filename: "ota_update.xlsx",
+    });
+    setLoading(false);
+  };
+
   return (
     <div className="content-wrapper bg-base-200">
       <div className="flex items-center justify-between">
@@ -77,18 +110,21 @@ export default function ManageOTAUpdate() {
             />
           </div>
           <div className="border px-1 py-2 rounded-box bg-base-100 border border-base-content/20">
-            <Space direction="vertical">
-              <DatePicker
-                onChange={handleSearchByDate}
-                variant="borderless"
-                className="cursor-pointer"
-              />
-            </Space>
+            <DatePicker
+              onChange={handleSearchByDate}
+              variant="borderless"
+              className="cursor-pointer"
+            />
+          </div>
+          <div className="border  py-2 rounded-box bg-base-100 border border-base-content/20">
+            <Button type="secondary" onClick={ExportData}>
+              <UploadOutlined className="text-[24px]" />
+            </Button>
           </div>
           <div className="adminBtn flex">
             <div>
               <button
-                className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-box flex items-center justify-between text-[17px] mr-4 hover:bg-slate-950"
+                className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[17px] mr-4 hover:bg-slate-950"
                 onClick={() => navigate("/ota-select-fleet")}
               >
                 Schedule OTA <FaPlus className="pl-2 text-[24px]" />

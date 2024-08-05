@@ -9,6 +9,7 @@ import DevicesTable from "../common/DevicesTable";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import exportToExcel from "../../utils/exportToExcel";
 
 const tabBackgroundColors = {
   1: "rgb(34 197 94)",
@@ -100,6 +101,7 @@ export default function OTADetails() {
     }
   };
   const handleStopJob = () => {
+    console.log(job);
     setLoading(true);
     axios
       .post(
@@ -157,6 +159,24 @@ export default function OTADetails() {
     }
   };
 
+  const ExportData = () => {
+    //TODO map through devices based on selected Tab
+    setLoading(true);
+    const jobs = devices.map(({ name, fleet, imei, status }) => {
+      return {
+        name,
+        fleet,
+        imei,
+        status,
+      };
+    });
+    exportToExcel({
+      data: jobs,
+      filename: "ota_devices.xlsx",
+    });
+    setLoading(false);
+  };
+
   return (
     <>
       {contextHolder}
@@ -185,7 +205,10 @@ export default function OTADetails() {
             <div className="adminBtn flex">
               {/* First Button */}
               <div>
-                <button className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[17px] mr-4 hover:bg-slate-950 min-w-40">
+                <button
+                  className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[17px] mr-4 hover:bg-slate-950 min-w-40"
+                  onClick={ExportData}
+                >
                   Export Job <TfiExport className="pl-2 text-[24px] stroke-1" />
                 </button>
               </div>
@@ -217,7 +240,7 @@ export default function OTADetails() {
               <div className="ml-5">
                 <button
                   className="btn bg-gray-200 text-gray-900 border rounded-[18px] border-gray-300 mr-3 mb-3 text-zinc-800 min-h-[36px] h-[40px] text-[16px] font-[500] landing-[35px] px-2 hover:bg-gray-300"
-                  disabled={jobStatus == "true" ? false : true}
+                  // disabled={jobStatus == "true" ? false : true}
                   onClick={() => verifyUser()}
                 >
                   Stop

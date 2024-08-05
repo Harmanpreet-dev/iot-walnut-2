@@ -6,8 +6,9 @@ import { Link, useParams } from "react-router-dom";
 import { Spin, Tabs, message } from "antd";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import ScheduleDeatilsTable from "./Details/ScheduleDeatilsTable";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
+import DevicesTable from "../common/DevicesTable";
+import exportToExcel from "../../utils/exportToExcel";
 
 const tabBackgroundColors = {
   1: "rgb(34 197 94)",
@@ -28,11 +29,11 @@ const onChange = (key, setActiveTab) => {
 
 const Jobdetail = () => {
   const [activeTab, setActiveTab] = useState("1");
-  const [task, setTask] = useState();
   const [name, setName] = useState();
   const [description, setDescription] = useState();
   const [fleetName, setFleetName] = useState();
   const [devices, setDevices] = useState([]);
+  const [filteredDevices, setFilteredDevices] = useState([]);
   const [jobArn, setJobArn] = useState("");
   const [jobStatus, setJobStatus] = useState("true");
   const [loading, setLoading] = useState(false);
@@ -49,17 +50,17 @@ const Jobdetail = () => {
     {
       key: "1",
       label: "Success",
-      children: <ScheduleDeatilsTable devices={[]} />,
+      children: <DevicesTable devices={[]} />,
     },
     {
       key: "2",
       label: "In Progress",
-      children: <ScheduleDeatilsTable devices={devices} />,
+      children: <DevicesTable devices={filteredDevices} />,
     },
     {
       key: "3",
       label: "Failed",
-      children: <ScheduleDeatilsTable devices={[]} />,
+      children: <DevicesTable devices={[]} />,
     },
   ];
 
@@ -79,11 +80,11 @@ const Jobdetail = () => {
       )
       .then((res) => {
         if (res.data.length != 0) {
-          setTask(res.data[0]);
           let task = res.data[0];
           setName(task.name);
           setDescription(task.description);
           setFleetName(JSON.parse(task.fleet).name);
+          setFilteredDevices(JSON.parse(task.devices));
           setDevices(JSON.parse(task.devices));
           setJobArn(task.arn);
           setJobStatus(task.status);
@@ -153,6 +154,36 @@ const Jobdetail = () => {
     }
   };
 
+  const handleSearch = (e) => {
+    const { value } = e.target;
+    if (!value?.trim()) {
+      setFilteredDevices(devices);
+    } else {
+      const results = devices.filter((device) =>
+        device.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredDevices(results);
+    }
+  };
+
+  const ExportData = () => {
+    //TODO map through devices based on selected Tab
+    setLoading(true);
+    const jobs = devices.map(({ name, fleet, imei, status }) => {
+      return {
+        name,
+        fleet,
+        imei,
+        status,
+      };
+    });
+    exportToExcel({
+      data: jobs,
+      filename: "schedular_devices.xlsx",
+    });
+    setLoading(false);
+  };
+
   return (
     <>
       {contextHolder}
@@ -164,7 +195,7 @@ const Jobdetail = () => {
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
             <ul>
               <li className="text-base-content/70 text-[18px]">
-                <Link to="/jobs"> Jobs </Link>
+                <Link to="/manage-scheduler"> Task Scheduler </Link>
               </li>
               <li className="text-[18px]">{name}</li>
             </ul>
@@ -173,15 +204,19 @@ const Jobdetail = () => {
             <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 mx-4 bg-base-100">
               <CiSearch className="text-[25px]" />
               <input
+                handleSearch
                 className="input w-full w-40 rounded focus:outline-none focus:border-none focus:outline-offset-none"
-                placeholder="Search Fleet.."
+                placeholder="Search Devices..."
+                onChange={handleSearch}
               />
             </div>
             <div className="adminBtn flex">
-              {/* First Button */}
               <div>
-                <button className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[17px] mr-4 hover:bg-slate-950 min-w-40">
-                  Export Job <TfiExport className="pl-2 text-[24px] stroke-1" />
+                <button
+                  onClick={ExportData}
+                  className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[17px] mr-4 hover:bg-slate-950 min-w-40"
+                >
+                  Export <TfiExport className="text-[24px]" />
                 </button>
               </div>
             </div>

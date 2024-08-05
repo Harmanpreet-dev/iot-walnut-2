@@ -6,17 +6,15 @@ import { useNavigate } from "react-router-dom";
 import SchdulerTable from "./SchdulerTable";
 import { useSelector } from "react-redux";
 import axios from "axios";
-
-const onChange = (date, dateString) => {
-  console.log(date, dateString);
-};
+import exportToExcel from "../../utils/exportToExcel";
+import { Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
 export default function ManageScheduler() {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searchQuery, setSearchQuery] = useState([]);
   const [filteredUpdates, setFilteredUpdates] = useState([]);
 
   const state = useSelector((state) => state);
@@ -37,7 +35,6 @@ export default function ManageScheduler() {
         setLoading(false);
         setTasks(res.data);
         setFilteredUpdates(res.data);
-        // console.log(res.data);
       })
       .catch((err) => {
         setLoading(false);
@@ -75,6 +72,41 @@ export default function ManageScheduler() {
     }
   };
 
+  const ExportData = () => {
+    setLoading(true);
+    const flattenedData = [];
+
+    tasks.forEach(
+      ({ name, fleet, devices, description, json, date, time, status }) => {
+        const tempDevices = JSON.parse(devices);
+        let i = 0;
+        tempDevices.forEach((device) => {
+          flattenedData.push({
+            name: i ? "" : name,
+            fleet: i ? "" : JSON.parse(fleet).name,
+            device_name: device.name,
+            device_status: device.status,
+            description: i ? "" : description,
+            json: i ? "" : json,
+            created_at: i
+              ? ""
+              : `${
+                  (new Date(date).toLocaleString(),
+                  new Date(time).toLocaleString())
+                }`,
+            status: i ? "" : status,
+          });
+          i = i + 1;
+        });
+      }
+    );
+    exportToExcel({
+      data: flattenedData,
+      filename: "schedular.xlsx",
+    });
+    setLoading(false);
+  };
+
   return (
     <>
       <div className="content-wrapper bg-base-200">
@@ -86,23 +118,26 @@ export default function ManageScheduler() {
               },
             ]}
           />
-          <div className="search-adminBox flex items-center justify-between w-32rem]">
-            <div className="border px-4 py-2 rounded-[20px] bg-base-100 border border-base-content/20">
-              <Space direction="vertical">
-                <DatePicker
-                  onChange={handleSearchByDate}
-                  variant="borderless"
-                  className="cursor-pointer"
-                />
-              </Space>
-            </div>
-            <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 mx-4 bg-base-100">
+          <div className="search-adminBox flex items-center justify-between space-x-2">
+            <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 bg-base-100">
               <CiSearch className="text-[25px]" />
               <input
                 className="input w-full w-40 rounded focus:outline-none focus:border-none focus:outline-offset-none"
-                placeholder="Search Fleet or Device.."
+                placeholder="Search Schedular"
                 onChange={handleSearch}
               />
+            </div>
+            <div className="border px-1 py-2 rounded-box bg-base-100 border border-base-content/20">
+              <DatePicker
+                onChange={handleSearchByDate}
+                variant="borderless"
+                className="cursor-pointer"
+              />
+            </div>
+            <div className="border py-2 rounded-box bg-base-100 border border-base-content/20">
+              <Button type="secondary" onClick={ExportData}>
+                <UploadOutlined className="text-[24px]" />
+              </Button>
             </div>
             <div className="adminBtn flex">
               <div>
