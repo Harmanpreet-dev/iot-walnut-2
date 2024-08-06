@@ -39,4 +39,10 @@ export let SideBarDataSuperAdmin = [
     link: "/manage-ota-update",
     svg: <OTAUpdate />,
   },
+  {
+    id: 7,
+    name: "Logger",
+    link: "/manage-logger",
+    svg: <FleetSVG />,
+  },
 ];

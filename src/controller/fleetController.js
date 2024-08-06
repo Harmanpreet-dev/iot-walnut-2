@@ -12,7 +12,7 @@ const addFleet = async (req, res) => {
 
     let result = await CreateFleetAWS(name);
 
-    res.status(200).json(result);
+    res.status(200).json("Fleet was Added");
   } catch (err) {
     res.status(500).json(err);
   }

@@ -129,7 +129,7 @@ const Manageuser = () => {
     setLoading(true);
     axios
       .post(
-        `${process.env.REACT_APP_API_URL}/deleteAdmin`,
+        `${process.env.REACT_APP_API_URL}/deleteUserDetails`,
         { id },
         {
           headers: {

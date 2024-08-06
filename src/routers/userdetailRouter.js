@@ -4,6 +4,7 @@ const {
   adduserdetail,
   getuserdetail,
   updateuserdetail,
+  deleteUserDetails,
 } = require("../controller/userdetailController");
 const logResponse = require("../middleware/logResponseMidleware");
 
@@ -16,11 +17,19 @@ userdetailRouter.post(
   logResponse,
   adduserdetail
 );
+
 userdetailRouter.post(
   "/updateuserdetail",
   verifyToken,
   logResponse,
   updateuserdetail
+);
+
+userdetailRouter.post(
+  "/deleteUserDetails",
+  verifyToken,
+  logResponse,
+  deleteUserDetails
 );
 
 module.exports = userdetailRouter;

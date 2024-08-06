@@ -105,8 +105,8 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
     },
     validate,
     onSubmit: (values) => {
-      checkEmail(values);
-      // handleFormSubmit(values);
+      // checkEmail(values);
+      handleFormSubmit(values);
     },
   });
 

@@ -6,10 +6,11 @@ const {
   getUserCategory,
   getFleetByAdmin,
 } = require("../controller/fleetController");
+const logResponse = require("../middleware/logResponseMidleware");
 
 const fleetRouter = Router();
 
-fleetRouter.post("/addFleet", verifyToken, addFleet);
+fleetRouter.post("/addFleet", verifyToken, logResponse, addFleet);
 fleetRouter.get("/getFleets", verifyToken, getFleet);
 fleetRouter.post("/getFleet", verifyToken, getFleetByAdmin);
 fleetRouter.get("/getUserCategory", verifyToken, getUserCategory);

@@ -38,7 +38,7 @@ const addImei = async (req, res) => {
       return res.status(400).json({ error: "Duplicate imei_no", duplicates });
     }
 
-    res.status(200).json({ message: "IMEIs uploaded successfully" });
+    res.status(200).json("Whitelist uploaded successfully");
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -84,7 +84,7 @@ const addBlackImei = async (req, res) => {
       return res.status(400).json({ error: "Duplicate imei_no", duplicates });
     }
 
-    res.status(200).json({ message: "IMEIs uploaded successfully" });
+    res.status(200).json("Blacklist uploaded successfully");
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -122,7 +122,7 @@ const addDevice = async (req, res) => {
 
     await CreateThingAndAddToGroup(name, fleet);
 
-    res.status(200).json(result);
+    res.json("Whitelist was Added");
   } catch (err) {
     res.status(500).json(err);
   }

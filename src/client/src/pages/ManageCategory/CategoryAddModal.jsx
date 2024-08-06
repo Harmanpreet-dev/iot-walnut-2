@@ -35,12 +35,20 @@ const CategoryAddModal = ({ getCategory }) => {
     const timestamp = new Date().toISOString(); // Capture current timestamp in ISO format
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/categories`, {
-        categoryName: values.categoryName,
-        name: state.name,
-        img: state.image,
-        timestamp, // Send timestamp to the server
-      })
+      .post(
+        `${process.env.REACT_APP_API_URL}/categories`,
+        {
+          categoryName: values.categoryName,
+          name: state.name,
+          img: state.image,
+          timestamp, // Send timestamp to the server
+        },
+        {
+          headers: {
+            Authorization: state.jwt,
+          },
+        }
+      )
       .then((res) => {
         getCategory();
         document.getElementById("my_modal_1").close();

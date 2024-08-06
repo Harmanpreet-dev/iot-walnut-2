@@ -7,7 +7,6 @@ const {
   textJob,
   StopJob,
 } = require("../controller/scheduleController");
-const logResponse = require("../middleware/logResponseMidleware");
 
 const scheduleRouter = Router();
 
@@ -17,6 +16,6 @@ scheduleRouter.post("/getScheduleTask", verifyToken, getScheduleTaskDetails);
 
 scheduleRouter.post("/stopJob", verifyToken, StopJob);
 
-scheduleRouter.get("/textJob", verifyToken, logResponse, textJob);
+scheduleRouter.get("/textJob", verifyToken, textJob);
 
 module.exports = scheduleRouter;

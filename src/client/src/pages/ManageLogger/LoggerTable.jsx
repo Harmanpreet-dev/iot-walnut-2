@@ -64,7 +64,7 @@ const Loggers = () => {
 
     if (query) {
       filteredData = filteredData.filter((logger) =>
-        logger.name.toLowerCase().includes(query)
+        logger.author_name.toLowerCase().includes(query)
       );
     }
 
@@ -178,24 +178,24 @@ const Loggers = () => {
                         <div className="flex items-center gap-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              {/* <img
-                                src={`${process.env.REACT_APP_PROFILE_URL}/profile/${logger.img}`}
+                              <img
+                                src={`${process.env.REACT_APP_PROFILE_URL}/profile/${logger.author_photo}`}
                                 alt="Avatar"
                                 className="border-2 border-[#CBCBCB] rounded-[18px]"
-                              /> */}
+                              />
                             </div>
                           </div>
                           <div>
                             <div className="font-bold text-base-500 font-[900] text-[19px] landing-[35px]">
-                              {"logger.name"}
+                              {logger.author_name}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
-                        {/* {moment(logger.timestamp).format(
+                        {moment(logger.date_time).format(
                           "MMMM D, YYYY | hh:mm A"
-                        )} */}
+                        )}
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100">
                         {logger.response}

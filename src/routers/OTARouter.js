@@ -6,7 +6,6 @@ const {
   getOTAUpdateDetails,
   textJob,
 } = require("../controller/OTAController");
-const logResponse = require("../middleware/logResponseMidleware");
 
 const OTARouter = Router();
 
@@ -14,6 +13,6 @@ OTARouter.post("/", verifyToken, createOTAUpdate);
 OTARouter.get("/", verifyToken, getOTAUpdates);
 OTARouter.get("/:id", verifyToken, getOTAUpdateDetails);
 
-OTARouter.get("/textJob", verifyToken, logResponse, textJob);
+OTARouter.get("/textJob", verifyToken, textJob);
 
 module.exports = OTARouter;

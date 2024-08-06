@@ -31,12 +31,7 @@ const adduserdetail = async (req, res) => {
         [name, email, phone, hashedPassword, photo, 2, author_id, author_name]
       );
 
-      res.json({
-        message: "A new person was created",
-        body: {
-          user: { result },
-        },
-      });
+      res.json("User created");
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -81,13 +76,13 @@ const updateuserdetail = async (req, res) => {
           "UPDATE users SET name=$1, email=$2, phone=$3 WHERE id=$4",
           [name, email, phone, id]
         );
-        res.json(result);
+        res.json("User Updated");
       } else {
         let result = await pgClient.query(
           "UPDATE users SET name=$1, email=$2, phone=$3, photo=$4 WHERE id=$5",
           [name, email, phone, photo, id]
         );
-        res.json(result);
+        res.json("User Updated");
       }
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -95,8 +90,18 @@ const updateuserdetail = async (req, res) => {
   });
 };
 
+const deleteUserDetails = async (req, res) => {
+  try {
+    await pgClient.query("DELETE FROM users where id = $1", [req.body.id]);
+    res.json(`User #${req.body.id} was deleted `);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 module.exports = {
   adduserdetail,
   getuserdetail,
   updateuserdetail,
+  deleteUserDetails,
 };

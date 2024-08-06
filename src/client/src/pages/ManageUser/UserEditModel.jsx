@@ -200,7 +200,7 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
     }
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/updateAdmin`, formData, {
+      .post(`${process.env.REACT_APP_API_URL}/updateuserdetail`, formData, {
         headers: {
           Authorization: state.jwt,
         },
