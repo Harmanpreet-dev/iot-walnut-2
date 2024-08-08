@@ -61,7 +61,7 @@ export const User2SVG = () => {
       width="19"
       height="24"
       viewBox="0 0 19 24"
-      fill="black"
+      className="mr-1 fill-current"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -80,7 +80,7 @@ export const SchdulerSVG = () => {
       width="21"
       height="21"
       viewBox="0 0 21 21"
-      fill="black"
+      className="mr-1 fill-current"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

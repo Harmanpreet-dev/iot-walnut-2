@@ -132,7 +132,9 @@ const Loggers = () => {
               <DatePicker
                 onChange={onChange}
                 variant="borderless"
-                className="custom-date-picker"
+                // className="custom-date-picker"
+                // className="mr-1 fill-current"
+                status="warning"
               />
             </Space>
           </div>
