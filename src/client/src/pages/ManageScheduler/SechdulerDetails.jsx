@@ -9,6 +9,8 @@ import axios from "axios";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 import DevicesTable from "../common/DevicesTable";
 import exportToExcel from "../../utils/exportToExcel";
+import { MdOutlineContentCopy } from "react-icons/md";
+import copy from "copy-to-clipboard";
 
 const tabBackgroundColors = {
   1: "rgb(34 197 94)",
@@ -28,7 +30,7 @@ const onChange = (key, setActiveTab) => {
 };
 
 const Jobdetail = () => {
-  const [activeTab, setActiveTab] = useState("1");
+  const [activeTab, setActiveTab] = useState(1);
   const [name, setName] = useState();
   const [description, setDescription] = useState();
   const [fleetName, setFleetName] = useState();
@@ -37,10 +39,19 @@ const Jobdetail = () => {
   const [jobArn, setJobArn] = useState("");
   const [jobStatus, setJobStatus] = useState("true");
   const [loading, setLoading] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
 
   const state = useSelector((state) => state);
   const parms = useParams();
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const handleCopy = (imei) => {
+    copy(imei);
+    messageApi.open({
+      type: "success",
+      content: "Text copied to clipboard!",
+    });
+  };
 
   useEffect(() => {
     getTaskDetails();
@@ -81,15 +92,51 @@ const Jobdetail = () => {
       .then((res) => {
         if (res.data.length != 0) {
           let task = res.data[0];
+          setLoading(false);
           setName(task.name);
           setDescription(task.description);
           setFleetName(JSON.parse(task.fleet).name);
           setFilteredDevices(JSON.parse(task.devices));
-          setDevices(JSON.parse(task.devices));
+          // setDevices(JSON.parse(task.devices));
+          getJobDetails(task.arn, JSON.parse(task.devices));
           setJobArn(task.arn);
           setJobStatus(task.status);
-          setLoading(false);
         }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getJobDetails = (arn, m_devices) => {
+    setLoading(true);
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/getJobDetails`,
+        {
+          arn,
+        },
+        {
+          headers: {
+            Authorization: state.auth.jwt,
+          },
+        }
+      )
+      .then((res) => {
+        let oldData = m_devices;
+
+        oldData.map((x) => {
+          res.data.map((y) => {
+            if (x.arn == y.thingArn) {
+              x.response = y.jobExecutionSummary.status;
+            }
+          });
+        });
+
+        setDevices(oldData);
+        setLoading(false);
+
+        // setDevices(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -113,7 +160,7 @@ const Jobdetail = () => {
         }
       )
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setLoading(false);
         setJobStatus("false");
         messageApi.success("Job Stoped Successfully");
@@ -182,6 +229,19 @@ const Jobdetail = () => {
       filename: "schedular_devices.xlsx",
     });
     setLoading(false);
+  };
+
+  const getCount = (state) => {
+    let count = 0;
+    let d = devices;
+
+    d.map((x) => {
+      if (state == x.response) {
+        count++;
+      }
+    });
+
+    return count;
   };
 
   return (
@@ -256,10 +316,173 @@ const Jobdetail = () => {
           </div>
         </div>
 
+        <div className="flex justify-center">
+          <div role="tablist" className="tabs tabs-boxed bg-white w-1/2">
+            <a
+              role="tab"
+              className={`tab ${activeTab === 1 ? "tab-active" : ""}`}
+              onClick={() => setActiveTab(1)}
+            >
+              QUEUED ({getCount("QUEUED")})
+            </a>
+            <a
+              role="tab"
+              className={`tab ${activeTab === 2 ? "tab-active" : ""}`}
+              onClick={() => setActiveTab(2)}
+            >
+              IN PROGRESS ({getCount("IN_PROGRESS")})
+            </a>
+            <a
+              role="tab"
+              className={`tab ${activeTab === 3 ? "tab-active" : ""}`}
+              onClick={() => setActiveTab(3)}
+            >
+              SUCCEEDED ({getCount("SUCCEEDED")})
+            </a>
+            <a
+              role="tab"
+              className={`tab ${activeTab === 4 ? "tab-active" : ""}`}
+              onClick={() => setActiveTab(4)}
+            >
+              FAILED ({getCount("FAILED")})
+            </a>
+          </div>
+        </div>
+
         {/* Table Start */}
 
         <div className="mt-6">
-          <div style={{ width: "100%" }}>
+          <table className="table">
+            <thead className="border-b-2 border-base-300">
+              <tr className="text-[#B1B1B1] text-[15px] font-[700] landing-[35px]">
+                <th>Device</th>
+                <th>IMEI</th>
+                <th>Job Status</th>
+              </tr>
+            </thead>
+            <br />
+            <tbody className="mt-3">
+              {devices.map((x) => {
+                if (activeTab == 1) {
+                  if (x.response == "QUEUED") {
+                    return (
+                      <>
+                        <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
+                          <td className="text-[20px] font-[700] landing-[35px] bg-base-100 cursor-pointer rounded-l-[15px] ">
+                            {x.name}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer  ">
+                            {/* {x.imei} */}
+                            <div
+                              className="flex items-center justify-start cursor-pointer"
+                              onClick={() => handleCopy(x.imei)}
+                            >
+                              {x.imei}{" "}
+                              <span className="ml-2 text-slate-400">
+                                <MdOutlineContentCopy />
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-base-content/70">
+                            {x.response}
+                          </td>
+                        </tr>
+                        <br />
+                      </>
+                    );
+                  }
+                }
+                if (activeTab == 2) {
+                  if (x.response == "IN_PROGRESS") {
+                    return (
+                      <>
+                        <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
+                          <td className="text-[20px] font-[700] landing-[35px] bg-base-100 cursor-pointer rounded-l-[15px] ">
+                            {x.name}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer  ">
+                            {/* {x.imei} */}
+                            <div
+                              className="flex items-center justify-start cursor-pointer"
+                              onClick={() => handleCopy(x.imei)}
+                            >
+                              {x.imei}{" "}
+                              <span className="ml-2 text-slate-400">
+                                <MdOutlineContentCopy />
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-base-content/70">
+                            {x.response}
+                          </td>
+                        </tr>
+                        <br />
+                      </>
+                    );
+                  }
+                }
+                if (activeTab == 3) {
+                  if (x.response == "SUCCEEDED") {
+                    return (
+                      <>
+                        <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
+                          <td className="text-[20px] font-[700] landing-[35px] bg-base-100 cursor-pointer rounded-l-[15px] ">
+                            {x.name}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer  ">
+                            {/* {x.imei} */}
+                            <div
+                              className="flex items-center justify-start cursor-pointer"
+                              onClick={() => handleCopy(x.imei)}
+                            >
+                              {x.imei}{" "}
+                              <span className="ml-2 text-slate-400">
+                                <MdOutlineContentCopy />
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-base-content/70">
+                            {x.response}
+                          </td>
+                        </tr>
+                        <br />
+                      </>
+                    );
+                  }
+                }
+                if (activeTab == 4) {
+                  if (x.response == "FAILED") {
+                    return (
+                      <>
+                        <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
+                          <td className="text-[20px] font-[700] landing-[35px] bg-base-100 cursor-pointer rounded-l-[15px] ">
+                            {x.name}
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer  ">
+                            {/* {x.imei} */}
+                            <div
+                              className="flex items-center justify-start cursor-pointer"
+                              onClick={() => handleCopy(x.imei)}
+                            >
+                              {x.imei}{" "}
+                              <span className="ml-2 text-slate-400">
+                                <MdOutlineContentCopy />
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-base-content/70">
+                            {x.response}
+                          </td>
+                        </tr>
+                        <br />
+                      </>
+                    );
+                  }
+                }
+              })}
+            </tbody>
+          </table>
+          {/* <div style={{ width: "100%" }}>
             <Tabs
               defaultActiveKey="1"
               items={items.map((item, index) => ({
@@ -291,7 +514,7 @@ const Jobdetail = () => {
               }))}
               onChange={(key) => onChange(key, setActiveTab)}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </>

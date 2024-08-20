@@ -19,17 +19,18 @@ app.get("/", (req, res) => {
 });
 
 // Use the user router
-app.use("/api", require("./routers/userRouter"));
-app.use("/api", require("./routers/commonRouter"));
-app.use("/api", require("./routers/categoryRouter"));
-app.use("/api", require("./routers/FleetRouter"));
-app.use("/api", require("./routers/deviceRouter"));
-app.use("/api", require("./routers/scheduleRouter"));
-app.use("/api", require("./routers/userdetailRouter"));
-app.use("/api", require("./routers/loggerRouter"));
-app.use("/api/ota", require("./routers/OTARouter"));
+app.use("/api", require("./api/v1/routers/userRouter"));
+app.use("/api", require("./api/v1/routers/commonRouter"));
+app.use("/api", require("./api/v1/routers/categoryRouter"));
+app.use("/api", require("./api/v1/routers/FleetRouter"));
+app.use("/api", require("./api/v1/routers/deviceRouter"));
+app.use("/api", require("./api/v1/routers/scheduleRouter"));
+app.use("/api", require("./api/v1/routers/userdetailRouter"));
+app.use("/api", require("./api/v1/routers/loggerRouter"));
+app.use("/api", require("./api/v1/routers/jobDetailsRouter"));
+app.use("/api/ota", require("./api/v1/routers/OTARouter"));
 
-app.use("/", require("./routers/certificateRouter"));
+app.use("/", require("./api/v1/routers/certificateRouter"));
 
 // Connect to PostgreSQL and start the server
 pgClient.connect((err) => {

@@ -50,7 +50,7 @@ export default function ScheduleDeatilsTable({ devices }) {
                         </div>
                       </td>
                       <td className="text-[16px] font-[500] landing-[35px] bg-base-100 cursor-pointer rounded-r-[15px] text-base-content/70">
-                        In progress
+                        In progresss
                       </td>
                     </tr>
                     <br />
