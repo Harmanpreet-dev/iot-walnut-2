@@ -28,6 +28,7 @@ app.use("/api", require("./api/v1/routers/scheduleRouter"));
 app.use("/api", require("./api/v1/routers/userdetailRouter"));
 app.use("/api", require("./api/v1/routers/loggerRouter"));
 app.use("/api", require("./api/v1/routers/jobDetailsRouter"));
+app.use("/api", require("./api/v1/routers/apiRouter"));
 app.use("/api/ota", require("./api/v1/routers/OTARouter"));
 
 app.use("/", require("./api/v1/routers/certificateRouter"));

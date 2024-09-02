@@ -126,7 +126,7 @@ export default function SchduleSelectDevice() {
       }
     });
     dispatch(SELECT_DEVICE({ devices: deviceArr }));
-    navigate("/schdule-task");
+    navigate("/ota-update");
   };
 
   const handleSearch = (e) => {

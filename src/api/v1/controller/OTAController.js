@@ -79,6 +79,7 @@ const getOTAUpdateDetails = async (req, res) => {
       "SELECT * FROM ota_update WHERE id=$1",
       [id]
     );
+    console.log(rows);
     return res.status(200).json(rows[0]);
   } catch (err) {
     return res.status(500).json(err);
