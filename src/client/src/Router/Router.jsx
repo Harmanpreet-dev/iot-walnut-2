@@ -29,12 +29,14 @@ import OTASelectFleet from "../pages/ManageOTAUpdate/OTASelectFleet";
 import OTASelectDevice from "../pages/ManageOTAUpdate/OTASelectDevice";
 import OTAUpdate from "../pages/ManageOTAUpdate/OTAUpdate";
 import OTADetails from "../pages/ManageOTAUpdate/OTADetails";
+import Dashboard from "../pages/Dashboard";
 
 const routerAdmin = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<Login />}></Route>
       <Route path="/" element={<Layout />}>
+        <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/settings" element={<Settings />}></Route>
         <Route path="/change-password" element={<ChangePassword />}></Route>
