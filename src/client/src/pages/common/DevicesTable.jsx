@@ -8,6 +8,7 @@ export default function DevicesTable({ devices }) {
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleCopy = (imei) => {
+    console.log("ok");
     copy(imei);
     messageApi.open({
       type: "success",
