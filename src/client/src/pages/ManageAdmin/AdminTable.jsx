@@ -1,13 +1,9 @@
+import { Empty } from "antd";
 import React from "react";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
-export default function AdminTable({
-  users,
-  handleDeleteAdmin,
-  handleActive,
-  error,
-}) {
+export default function AdminTable({ users, handleDeleteAdmin, handleActive }) {
   const TableRow = ({ id, name, email, phone, photo }) => {
     return (
       <>
@@ -16,19 +12,15 @@ export default function AdminTable({
             <div className="flex items-center gap-3">
               <div className="avatar">
                 <div className="mask mask-squircle w-12 h-12">
-                  {photo == null ? (
-                    <img
-                      src="./images/default.jpeg"
-                      alt="Avatar Tailwind CSS Component"
-                      className="border-2 border-[#CBCBCB] rounded-[18px]"
-                    />
-                  ) : (
-                    <img
-                      src={`${process.env.REACT_APP_PROFILE_URL}/profile/${photo}`}
-                      alt="Avatar Tailwind CSS Component"
-                      className="border-2 border-[#CBCBCB] rounded-[18px]"
-                    />
-                  )}
+                  <img
+                    src={
+                      photo
+                        ? `${process.env.REACT_APP_PROFILE_URL}/profile/${photo}`
+                        : "./images/default.jpeg"
+                    }
+                    alt="Avatar Tailwind CSS Component"
+                    className="border-2 border-[#CBCBCB] rounded-[18px]"
+                  />
                 </div>
               </div>
               <div>
@@ -90,25 +82,29 @@ export default function AdminTable({
             </thead>
             <br />
             <tbody className="mt-3">
-              {error && (
+              {users?.length ? (
+                <>
+                  {users.map((x) => {
+                    let { id, name, email, phone, photo } = x;
+                    return (
+                      <TableRow
+                        key={id}
+                        id={id}
+                        name={name}
+                        email={email}
+                        phone={phone}
+                        photo={photo}
+                      />
+                    );
+                  })}
+                </>
+              ) : (
                 <tr>
                   <td colSpan="5" className="text-[20px] text-center">
-                    {error}
+                    <Empty />
                   </td>
                 </tr>
               )}
-              {users.map((x) => {
-                let { id, name, email, phone, photo } = x;
-                return (
-                  <TableRow
-                    id={id}
-                    name={name}
-                    email={email}
-                    phone={phone}
-                    photo={photo}
-                  />
-                );
-              })}
             </tbody>
           </table>
         </div>

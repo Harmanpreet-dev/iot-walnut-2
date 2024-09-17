@@ -31,7 +31,7 @@ export default function FleetFilter({
         <input type="radio" name="my-accordion-3" defaultChecked />
         <div className="collapse-title text-[20px] font-[600]">Admins</div>
         <div className="collapse-content">
-          {admin.map((x) => {
+          {admin?.map((x) => {
             return (
               <div className="flex justify-start items-center mb-4">
                 <input

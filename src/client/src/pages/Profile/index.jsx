@@ -1,27 +1,23 @@
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { UPDATE_PROFILE } from "../../redux/actions/AuthActions";
+import { UPDATE_PROFILE } from "../../redux/actions/authActions";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
-import { Spin } from "antd";
+import axiosInstance from "../../utils/axiosInstance";
 
 const validate = (values) => {
   const errors = {};
-
   if (!values.name) {
     errors.name = "Required";
   } else if (!/^[0-9a-zA-Z].*/i.test(values.name)) {
     errors.name = "Invalid username";
   }
-
   if (!values.email) {
     errors.email = "Required";
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
     errors.email = "Invalid email address";
   }
-
   if (!values.phone) {
     errors.phone = "Required";
   } else if (
@@ -31,23 +27,26 @@ const validate = (values) => {
   ) {
     errors.phone = "Enter max 8 Characters";
   }
-
   return errors;
 };
 
 export default function Profile() {
-  const state = useSelector((state) => state.auth);
+  const uploadRef = useRef();
+  const { id, name, email, phone, image } = useSelector((state) => state.auth);
+  const [imageSrc, setImageSrc] = useState(
+    image
+      ? `${process.env.REACT_APP_PROFILE_URL}/profile/${image}`
+      : "./images/default.jpeg"
+  );
   const [emailError, setEmailError] = useState("");
   const [formValues, setFormValues] = useState();
-  const [loading, setLoading] = useState(false);
-
   let dispatch = useDispatch();
 
   const formik = useFormik({
     initialValues: {
-      name: state.name,
-      email: state.email,
-      phone: state.phone,
+      name: name,
+      email: email,
+      phone: phone,
     },
     validate,
     onSubmit: (values) => {
@@ -56,23 +55,11 @@ export default function Profile() {
   });
 
   const verifyUser = (value) => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: email,
+      })
       .then((res) => {
-        setLoading(false);
-
-        console.log(res.data);
         setFormValues(value);
         document.getElementById("my_modal_2").showModal();
       })
@@ -89,19 +76,23 @@ export default function Profile() {
     }
   };
 
+  const handleUploadPhoto = () => {
+    uploadRef.current.click();
+  };
+
   const handleFormSubmit = (values) => {
     setEmailError("");
-
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("email", values.email);
     formData.append("phone", values.phone);
-    formData.append("token", state.jwt);
-
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/updateProfile`, formData, {
+    if (values.image && values.image.length > 0) {
+      formData.append("image", values.image[0]);
+    }
+    axiosInstance
+      .put(`/users/${id}`, formData, {
         headers: {
-          Authorization: state.jwt,
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       })
       .then((res) => {
@@ -114,10 +105,38 @@ export default function Profile() {
       });
   };
 
+  const handleFileSelect = (event) => {
+    if (event.target.value !== "") {
+      const files = event.target.files;
+      let myFiles = Array.from(files);
+      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+      const maxSize = 5 * 1024 * 1024; // 5 MB
+
+      myFiles = myFiles.filter((file) => {
+        if (!validImageTypes.includes(file.type)) {
+          alert("Invalid file type. Only JPG, PNG, and GIF are allowed.");
+          return false;
+        }
+        if (file.size > maxSize) {
+          alert("File size exceeds the 5MB limit.");
+          return false;
+        }
+        return true;
+      });
+
+      if (myFiles.length > 0) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImageSrc(e.target.result);
+        };
+        reader.readAsDataURL(myFiles[0]);
+        formik.setFieldValue("image", myFiles);
+      }
+    }
+  };
+
   return (
     <div>
-      <Spin spinning={loading} fullscreen />
-
       <TwoFactAuth handle2FA={handle2FA} />
       <div className="content-wrapper bg-base-200">
         <div>
@@ -135,17 +154,27 @@ export default function Profile() {
           <div className="mt-6">
             <div className="col-12 flex items-center justify-center">
               <div className="profile-group flex items-center justify-center flex-col min-w-[600px]">
-                <div className="profile-image">
+                <div
+                  className="profile-image"
+                  onClick={() => handleUploadPhoto()}
+                >
                   <img
-                    src={`${process.env.REACT_APP_PROFILE_URL}/profile/${state.image}`}
+                    src={imageSrc}
                     alt="profile-avtar"
                     className="w-32 h-32 border border-1 border-current rounded-full"
                   />
                 </div>
-
                 <div className="mt-10 w-full">
                   <form onSubmit={formik.handleSubmit}>
                     <div>
+                      <input
+                        style={{ display: "none" }}
+                        type="file"
+                        name="image"
+                        ref={uploadRef}
+                        className="file-input w-full max-w-xs"
+                        onChange={(event) => handleFileSelect(event)}
+                      />
                       <div className="form-control">
                         <label className="label">
                           <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">
@@ -205,8 +234,8 @@ export default function Profile() {
                               name="phone"
                               type="tel"
                               size="20"
-                              minlength="9"
-                              maxlength="14"
+                              minLength="9"
+                              maxLength="14"
                               onChange={formik.handleChange}
                               value={formik.values.phone}
                             />

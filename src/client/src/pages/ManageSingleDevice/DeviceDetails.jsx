@@ -5,7 +5,7 @@ import { MdErrorOutline } from "react-icons/md";
 import { IoCopyOutline } from "react-icons/io5";
 import { message } from "antd";
 import copy from "copy-to-clipboard";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function DeviceDetails({ device, state, getDeviceDetail }) {
   const [messageApi, contextHolder] = message.useMessage();
@@ -19,16 +19,8 @@ export default function DeviceDetails({ device, state, getDeviceDetail }) {
   };
 
   const handleRevoke = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/revokeDevice`,
-        { certificate_id: device.certificate_id },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/revokeDevice`, { certificate_id: device.certificate_id })
       .then((res) => {
         document.getElementById("my_modal_revoke").close();
         getDeviceDetail();
@@ -66,7 +58,7 @@ export default function DeviceDetails({ device, state, getDeviceDetail }) {
               Inactive
             </span>
             <div className="ml-4">
-              {device.status == "true" ? (
+              {device.status === "true" ? (
                 <button
                   className="btn bg-gray-200 text-gray-900 border rounded-[18px] border-gray-300 mr-3 mb-3 text-zinc-700 min-h-[36px] h-[40px] text-[16px] font-[500] landing-[35px]"
                   onClick={() =>

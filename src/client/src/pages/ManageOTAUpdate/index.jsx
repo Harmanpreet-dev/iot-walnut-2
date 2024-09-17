@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
-import { Breadcrumb, DatePicker, Space } from "antd";
+import { Breadcrumb, DatePicker } from "antd";
 import { useNavigate } from "react-router-dom";
 import OTATable from "./OTATable";
 import axiosInstance from "../../utils/axiosInstance";
-import { RESET } from "../../redux/actions/OTAAction";
+import { RESET } from "../../redux/actions/otaAction";
 import { useDispatch } from "react-redux";
 import { Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
@@ -15,7 +15,6 @@ export default function ManageOTAUpdate() {
   const navigate = useNavigate();
   const [OTAUpdates, setOTAUpdates] = useState([]);
   const [filteredOTAUpdates, setFilteredOTAUpdates] = useState([]);
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -24,16 +23,14 @@ export default function ManageOTAUpdate() {
   }, []);
 
   const getOTAUpdates = () => {
-    setLoading(true);
     axiosInstance
-      .get(`/OTA`)
+      .get(`/ota-updates`)
       .then(({ data }) => {
-        setLoading(false);
         setOTAUpdates(data);
         setFilteredOTAUpdates(data);
       })
-      .catch(() => {
-        setLoading(false);
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -67,9 +64,7 @@ export default function ManageOTAUpdate() {
   };
 
   const ExportData = () => {
-    setLoading(true);
     const flattenedData = [];
-
     OTAUpdates.forEach(
       ({ name, fleet, devices, description, json, created_at, status }) => {
         const tempDevices = JSON.parse(devices);
@@ -93,7 +88,6 @@ export default function ManageOTAUpdate() {
       data: flattenedData,
       filename: "ota_update.xlsx",
     });
-    setLoading(false);
   };
 
   return (
@@ -133,11 +127,7 @@ export default function ManageOTAUpdate() {
           </div>
         </div>
       </div>
-      <OTATable
-        navigate={navigate}
-        OTAUpdates={filteredOTAUpdates}
-        loading={loading}
-      />
+      <OTATable navigate={navigate} OTAUpdates={filteredOTAUpdates} />
     </div>
   );
 }

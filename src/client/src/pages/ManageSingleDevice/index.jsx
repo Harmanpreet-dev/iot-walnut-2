@@ -3,36 +3,26 @@ import { Link, useParams } from "react-router-dom";
 import DeviceDetails from "./DeviceDetails";
 import DeviceGraphData from "./DeviceGraphData";
 import DeviceTabsData from "./DeviceTabsData";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { Breadcrumb, Spin } from "antd";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function ManageSingleDevice() {
   const parms = useParams();
   const state = useSelector((state) => state.auth);
   const [device, serDevice] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getDeviceDetail();
   }, []);
 
   const getDeviceDetail = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/getDevice`,
-        {
-          name: parms.name,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/getDevice`, {
+        name: parms.name,
+      })
       .then((res) => {
         serDevice(res.data[0]);
-        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -40,47 +30,36 @@ export default function ManageSingleDevice() {
   };
 
   return (
-    <>
-      <Spin spinning={loading} fullscreen />
-      <div className="content-wrapper bg-base-200">
-        <div>
-          {loading ? (
-            ""
-          ) : (
-            <>
-              <div className="flex items-center">
-                <Breadcrumb
-                  items={[
-                    {
-                      title: <Link to="/manage-fleets">Fleets</Link>,
-                    },
-                    {
-                      title: (
-                        <Link to={`/manage-devices/${device.fleet}`}>
-                          {device.fleet}
-                        </Link>
-                      ),
-                    },
-                    {
-                      title: device.name,
-                    },
-                  ]}
-                />
-              </div>
-              <DeviceDetails
-                getDeviceDetail={getDeviceDetail}
-                device={device}
-                state={state}
-              />
-
-              <div className="mt-10">
-                <DeviceTabsData />
-                <DeviceGraphData />
-              </div>
-            </>
-          )}
-        </div>
+    <div className="content-wrapper bg-base-200">
+      <div className="flex items-center">
+        <Breadcrumb
+          items={[
+            {
+              title: <Link to="/manage-fleets">Fleets</Link>,
+            },
+            {
+              title: (
+                <Link to={`/manage-devices/${device.fleet}`}>
+                  {device.fleet}
+                </Link>
+              ),
+            },
+            {
+              title: device.name,
+            },
+          ]}
+        />
       </div>
-    </>
+      <DeviceDetails
+        getDeviceDetail={getDeviceDetail}
+        device={device}
+        state={state}
+      />
+
+      <div className="mt-10">
+        <DeviceTabsData />
+        <DeviceGraphData />
+      </div>
+    </div>
   );
 }

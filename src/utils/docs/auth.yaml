@@ -1,0 +1,207 @@
+openapi: 3.0.0
+info:
+  title: User Authentication API
+  version: 1.0.0
+  description: API endpoints for user authentication and management
+
+tags:
+  - name: Authentication
+    description: API endpoints for user login, logout, password change, and token generation
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login a user
+      description: Authenticates a user and generates a JWT token if successful.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the user.
+                  example: user@example.com
+                password:
+                  type: string
+                  description: The password of the user.
+                  example: userpassword123
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: Successfully logged in and token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: User ID
+                      name:
+                        type: string
+                        description: User's name
+                      email:
+                        type: string
+                        description: User's email
+                      role:
+                        type: integer
+                        description: User's role
+                      image:
+                        type: string
+                        description: URL to user's photo
+                      phone:
+                        type: string
+                        description: User's phone number
+                      google_secret:
+                        type: string
+                        description: Google TOTP secret
+                  token:
+                    type: string
+                    description: JWT token for the user
+        "400":
+          description: Email or password missing or invalid
+        "401":
+          description: Invalid email or password
+        "500":
+          description: Internal server error
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout a user
+      description: Logs out a user by email.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the user to log out.
+                  example: user@example.com
+              required:
+                - email
+      responses:
+        "200":
+          description: Successfully logged out
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+
+  /api/auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Change user password
+      description: Changes the password for a user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The ID of the user.
+                  example: "user-id-123"
+                password:
+                  type: string
+                  description: The current password of the user.
+                  example: oldpassword123
+                new_password:
+                  type: string
+                  description: The new password to set.
+                  example: newpassword456
+              required:
+                - id
+                - password
+                - new_password
+      responses:
+        "200":
+          description: Password updated successfully
+        "400":
+          description: Missing or incorrect parameters
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+
+  /api/auth/generate-token:
+    post:
+      tags:
+        - Authentication
+      summary: Generate a JWT token
+      description: Generates a JWT token for a user and updates it in the database.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the user.
+                  example: user@example.com
+                password:
+                  type: string
+                  description: The password of the user.
+                  example: userpassword123
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: JWT token generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token
+        "400":
+          description: Email or password missing or invalid
+        "401":
+          description: Authentication failed
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the user.
+        name:
+          type: string
+          description: The name of the user.
+        email:
+          type: string
+          description: The email of the user.
+        role:
+          type: integer
+          description: The role of the user.
+        photo:
+          type: string
+          description: The URL to the user's photo.
+        phone:
+          type: string
+          description: The phone number of the user.
+        totp:
+          type: string
+          description: The TOTP secret for the user.

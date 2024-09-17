@@ -3,11 +3,10 @@ import { CiSearch } from "react-icons/ci";
 import { TfiExport } from "react-icons/tfi";
 import { GoDotFill } from "react-icons/go";
 import { Link, useParams } from "react-router-dom";
-import { Spin, Tabs, message } from "antd";
+import { Tabs, message } from "antd";
 import axiosInstance from "../../utils/axiosInstance";
 import DevicesTable from "../common/DevicesTable";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import exportToExcel from "../../utils/exportToExcel";
 
@@ -32,14 +31,9 @@ export default function OTADetails() {
   const [job, setJob] = useState();
   const [devices, setDevices] = useState([]);
   const [filteredDevices, setFilteredDevices] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [jobArn, setJobArn] = useState("");
-
   const [jobStatus, setJobStatus] = useState("true");
-
-  const state = useSelector((state) => state);
-
+  const { email } = useSelector((state) => state.auth);
   const parms = useParams();
 
   useEffect(() => {
@@ -65,9 +59,8 @@ export default function OTADetails() {
   ];
 
   const getOTAUpdateDetails = () => {
-    setLoading(true);
     axiosInstance
-      .get(`/ota/${parms.id}`)
+      .get(`/ota-updates/${parms.id}`)
       .then(({ data }) => {
         if (data.id) {
           const { name, description, fleet, devices, arn, status } = data;
@@ -82,10 +75,9 @@ export default function OTADetails() {
           setFilteredDevices(devicesList);
           setJobStatus(status);
         }
-        setLoading(false);
       })
       .catch((err) => {
-        setLoading(false);
+        console.log(err);
       });
   };
 
@@ -102,26 +94,15 @@ export default function OTADetails() {
   };
   const handleStopJob = () => {
     console.log(job);
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/stopJob`,
-        {
-          id: parms.id,
-          arn: job.arn,
-          type: "OTA",
-        },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/schedulers/stop-job`, {
+        id: parms.id,
+        arn: job.arn,
+        type: "OTA",
+      })
       .then((res) => {
-        console.log(res.data);
-        setLoading(false);
         setJobStatus("false");
-        messageApi.success("OTA Update Stoped Successfully");
+        messageApi.success("Job Stoped Successfully");
       })
       .catch((err) => {
         console.log(err);
@@ -129,25 +110,16 @@ export default function OTADetails() {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.auth.email,
-        },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: email,
+      })
       .then((res) => {
         console.log(res.data);
         document.getElementById("my_modal_2").showModal();
       })
       .catch((err) => {
         if (err.response.data.error === "Email already exists") {
-          // setEmailError(err.response.data.error);
         }
       });
   };
@@ -160,9 +132,7 @@ export default function OTADetails() {
   };
 
   const ExportData = () => {
-    //TODO map through devices based on selected Tab
-    setLoading(true);
-    const jobs = devices.map(({ name, fleet, imei, status }) => {
+    const jobs = devices?.map(({ name, fleet, imei, status }) => {
       return {
         name,
         fleet,
@@ -174,15 +144,12 @@ export default function OTADetails() {
       data: jobs,
       filename: "ota_devices.xlsx",
     });
-    setLoading(false);
   };
 
   return (
     <>
       {contextHolder}
-
       <TwoFactAuth handle2FA={handle2FA} />
-      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
@@ -240,7 +207,6 @@ export default function OTADetails() {
               <div className="ml-5">
                 <button
                   className="btn bg-gray-200 text-gray-900 border rounded-[18px] border-gray-300 mr-3 mb-3 text-zinc-800 min-h-[36px] h-[40px] text-[16px] font-[500] landing-[35px] px-2 hover:bg-gray-300"
-                  // disabled={jobStatus == "true" ? false : true}
                   onClick={() => verifyUser()}
                 >
                   Stop
@@ -257,7 +223,7 @@ export default function OTADetails() {
           <div style={{ width: "100%" }}>
             <Tabs
               defaultActiveKey="1"
-              items={items.map((item, index) => ({
+              items={items?.map((item, index) => ({
                 ...item,
                 label: (
                   <div

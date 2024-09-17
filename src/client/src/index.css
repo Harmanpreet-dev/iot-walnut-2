@@ -6,6 +6,7 @@
 
 * {
   font-family: "DM Sans", sans-serif;
+  box-sizing: border-box;
 }
 
 .main-wrapper {
@@ -321,11 +322,6 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
 :where(.css-dev-only-do-not-override-3rel02).ant-tabs
   .ant-tabs-tab
   + .ant-tabs-tab {
@@ -333,7 +329,7 @@ input[type="number"] {
 }
 
 .sample_download {
-  font-sizd: 14px;
+  font-size: 14px;
   color: darkslateblue;
 }
 

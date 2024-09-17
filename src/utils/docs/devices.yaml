@@ -1,0 +1,250 @@
+openapi: 3.0.0
+info:
+  title: Device Management API
+  version: 1.0.0
+  description: API documentation for managing devices and related operations
+tags:
+  - name: Devices
+    description: Operations related to device management
+
+paths:
+  /api/devices:
+    post:
+      tags:
+        - Devices
+      summary: Add a new device
+      description: Adds a new device to the system and creates it in AWS.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Device XYZ"
+                imei:
+                  type: string
+                  example: "123456789012345"
+                fleet:
+                  type: string
+                  example: "fleet-123"
+              required:
+                - name
+                - imei
+                - fleet
+      responses:
+        "201":
+          description: Device created successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+    get:
+      tags:
+        - Devices
+      summary: Retrieve all devices
+      description: Retrieves a list of all devices.
+      responses:
+        "200":
+          description: A list of devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    imei:
+                      type: string
+                    fleet:
+                      type: string
+                    status:
+                      type: boolean
+        "500":
+          description: Internal server error
+
+  /api/devices/fleet/{fleet}:
+    get:
+      tags:
+        - Devices
+      summary: Retrieve devices by fleet
+      description: Retrieves a list of devices associated with a specific fleet.
+      parameters:
+        - name: fleet
+          in: path
+          required: true
+          description: The ID of the fleet to retrieve devices for
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of devices for the specified fleet
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    imei:
+                      type: string
+                    fleet:
+                      type: string
+                    status:
+                      type: boolean
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+  /api/devices/name/{name}:
+    get:
+      tags:
+        - Devices
+      summary: Retrieve a device by name
+      description: Retrieves a device by its name.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The name of the device to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A single device
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  imei:
+                    type: string
+                  fleet:
+                    type: string
+                  status:
+                    type: boolean
+        "400":
+          description: Bad request
+        "404":
+          description: Device not found
+        "500":
+          description: Internal server error
+
+  /api/devices/revoke/{certificateId}:
+    post:
+      tags:
+        - Devices
+      summary: Revoke device connectivity
+      description: Revokes connectivity for a device and updates its status.
+      parameters:
+        - name: certificateId
+          in: path
+          required: true
+          description: The certificate ID of the device to revoke
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device connectivity successfully revoked
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+  /api/devices/whitelist:
+    post:
+      tags:
+        - Devices
+      summary: Add IMEIs to whitelist
+      description: Uploads a file containing IMEIs to be whitelisted and adds them to the system.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                fleet:
+                  type: string
+                  example: "fleet-123"
+              required:
+                - file
+                - fleet
+      responses:
+        "200":
+          description: IMEIs added to whitelist successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+  /api/devices/blacklist:
+    post:
+      tags:
+        - Devices
+      summary: Add IMEIs to blacklist
+      description: Uploads a file containing IMEIs to be blacklisted and updates their status in the system.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+                - file
+      responses:
+        "200":
+          description: IMEIs added to blacklist successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+  /api/devices/certificate/{imei}:
+    get:
+      tags:
+        - Devices
+      summary: Retrieve device certificates
+      description: Retrieves and zips the certificate files for a device.
+      parameters:
+        - name: imei
+          in: path
+          required: true
+          description: The IMEI of the device to retrieve certificates for
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Certificates for the device
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Certificates or device not found
+        "500":
+          description: Internal server error

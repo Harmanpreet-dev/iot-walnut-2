@@ -1,0 +1,208 @@
+openapi: 3.0.0
+info:
+  title: User Management API
+  version: 1.0.0
+  description: API for managing users, including creation, retrieval, update, and deletion.
+tags:
+  - name: Users
+    description: Operations related to user management
+
+paths:
+  /api/users:
+    post:
+      tags:
+        - Users
+      summary: Add a new user
+      description: Adds a new user to the system.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                phone:
+                  type: string
+                  example: "+1234567890"
+                password:
+                  type: string
+                  example: "password123"
+                author_id:
+                  type: string
+                  example: "author-123"
+                author_name:
+                  type: string
+                  example: "Author Name"
+                photo:
+                  type: string
+                  format: binary
+              required:
+                - name
+                - email
+                - phone
+                - password
+                - author_id
+                - author_name
+      responses:
+        "201":
+          description: User created successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+    get:
+      tags:
+        - Users
+      summary: Retrieve all users
+      description: Retrieves a list of all users.
+      responses:
+        "200":
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    phone:
+                      type: string
+                    photo:
+                      type: string
+                    role:
+                      type: integer
+        "500":
+          description: Internal server error
+
+  /api/users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Retrieve a specific user
+      description: Retrieves details of a specific user by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  phone:
+                    type: string
+                  photo:
+                    type: string
+                  role:
+                    type: integer
+        "400":
+          description: Bad request, ID is required
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+
+    put:
+      tags:
+        - Users
+      summary: Update a user
+      description: Updates the details of a specific user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                phone:
+                  type: string
+                  example: "+1234567890"
+                photo:
+                  type: string
+                  format: binary
+              required:
+                - email
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  phone:
+                    type: string
+                  photo:
+                    type: string
+        "400":
+          description: Bad request
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      description: Deletes a specific user by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully
+        "400":
+          description: Bad request, ID is required
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error

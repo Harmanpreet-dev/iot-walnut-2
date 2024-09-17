@@ -4,26 +4,25 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { Empty, Spin } from "antd";
-import { SELECT_FLEET } from "../../redux/actions/SchduleAction";
+import { Empty } from "antd";
+import { SELECT_FLEET } from "../../redux/actions/schduleAction";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function SchduleSelectFleet() {
   const navigate = useNavigate();
   const [fleets, setFleets] = useState([]);
   const [admin, setAdmin] = useState([]);
   const [category, setCategory] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
   const [filteredFleets, setFilteredFleets] = useState([]);
 
   const dispatch = useDispatch();
 
-  const state = useSelector((state) => state.auth);
+  const { role, id } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (state.role == 0) {
+    if (role === "0") {
       getFleets();
     } else {
       getFeelByAdmin();
@@ -32,22 +31,13 @@ export default function SchduleSelectFleet() {
   }, []);
 
   const getFleets = () => {
-    setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getFleets`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .get(`/fleets`)
       .then((res) => {
-        setLoading(false);
-
         let data = res.data;
-
-        data.map((x) => {
+        data?.map((x) => {
           x.checked = false;
         });
-
         setFleets(data);
         setFilteredFleets(data);
       })
@@ -57,26 +47,13 @@ export default function SchduleSelectFleet() {
   };
 
   const getFeelByAdmin = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/getFleet`,
-        { id: state.id },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/getFleet`, { id: id })
       .then((res) => {
-        setLoading(false);
-
         let data = res.data;
-
-        data.map((x) => {
+        data?.map((x) => {
           x.checked = false;
         });
-
         setFleets(data);
         setFilteredFleets(data);
       })
@@ -86,16 +63,12 @@ export default function SchduleSelectFleet() {
   };
 
   const getUserCategory = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getUserCategory`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .get(`/fleets/users-categories`)
       .then((res) => {
         let { users, category } = res.data;
 
-        users.map((x) => {
+        users?.map((x) => {
           x.status = false;
         });
 
@@ -109,7 +82,7 @@ export default function SchduleSelectFleet() {
 
   const handleCheckStatus = (id) => {
     setFilteredFleets((prevFleets) =>
-      prevFleets.map((fleet) => ({
+      prevFleets?.map((fleet) => ({
         ...fleet,
         checked: fleet.id === id ? !fleet.checked : false,
       }))
@@ -122,7 +95,6 @@ export default function SchduleSelectFleet() {
   };
 
   const handleSubmit = () => {
-    console.log(selectedFleet);
     dispatch(SELECT_FLEET({ fleetId: selectedFleet.id, fleet: selectedFleet }));
     navigate("/schdule-select-device");
   };
@@ -141,7 +113,6 @@ export default function SchduleSelectFleet() {
 
   return (
     <>
-      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
@@ -149,7 +120,7 @@ export default function SchduleSelectFleet() {
               <li className="text-base-content text-[18px]">
                 <Link to="/manage-scheduler">
                   <IoIosArrowBack className="mr-3" />
-                  Go Back{" "}
+                  Go Back
                 </Link>
               </li>
             </ul>
@@ -174,7 +145,7 @@ export default function SchduleSelectFleet() {
             <button
               className="btn bg-slate-950 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
               onClick={() => handleSubmit()}
-              disabled={selectedFleet == null ? true : false}
+              disabled={selectedFleet === null ? true : false}
             >
               Continue
             </button>
@@ -202,7 +173,7 @@ export default function SchduleSelectFleet() {
                         Inactive Devices
                       </span>
                     </th>
-                    {state.role == 0 ? (
+                    {role === "0" ? (
                       <>
                         <th>Admin</th>
                         <th>Admin Phone</th>
@@ -213,7 +184,7 @@ export default function SchduleSelectFleet() {
                 <br />
                 <tbody className="mt-3">
                   {filteredFleets.length ? (
-                    filteredFleets.map((x) => (
+                    filteredFleets?.map((x) => (
                       <>
                         <tr className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20">
                           <th className="shadow-none cursor-pointer">
@@ -235,7 +206,7 @@ export default function SchduleSelectFleet() {
                             </div>
                           </td>
                           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                            {category.map((y) => {
+                            {category?.map((y) => {
                               if (y.id === parseInt(x.category)) {
                                 return y.name;
                               }
@@ -247,17 +218,17 @@ export default function SchduleSelectFleet() {
                           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                             0,189
                           </td>
-                          {state.role == 0 ? (
+                          {role === "0" ? (
                             <>
                               <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                                {admin.map((y) => {
+                                {admin?.map((y) => {
                                   if (y.id === parseInt(x.admin)) {
                                     return y.name;
                                   }
                                 })}
                               </td>
                               <td className="text-[16px] font-[500] landing-[35px] bg-base-100  rounded-r-[15px]">
-                                {admin.map((y) => {
+                                {admin?.map((y) => {
                                   if (y.id === parseInt(x.admin)) {
                                     return y.phone;
                                   }
@@ -272,7 +243,7 @@ export default function SchduleSelectFleet() {
                   ) : (
                     <tr>
                       <td colSpan="6" className="text-[20px] text-center">
-                        {loading || <Empty />}
+                        <Empty />
                       </td>
                     </tr>
                   )}

@@ -1,13 +1,6 @@
-import { FleetSVG, SchdulerSVG, User2SVG, UserSVG } from "./SVGIcon";
-import { HiOutlineViewGrid } from "react-icons/hi";
+import { FleetSVG, SchdulerSVG, User2SVG } from "./SVGIcon";
 
 export let SideBarDataAdmin = [
-  // {
-  //   id: 1,
-  //   name: "Dashboard",
-  //   link: "/manage-fleets",
-  //   svg: <FleetSVG />,
-  // },
   {
     id: 4,
     name: "Fleets",
@@ -20,23 +13,10 @@ export let SideBarDataAdmin = [
     link: "/manage-user",
     svg: <User2SVG />,
   },
-
-  // {
-  //   id: 3,
-  //   name: "Categories",
-  //   link: "/manage-category",
-  //   svg: <HiOutlineViewGrid />,
-  // },
   {
     id: 5,
     name: "Task Scheduler",
     link: "/manage-scheduler",
     svg: <SchdulerSVG />,
   },
-  // {
-  //   id: 6,
-  //   name: "Logger",
-  //   link: "/manage-logger",
-  //   svg: <FleetSVG />,
-  // },
 ];

@@ -1,0 +1,325 @@
+openapi: 3.0.0
+info:
+  title: Email Management API
+  version: 1.0.0
+  description: API for managing email verification and updates, including OTP verification.
+tags:
+  - name: Email
+    description: Operations related to email verification and updates
+paths:
+  /api/email/exists:
+    post:
+      summary: Check if an email exists
+      description: Checks if the given email exists in the database.
+      tags:
+        - Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email address to check for existence.
+              required:
+                - email
+      responses:
+        "200":
+          description: Email existence status.
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Something went wrong"
+
+  /api/email/update:
+    post:
+      summary: Request email update
+      description: Sends an OTP to the new email address for verification.
+      tags:
+        - Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The current email address of the user.
+                newEmail:
+                  type: string
+                  format: email
+                  description: The new email address to be updated.
+                id:
+                  type: integer
+                  description: The user ID.
+              required:
+                - email
+                - newEmail
+                - id
+      responses:
+        "200":
+          description: OTP sent successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                example:
+                  message: "OTP has been sent to the new email"
+        "400":
+          description: Bad request, invalid new email.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Please enter a valid New Email"
+        "404":
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "User does not exist"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Something went wrong"
+
+  /api/email/verify-update-otp:
+    post:
+      summary: Verify OTP for email update
+      description: Verifies the OTP and updates the user's email.
+      tags:
+        - Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The user ID.
+                otp:
+                  type: string
+                  description: The OTP token to verify.
+                email:
+                  type: string
+                  format: email
+                  description: The current email address.
+              required:
+                - id
+                - otp
+                - email
+      responses:
+        "200":
+          description: Email updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                  token:
+                    type: string
+                    description: JWT token.
+                example:
+                  message: "Email has been updated successfully"
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJleGFtcGxlQGV4YW1wbGUuY29tIn0.N5KjkdqkF2X8cfS-uk1M9Z2FJQ2SfhjT9Q7Fz4G3FOw"
+        "400":
+          description: Invalid OTP.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Invalid OTP"
+        "404":
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "User does not exist"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Something went wrong"
+
+  /api/email/otp/send:
+    post:
+      summary: Send OTP
+      description: Sends an OTP to the given email address.
+      tags:
+        - Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email address to send the OTP to.
+              required:
+                - email
+      responses:
+        "200":
+          description: OTP sent successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                example:
+                  message: "OTP has been sent successfully"
+        "400":
+          description: Bad request, invalid email format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Please enter a valid Email"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "OTP Generation failed"
+
+  /api/email/otp/verify:
+    post:
+      summary: Verify OTP
+      description: Verifies the OTP for the given email address.
+      tags:
+        - Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email address associated with the OTP.
+                otp:
+                  type: string
+                  description: The OTP token to verify.
+              required:
+                - email
+                - otp
+      responses:
+        "200":
+          description: OTP verification result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verified:
+                    type: boolean
+                    description: Indicates if the OTP token is valid.
+                example:
+                  verified: true
+        "400":
+          description: Invalid OTP.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Invalid OTP"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "OTP Verification failed"

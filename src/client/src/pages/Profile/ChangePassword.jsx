@@ -3,9 +3,9 @@ import { IoEyeOutline } from "react-icons/io5";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { useSelector } from "react-redux";
-import { Spin, notification } from "antd";
+import { notification } from "antd";
+import axiosInstance from "../../utils/axiosInstance";
 
 const validate = (values) => {
   const errors = {};
@@ -44,8 +44,7 @@ const ChangePassword = () => {
   const [type, setType] = useState("password");
   const [error, setError] = useState("");
   const [icon, setIcon] = useState(<FaRegEyeSlash />);
-  const [loading, setLoading] = useState(false);
-  const state = useSelector((state) => state.auth);
+  const { id } = useSelector((state) => state.auth);
   const [api, contextHolder] = notification.useNotification();
 
   const handleToggle = () => {
@@ -71,29 +70,19 @@ const ChangePassword = () => {
   });
 
   const handleFormSubmit = (values) => {
-    setLoading(true);
-    let new_values = {
+    const data = {
       password: values.currentPassword,
       new_password: values.newPassword,
-      id: state.jwt,
+      id: id,
     };
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/changePassword`, new_values, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .post(`/auth/change-password`, data)
       .then((res) => {
-        setLoading(false);
-
         setError("");
-        openNotification("success", res.data.message);
+        openNotification("success", res?.data?.message);
       })
       .catch((err) => {
-        setLoading(false);
-
-        setError(err.response.data.error);
-        console.log(err.response.data.error);
+        console.log(err);
       });
   };
   const openNotification = (type, message) => {
@@ -105,8 +94,6 @@ const ChangePassword = () => {
   return (
     <div className="content-wrapper bg-base-200">
       {contextHolder}
-      <Spin spinning={loading} fullscreen />
-
       <div>
         <div className="flex items-center">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0 sm:inline">

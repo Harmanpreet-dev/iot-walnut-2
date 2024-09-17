@@ -1,30 +1,22 @@
 import React, { useState } from "react";
 import { Button, Spin, notification } from "antd";
 import OtpInput from "react18-input-otp";
-import axios from "axios";
 import { useSelector } from "react-redux";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function TwoFactEmailAuth({ next }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState(null);
-  const state = useSelector((state) => state.auth);
+  const { email } = useSelector((state) => state.auth);
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/verifyEmailOTP`,
-        {
-          email: state.email,
-          otp: code,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/verify-otp`, {
+        email: email,
+        otp: code,
+      })
       .then((res) => {
         setError(null);
         setCode("");
@@ -39,18 +31,10 @@ export default function TwoFactEmailAuth({ next }) {
 
   const resendEmailOTP = () => {
     setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: email,
+      })
       .then((res) => {
         setLoading(false);
 
@@ -80,7 +64,7 @@ export default function TwoFactEmailAuth({ next }) {
         Email Verification
       </h3>
       <p className="py-1 text-center text-[14px] font-[500] text-[#898B8F] landing-[19px] w-80 m-auto">
-        Enter verification code sent to {state.email}
+        Enter verification code sent to {email}
       </p>
       <div className="modal-action flex items-center justify-center max-h-96">
         <form
@@ -94,7 +78,6 @@ export default function TwoFactEmailAuth({ next }) {
                 value={code}
                 onChange={handleChange}
                 numInputs={6}
-                id="myInput"
                 placeholder=""
                 isSuccessed={false}
                 errorStyle="error"

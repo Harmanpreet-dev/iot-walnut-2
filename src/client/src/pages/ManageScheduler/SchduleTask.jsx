@@ -3,14 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { DatePicker, Input, Spin, TimePicker, notification } from "antd";
-import axios from "axios";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function SchduleTask() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [rate, setRate] = useState("constant");
-
   const [name, setName] = useState();
   const [description, setDescription] = useState();
   const [json, setJson] = useState();
@@ -19,16 +18,11 @@ export default function SchduleTask() {
   const [isValid, setIsValid] = useState(true);
   const [error, setError] = useState("");
   const [maxPerMintue, setMaxPerMintue] = useState();
-
   const [baseRatePerMinute, setBaseRatePerMinute] = useState();
   const [incrementFactor, setIncrementFactor] = useState();
   const [maxPerMintue2, setMaxPerMintue2] = useState();
-  const [loading, setLoading] = useState(false);
-  // const state = useSelector((state) => state.auth);
-
   const [api, contextHolder] = notification.useNotification();
-
-  const state = useSelector((state) => state);
+  const { schdule, auth } = useSelector((state) => state);
 
   const handleChange = (event) => {
     setRate(event.target.value);
@@ -41,11 +35,10 @@ export default function SchduleTask() {
   };
 
   const handleSubmit = () => {
-    setLoading(true);
     let dataJson = {
-      fleetId: state.schdule.fleetId,
-      fleet: state.schdule.fleet,
-      devices: state.schdule.devices,
+      fleetId: schdule.fleetId,
+      fleet: schdule.fleet,
+      devices: schdule.devices,
       name: name.replace(" ", "_"),
       description,
       json,
@@ -58,16 +51,11 @@ export default function SchduleTask() {
       incrementFactor,
       maxPerMintue2,
     };
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/addSchedule`, dataJson, {
-        headers: {
-          Authorization: state.auth.jwt,
-        },
-      })
+    axiosInstance
+      .post(`/schedulers`, dataJson)
       .then((res) => {
         openNotificationWithIcon("success", "Schedule Task is Added");
         setTimeout(() => {
-          setLoading(false);
           navigate("/manage-scheduler");
         }, 2000);
       })
@@ -77,25 +65,16 @@ export default function SchduleTask() {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.auth.email,
-        },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: auth.email,
+      })
       .then((res) => {
         console.log(res.data);
         document.getElementById("my_modal_2").showModal();
       })
       .catch((err) => {
         if (err.response.data.error === "Email already exists") {
-          // setEmailError(err.response.data.error);
         }
       });
   };
@@ -126,7 +105,6 @@ export default function SchduleTask() {
 
   return (
     <>
-      <Spin spinning={loading} fullscreen />
       <TwoFactAuth handle2FA={handle2FA} />
       {contextHolder}
       <div className="content-wrapper bg-base-200">
@@ -167,7 +145,7 @@ export default function SchduleTask() {
           <span
             style={{ color: "#6f6a6a", fontWeight: "bold", fontSize: "18px" }}
           >
-            {state.schdule.totalDeviceNo}
+            {schdule.totalDeviceNo}
           </span>
         </div>
         <div
@@ -340,7 +318,7 @@ export default function SchduleTask() {
                         </label>
                       </div>
                     </div>
-                    {rate == "constant" ? (
+                    {rate === "constant" ? (
                       <div className="form-control mt-4">
                         <label className="label">
                           <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">

@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  title: Fleet Management API
+  version: 1.0.0
+  description: API documentation for managing fleets and related data
+tags:
+  - name: Fleets
+    description: Operations related to fleet management
+
+paths:
+  /api/fleets:
+    post:
+      tags:
+        - Fleets
+      summary: Create a new fleet
+      description: Adds a new fleet to the system and creates the fleet in AWS.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Fleet Alpha"
+                admin:
+                  type: string
+                  example: "admin123"
+                category:
+                  type: string
+                  example: "CategoryA"
+              required:
+                - name
+                - admin
+                - category
+      responses:
+        "201":
+          description: Fleet created successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+    get:
+      tags:
+        - Fleets
+      summary: Retrieve all fleets
+      description: Retrieves a list of all fleets.
+      responses:
+        "200":
+          description: A list of fleets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    admin:
+                      type: string
+                    category:
+                      type: string
+        "500":
+          description: Internal server error
+
+  /api/fleets/admin/{id}:
+    get:
+      tags:
+        - Fleets
+      summary: Retrieve fleets by admin ID
+      description: Retrieves a list of fleets associated with a specific admin.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the admin to retrieve fleets for
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of fleets for the specified admin
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    admin:
+                      type: string
+                    category:
+                      type: string
+        "400":
+          description: Bad request
+        "404":
+          description: Admin not found
+        "500":
+          description: Internal server error
+
+  /api/users-categories:
+    get:
+      tags:
+        - Fleets
+      summary: Retrieve users and categories
+      description: Retrieves a list of users with a specific role and all categories.
+      responses:
+        "200":
+          description: A list of users and categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        email:
+                          type: string
+                        phone:
+                          type: string
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+        "500":
+          description: Internal server error

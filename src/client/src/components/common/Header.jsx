@@ -1,71 +1,50 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { LOGOUT } from "../../redux/actions/AuthActions";
+import { LOGOUT } from "../../redux/actions/authActions";
 import { IoIosLogOut, IoIosSettings } from "react-icons/io";
+import { AiTwotoneApi } from "react-icons/ai";
 import { LuUser2 } from "react-icons/lu";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 const Header = ({ handleToggle }) => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-  const [themeIcon, setThemeIcon] = useState(theme === "dark" ? "sun" : "moon");
-
   const naviagte = useNavigate();
   const dispatch = useDispatch();
-  const state = useSelector((state) => state.auth);
+  const { email, name, role, image } = useSelector((state) => state.auth);
+  const [displayPicture, setDisplayPicture] = useState("./images/default.jpeg");
 
   useEffect(() => {
-    verifyTokenStatus();
+    setDisplayPicture(
+      image
+        ? `${process.env.REACT_APP_PROFILE_URL}/profile/${image}`
+        : "./images/default.jpeg"
+    );
+  }, [image]);
 
+  useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light";
     setTheme(savedTheme);
-    setThemeIcon(savedTheme === "dark" ? "sun" : "moon");
     document.querySelector("html").setAttribute("data-theme", savedTheme);
   }, []);
 
   const handleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    setThemeIcon(newTheme === "dark" ? "sun" : "moon");
     localStorage.setItem("theme", newTheme);
     document.querySelector("html").setAttribute("data-theme", newTheme);
   };
 
-  const hanldeLogot = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/logoutUser`,
-        { email: state.email },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+  const hanldeLogout = () => {
+    axiosInstance
+      .post(`/auth/logout`, { email })
       .then((res) => {
         dispatch(LOGOUT());
         naviagte("/");
       })
       .catch((err) => {
         if (err.response.data.error === "Invalid token") {
-          hanldeLogot();
-        }
-      });
-  };
-
-  const verifyTokenStatus = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/verifyTokenStatus`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
-      .then((res) => {
-        // console.log(res.data);
-      })
-      .catch((err) => {
-        if (err.response.data.error === "Invalid token") {
-          hanldeLogot();
+          hanldeLogout();
         }
       });
   };
@@ -163,7 +142,6 @@ const Header = ({ handleToggle }) => {
               >
                 <div className="flex items-center justify-between px-2">
                   <p className="flex items-center justify-between px-2">
-                    {" "}
                     Notification
                   </p>
                 </div>
@@ -255,7 +233,6 @@ const Header = ({ handleToggle }) => {
 
                 <div className="flex items-center justify-between pt-2">
                   <button className="btn text-primary hover:bg-primary/10 btn-sm btn-ghost">
-                    {" "}
                     View All
                   </button>
                   <button className="btn text-base-content/80 hover:bg-base-content/10 btn-sm btn-ghost">
@@ -270,41 +247,21 @@ const Header = ({ handleToggle }) => {
             <label tabIndex="0" className="btn btn-ghost rounded-btn px-1.5">
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-end">
-                  <p className="text-[18px] landing[19] font[500]">
-                    {" "}
-                    {state.name}
-                  </p>
+                  <p className="text-[18px] landing[19] font[500]">{name}</p>
                   <p className="mt-1 text-[#909090B2] text-[12px] landing[19] font[500]">
-                    {" "}
-                    {getRoleName(state.role)}
+                    {getRoleName(role)}
                   </p>
                 </div>
-                <div
-                  aria-label="Avatar photo"
-                  className="avatar"
-                  // style={{
-                  //   border: "1px solid #32D296A1",
-                  //   borderRadius: "50%",
-                  //   boxShadow: "0px 0px 3px 4px #32D296A1",
-                  // }}
-                >
+                <div aria-label="Avatar photo" className="avatar">
                   <div
                     className="mask mask-squircle "
                     style={{ width: "44px", height: "44px", objectFit: "fit" }}
                   >
-                    {state.image == null ? (
-                      <img
-                        src="./images/default.jpeg"
-                        alt="admin-avtar"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <img
-                        src={`${process.env.REACT_APP_PROFILE_URL}/profile/${state.image}`}
-                        alt="admin-avtar"
-                        className="object-cover"
-                      />
-                    )}
+                    <img
+                      src={displayPicture}
+                      alt="admin-avtar"
+                      className="object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -326,14 +283,18 @@ const Header = ({ handleToggle }) => {
                   Settings
                 </Link>
               </li>
+              <li className="text-[15px] font-[600]">
+                <Link to="/api-docs" className="flex">
+                  <AiTwotoneApi style={{ fontSize: "20px" }} />
+                  API Docs
+                </Link>
+              </li>
               <hr className="-mx-2 my-1 border-base-content/10" />
               <li className="text-[15px] font-[600]">
-                {/* <Link to="/" className="flex"> */}
-                <div className="flex" onClick={() => hanldeLogot()}>
+                <div className="flex" onClick={() => hanldeLogout()}>
                   <IoIosLogOut style={{ fontSize: "20px" }} />
                   Logout
                 </div>
-                {/* </Link> */}
               </li>
             </ul>
           </div>

@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import DevicetAddModal from "./DeviceAddModal";
 import DeviceTable from "./DeviceTable";
 import DeviceAddBlackModal from "./DeviceAddBlackModal";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "antd";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function ManageDevices() {
   const [devices, setDevices] = useState([]);
@@ -17,7 +17,7 @@ export default function ManageDevices() {
 
   let parms = useParams();
 
-  const state = useSelector((state) => state.auth);
+  const { role } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getDevices();
@@ -49,16 +49,8 @@ export default function ManageDevices() {
   };
 
   const getDevices = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/getDevices`,
-        { fleet: parms.fleet },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .get(`/devices/fleet/${parms.fleet}`)
       .then((res) => {
         setDevices(res.data);
       })
@@ -91,7 +83,7 @@ export default function ManageDevices() {
                 onChange={handleInputChange}
               />
             </div>
-            {state.role == 0 ? (
+            {role === "0" ? (
               <>
                 <div className="adminBtn flex">
                   <div>
@@ -121,7 +113,7 @@ export default function ManageDevices() {
             ) : null}
           </div>
         </div>
-        {state.role == 0 ? (
+        {role === "0" ? (
           <>
             <div style={{ textAlign: "end", margin: "1rem" }}>
               <a href="#" target="_blank" className="sample_download">

@@ -1,0 +1,329 @@
+openapi: 3.0.0
+info:
+  title: Scheduler API
+  version: 1.0.0
+  description: API documentation for managing schedulers and jobs
+tags:
+  - name: Schedulers
+    description: Operations related to scheduling and job management
+
+paths:
+  /api/schedulers:
+    post:
+      tags:
+        - Schedulers
+      summary: Create a new scheduler
+      description: Adds a new scheduler to the system and starts an IoT job.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Daily Check"
+                fleetId:
+                  type: string
+                  example: "fleet-123"
+                fleet:
+                  type: object
+                  example: { "type": "Fleet", "id": "fleet-123" }
+                devices:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      arn:
+                        type: string
+                        example: "arn:aws:iot:region:account:thing/thing-name"
+                description:
+                  type: string
+                  example: "Scheduler for daily checks"
+                json:
+                  type: string
+                  example: "{}"
+                isOpen:
+                  type: boolean
+                  example: true
+                date:
+                  type: string
+                  format: date
+                  example: "2024-09-15"
+                time:
+                  type: string
+                  format: time
+                  example: "14:00:00"
+                rate:
+                  type: integer
+                  example: 5
+                maxPerMinute:
+                  type: integer
+                  example: 10
+                baseRatePerMinute:
+                  type: number
+                  example: 0.1
+                incrementFactor:
+                  type: number
+                  example: 0.05
+                maxPerMinute2:
+                  type: integer
+                  example: 20
+              required:
+                - name
+                - fleetId
+                - fleet
+                - devices
+                - description
+      responses:
+        "201":
+          description: Scheduler successfully created and IoT job started
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+    get:
+      tags:
+        - Schedulers
+      summary: Retrieve all schedulers
+      description: Retrieves a list of all schedulers.
+      responses:
+        "200":
+          description: A list of schedulers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    fleetId:
+                      type: string
+                    fleet:
+                      type: object
+                    devices:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          arn:
+                            type: string
+                    description:
+                      type: string
+                    json:
+                      type: string
+                    isOpen:
+                      type: boolean
+                    date:
+                      type: string
+                      format: date
+                    time:
+                      type: string
+                      format: time
+                    rate:
+                      type: integer
+                    maxPerMinute:
+                      type: integer
+                    baseRatePerMinute:
+                      type: number
+                    incrementFactor:
+                      type: number
+                    maxPerMinute2:
+                      type: integer
+                    status:
+                      type: boolean
+        "500":
+          description: Internal server error
+
+  /api/schedulers/{id}:
+    get:
+      tags:
+        - Schedulers
+      summary: Retrieve a scheduler by ID
+      description: Retrieves a scheduler by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the scheduler to retrieve
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A single scheduler
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  fleetId:
+                    type: string
+                  fleet:
+                    type: object
+                  devices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        arn:
+                          type: string
+                  description:
+                    type: string
+                  json:
+                    type: string
+                  isOpen:
+                    type: boolean
+                  date:
+                    type: string
+                    format: date
+                  time:
+                    type: string
+                    format: time
+                  rate:
+                    type: integer
+                  maxPerMinute:
+                    type: integer
+                  baseRatePerMinute:
+                    type: number
+                  incrementFactor:
+                    type: number
+                  maxPerMinute2:
+                    type: integer
+                  status:
+                    type: boolean
+        "400":
+          description: Bad request
+        "404":
+          description: Scheduler not found
+        "500":
+          description: Internal server error
+
+    put:
+      tags:
+        - Schedulers
+      summary: Update a scheduler by ID
+      description: Updates an existing scheduler by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the scheduler to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                fleetId:
+                  type: string
+                fleet:
+                  type: object
+                devices:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      arn:
+                        type: string
+                description:
+                  type: string
+                json:
+                  type: string
+                isOpen:
+                  type: boolean
+                date:
+                  type: string
+                  format: date
+                time:
+                  type: string
+                  format: time
+                rate:
+                  type: integer
+                maxPerMinute:
+                  type: integer
+                baseRatePerMinute:
+                  type: number
+                incrementFactor:
+                  type: number
+                maxPerMinute2:
+                  type: integer
+      responses:
+        "200":
+          description: Scheduler successfully updated
+        "400":
+          description: Bad request
+        "404":
+          description: Scheduler not found
+        "500":
+          description: Internal server error
+
+    delete:
+      tags:
+        - Schedulers
+      summary: Delete a scheduler by ID
+      description: Deletes a scheduler by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the scheduler to delete
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Scheduler successfully deleted
+        "400":
+          description: Bad request
+        "404":
+          description: Scheduler not found
+        "500":
+          description: Internal server error
+
+  /api/jobs/stop:
+    post:
+      tags:
+        - Schedulers
+      summary: Stop a job
+      description: Stops a job and updates its status based on the type.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: "123"
+                type:
+                  type: string
+                  example: "SCH"
+                arn:
+                  type: string
+                  example: "arn:aws:iot:region:account:thing/thing-name"
+              required:
+                - id
+                - type
+                - arn
+      responses:
+        "200":
+          description: Job successfully stopped
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error

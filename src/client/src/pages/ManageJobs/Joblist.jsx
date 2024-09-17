@@ -37,7 +37,6 @@ const Joblist = () => {
               />
             </div>
             <div className="adminBtn flex">
-              {/* First Button */}
               <div>
                 <button
                   className="btn bg-slate-950 text-slate-50 font-bold py-2 px-4 rounded-[10px] flex items-center justify-between text-[17px] mr-4 hover:bg-slate-950"

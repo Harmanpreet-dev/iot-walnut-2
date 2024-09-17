@@ -1,10 +1,10 @@
 import { useFormik } from "formik";
 import React, { useRef, useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
-import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 import { message } from "antd";
+import axiosInstance from "../../utils/axiosInstance";
 
 const validate = (values) => {
   const errors = {};
@@ -32,7 +32,7 @@ const validate = (values) => {
   } else if (values.password.length < 8) {
     // Fixed this line
     errors.password = "*Password must be 8 characters long.";
-  } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.password)) {
+  } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(values.password)) {
     errors.password = "*Invalid Password";
   }
 
@@ -42,7 +42,7 @@ const validate = (values) => {
     // Fixed this line
     errors.confirmpassword = "*confirmpassword must be 8 characters long.";
   } else if (
-    !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.confirmpassword)
+    !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(values.confirmpassword)
   ) {
     errors.confirmpassword = "*Invalid confirmpassword";
   }
@@ -82,16 +82,8 @@ export default function AdminAddModal({ getUsers, state }) {
   });
 
   const checkEmail = (values) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/checkEmail`,
-        { email: values.email },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/exists`, { email: values.email })
       .then((res) => {
         if (res.data === true) {
           setEmailError("");
@@ -106,20 +98,11 @@ export default function AdminAddModal({ getUsers, state }) {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: state.email,
+      })
       .then((res) => {
-        console.log(res.data);
         setFormValues(value);
         document.getElementById("my_modal_2").showModal();
       })
@@ -131,7 +114,6 @@ export default function AdminAddModal({ getUsers, state }) {
   };
 
   const handle2FA = (response) => {
-    console.log(response);
     if (response === true) {
       handleFormSubmit(formValues);
     }
@@ -142,9 +124,7 @@ export default function AdminAddModal({ getUsers, state }) {
   };
 
   const handleFormSubmit = (values) => {
-    // setLoading(true);
     setEmailError("");
-
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("email", values.email);
@@ -156,12 +136,8 @@ export default function AdminAddModal({ getUsers, state }) {
       formData.append("image", values.image[0]); // Assuming single file upload. For multiple, loop through the array
     }
 
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/addAdmin`, formData, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .post(`/admins`, formData)
       .then((res) => {
         getUsers();
         document.getElementById("my_modal_3").close();
@@ -173,23 +149,6 @@ export default function AdminAddModal({ getUsers, state }) {
         }
       });
   };
-
-  // const handleFileSelect = (event) => {
-  //   if (event.target.value !== "") {
-  //     const files = event.target.files;
-  //     let myFiles = Array.from(files);
-
-  //     const reader = new FileReader();
-
-  //     reader.onload = (e) => {
-  //       setImageSrc(e.target.result);
-  //     };
-
-  //     reader.readAsDataURL(files[0]);
-
-  //     formik.setFieldValue("image", myFiles);
-  //   }
-  // };
 
   const handleFileSelect = (event) => {
     if (event.target.value !== "") {
@@ -328,11 +287,10 @@ export default function AdminAddModal({ getUsers, state }) {
                     <div className="form-control flex flex-row items-center rounded-[15px] h-12 bg-base-100 px-3 shadow">
                       <input
                         className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                        id="telNo"
                         name="phone"
                         type="number"
-                        minlength="9"
-                        maxlength="10"
+                        minLength="9"
+                        maxLength="10"
                         onChange={formik.handleChange}
                         value={formik.values.phone}
                       />

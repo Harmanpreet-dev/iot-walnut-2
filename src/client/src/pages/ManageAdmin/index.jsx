@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
-import axios from "axios";
 import { useSelector } from "react-redux";
-import { Breadcrumb, Spin, message } from "antd";
+import { Breadcrumb, message } from "antd";
 import AdminTable from "./AdminTable";
 import AdminAddModal from "./AdminAddModal";
 import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
 import AdminEditModal from "./AdminEditModal";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function ManageAdmin() {
   const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const state = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState();
@@ -50,12 +49,8 @@ export default function ManageAdmin() {
   };
 
   const getUsers = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getAdmins`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .get(`/admins`)
       .then((res) => {
         setUsers(res.data);
       })
@@ -65,41 +60,22 @@ export default function ManageAdmin() {
   };
 
   const handleDeleteAdmin = (id) => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/deleteAdmin`,
-        { id },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .delete(`/admins/${id}`)
       .then((res) => {
-        console.log(res);
         getUsers();
-        setLoading(false);
         messageApi.success("Admin Deleted Successfully");
       })
       .catch((err) => {
-        setLoading(false);
+        console.log(err);
       });
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: state.email,
+      })
       .then((res) => {
         console.log(res.data);
         setFormValues(value);
@@ -128,7 +104,6 @@ export default function ManageAdmin() {
     <>
       {contextHolder}
       <TwoFactAuth2 handle2FA={handle2FA2} />
-      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <Breadcrumb

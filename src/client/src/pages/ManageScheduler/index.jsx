@@ -1,43 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
-import { Breadcrumb, DatePicker, Space } from "antd";
+import { Breadcrumb, DatePicker } from "antd";
 import { useNavigate } from "react-router-dom";
 import SchdulerTable from "./SchdulerTable";
-import { useSelector } from "react-redux";
-import axios from "axios";
 import exportToExcel from "../../utils/exportToExcel";
 import { Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function ManageScheduler() {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [filteredUpdates, setFilteredUpdates] = useState([]);
-
-  const state = useSelector((state) => state);
 
   useEffect(() => {
     getScheduleTask();
   }, []);
 
   const getScheduleTask = () => {
-    setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getScheduleTask`, {
-        headers: {
-          Authorization: state.auth.jwt,
-        },
-      })
+    axiosInstance
+      .get(`/schedulers`)
       .then((res) => {
-        setLoading(false);
         setTasks(res.data);
         setFilteredUpdates(res.data);
       })
       .catch((err) => {
-        setLoading(false);
         setError("Failed to load tasks");
         console.log(err);
       });
@@ -73,9 +62,7 @@ export default function ManageScheduler() {
   };
 
   const ExportData = () => {
-    setLoading(true);
     const flattenedData = [];
-
     tasks.forEach(
       ({ name, fleet, devices, description, json, date, time, status }) => {
         const tempDevices = JSON.parse(devices);
@@ -104,7 +91,6 @@ export default function ManageScheduler() {
       data: flattenedData,
       filename: "schedular.xlsx",
     });
-    setLoading(false);
   };
 
   return (
@@ -151,9 +137,7 @@ export default function ManageScheduler() {
             </div>
           </div>
         </div>
-
         <SchdulerTable
-          loading={loading}
           error={error}
           navigate={navigate}
           filteredTasks={filteredUpdates}

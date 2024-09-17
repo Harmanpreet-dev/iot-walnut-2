@@ -3,31 +3,13 @@ import { CiSearch } from "react-icons/ci";
 import { TfiExport } from "react-icons/tfi";
 import { GoDotFill } from "react-icons/go";
 import { Link, useParams } from "react-router-dom";
-import { Spin, Tabs, message } from "antd";
+import { message } from "antd";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
-import DevicesTable from "../common/DevicesTable";
 import exportToExcel from "../../utils/exportToExcel";
 import { MdOutlineContentCopy } from "react-icons/md";
 import copy from "copy-to-clipboard";
-
-const tabBackgroundColors = {
-  1: "rgb(34 197 94)",
-  2: "rgb(249 115 22)",
-  3: "rgb(220 38 38)",
-};
-
-const tabTextColors = {
-  1: "rgb(220 252 231)",
-  2: "rgb(253 230 138)",
-  3: "rgb(254 202 202)",
-};
-
-const onChange = (key, setActiveTab) => {
-  setActiveTab(key);
-  console.log(key);
-};
+import axiosInstance from "../../utils/axiosInstance";
 
 const Jobdetail = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -38,9 +20,7 @@ const Jobdetail = () => {
   const [filteredDevices, setFilteredDevices] = useState([]);
   const [jobArn, setJobArn] = useState("");
   const [jobStatus, setJobStatus] = useState("true");
-  const [loading, setLoading] = useState(false);
-
-  const state = useSelector((state) => state);
+  const state = useSelector((state) => state.auth);
   const parms = useParams();
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -57,86 +37,37 @@ const Jobdetail = () => {
     getTaskDetails();
   }, []);
 
-  const items = [
-    {
-      key: "1",
-      label: "Success",
-      children: <DevicesTable devices={[]} />,
-    },
-    {
-      key: "2",
-      label: "In Progress",
-      children: <DevicesTable devices={filteredDevices} />,
-    },
-    {
-      key: "3",
-      label: "Failed",
-      children: <DevicesTable devices={[]} />,
-    },
-  ];
-
   const getTaskDetails = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/getScheduleTask`,
-        {
-          id: parms.id,
-        },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data.length != 0) {
-          let task = res.data[0];
-          setLoading(false);
-          setName(task.name);
-          setDescription(task.description);
-          setFleetName(JSON.parse(task.fleet).name);
-          setFilteredDevices(JSON.parse(task.devices));
-          // setDevices(JSON.parse(task.devices));
-          getJobDetails(task.arn, JSON.parse(task.devices));
-          setJobArn(task.arn);
-          setJobStatus(task.status);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    axiosInstance.get(`/schedulers/${parms.id}`).then((res) => {
+      if (res.data) {
+        let task = res.data;
+        setName(task.name);
+        setDescription(task.description);
+        setFleetName(JSON.parse(task.fleet).name);
+        setFilteredDevices(JSON.parse(task.devices));
+        getJobDetails(task.arn, JSON.parse(task.devices));
+        setJobArn(task.arn);
+        setJobStatus(task.status);
+      }
+    });
   };
 
   const getJobDetails = (arn, m_devices) => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/getJobDetails`,
-        {
-          arn,
-        },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/job-details`, {
+        arn,
+      })
       .then((res) => {
         let oldData = m_devices;
 
         oldData.map((x) => {
           res.data.map((y) => {
-            if (x.arn == y.thingArn) {
+            if (x.arn === y.thingArn) {
               x.response = y.jobExecutionSummary.status;
             }
           });
         });
-
         setDevices(oldData);
-        setLoading(false);
-
-        // setDevices(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -144,24 +75,13 @@ const Jobdetail = () => {
   };
 
   const handleStopJob = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/stopJob`,
-        {
-          id: parms.id,
-          arn: jobArn,
-          type: "SCH",
-        },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/stopJob`, {
+        id: parms.id,
+        arn: jobArn,
+        type: "SCH",
+      })
       .then((res) => {
-        // console.log(res.data);
-        setLoading(false);
         setJobStatus("false");
         messageApi.success("Job Stoped Successfully");
       })
@@ -171,26 +91,16 @@ const Jobdetail = () => {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.auth.email,
-        },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: state.email,
+      })
       .then((res) => {
         console.log(res.data);
         document.getElementById("my_modal_2").showModal();
       })
       .catch((err) => {
-        if (err.response.data.error === "Email already exists") {
-          // setEmailError(err.response.data.error);
-        }
+        console.log(err);
       });
   };
 
@@ -214,8 +124,6 @@ const Jobdetail = () => {
   };
 
   const ExportData = () => {
-    //TODO map through devices based on selected Tab
-    setLoading(true);
     const jobs = devices.map(({ name, fleet, imei, status }) => {
       return {
         name,
@@ -228,7 +136,6 @@ const Jobdetail = () => {
       data: jobs,
       filename: "schedular_devices.xlsx",
     });
-    setLoading(false);
   };
 
   const getCount = (state) => {
@@ -236,7 +143,7 @@ const Jobdetail = () => {
     let d = devices;
 
     d.map((x) => {
-      if (state == x.response) {
+      if (state === x.response) {
         count++;
       }
     });
@@ -247,7 +154,7 @@ const Jobdetail = () => {
   return (
     <>
       {contextHolder}
-      <Spin spinning={loading} fullscreen />
+
       <TwoFactAuth handle2FA={handle2FA} />
 
       <div className="content-wrapper bg-base-200">
@@ -306,7 +213,7 @@ const Jobdetail = () => {
                 <button
                   className="btn bg-gray-200 text-gray-900 border rounded-[18px] border-gray-300 mr-3 mb-3 text-zinc-800 min-h-[36px] h-[40px] text-[16px] font-[500] landing-[35px] px-2 hover:bg-gray-300"
                   onClick={() => verifyUser()}
-                  disabled={jobStatus == "true" ? false : true}
+                  disabled={jobStatus === "true" ? false : true}
                 >
                   Stop{" "}
                   <GoDotFill className="ml-2 text-[32px] text-[#FF2002] stroke-[5px] stroke-[#FF20024D]" />
@@ -363,8 +270,8 @@ const Jobdetail = () => {
             <br />
             <tbody className="mt-3">
               {devices.map((x) => {
-                if (activeTab == 1) {
-                  if (x.response == "QUEUED") {
+                if (activeTab === 1) {
+                  if (x.response === "QUEUED") {
                     return (
                       <>
                         <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
@@ -392,8 +299,8 @@ const Jobdetail = () => {
                     );
                   }
                 }
-                if (activeTab == 2) {
-                  if (x.response == "IN_PROGRESS") {
+                if (activeTab === 2) {
+                  if (x.response === "IN_PROGRESS") {
                     return (
                       <>
                         <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
@@ -421,8 +328,8 @@ const Jobdetail = () => {
                     );
                   }
                 }
-                if (activeTab == 3) {
-                  if (x.response == "SUCCEEDED") {
+                if (activeTab === 3) {
+                  if (x.response === "SUCCEEDED") {
                     return (
                       <>
                         <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">
@@ -450,8 +357,8 @@ const Jobdetail = () => {
                     );
                   }
                 }
-                if (activeTab == 4) {
-                  if (x.response == "FAILED") {
+                if (activeTab === 4) {
+                  if (x.response === "FAILED") {
                     return (
                       <>
                         <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3 ">

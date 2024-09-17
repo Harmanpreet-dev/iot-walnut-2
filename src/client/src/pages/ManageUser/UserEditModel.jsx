@@ -1,10 +1,10 @@
 import { useFormik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
-import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
 import TwoFactAuth3 from "../../components/TwoFactAuth3/TwoFactAuth3";
 import { message } from "antd";
+import axiosInstance from "../../utils/axiosInstance";
 
 const validate = (values) => {
   const errors = {};
@@ -14,59 +14,16 @@ const validate = (values) => {
   } else if (!/^[0-9a-zA-Z].*/i.test(values.name)) {
     errors.name = "Invalid username";
   }
-
   if (!values.email) {
     errors.email = "Required";
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
     errors.email = "Invalid email address";
   }
-
   if (!values.phone) {
     errors.phone = "Required";
   } else if (!/^\d{8,11}$/.test(values.phone)) {
     errors.phone = "Enter valid Phone Number";
   }
-
-  return errors;
-};
-
-const validate2 = (values) => {
-  const errors = {};
-
-  if (!values.Password) {
-    errors.Password = "Required";
-  }
-
-  // if (!values.new_password) {
-  //   errors.new_password = "Required";
-  // } else if (values.new_password.length < 8) {
-  //   // Fixed this line
-  //   errors.new_password = "*new_password must be 8 characters long.";
-  // } else if (
-  //   !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.new_password)
-  // ) {
-  //   errors.new_password = "*Invalid confirmpassword";
-  // }
-
-  // if (!values.confirm_password) {
-  //   errors.confirm_password = "Required";
-  // } else if (values.confirm_password.length < 8) {
-  //   // Fixed this line
-  //   errors.confirm_password = "*confirm_password must be 8 characters long.";
-  // } else if (
-  //   !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.confirm_password)
-  // ) {
-  //   errors.confirm_password = "*Invalid confirmpassword";
-  // }
-
-  // if (
-  //   values.new_password &&
-  //   values.confirmpassword &&
-  //   values.new_password !== values.confirmpassword
-  // ) {
-  //   errors.confirmpassword = "Passwords do not match";
-  // }
-
   return errors;
 };
 
@@ -106,35 +63,21 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
     validate,
     onSubmit: (values) => {
       checkEmail(values);
-      // handleFormSubmit(values);
     },
   });
 
   const formik2 = useFormik({
     initialValues: {
       Password: "",
-      // new_password: "",
-      // confirm_password: "",
     },
-    // validate2,
     onSubmit: (values) => {
-      console.log(values);
       checkEmail(values);
-      // handleFormSubmit(values);
     },
   });
 
   const checkEmail = (values) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/checkEmailEdit`,
-        { id: activeUser.id, email: values.email },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/exists`, { id: activeUser.id, email: values.email })
       .then((res) => {
         if (res.data === true) {
           setEmailError("");
@@ -149,18 +92,10 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: state.email,
+      })
       .then((res) => {
         console.log(res.data);
         setFormValues(value);
@@ -185,7 +120,6 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
   };
 
   const handleFormSubmit = (values) => {
-    // setLoading(true);
     setEmailError("");
 
     const formData = new FormData();
@@ -198,13 +132,8 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
       console.log(values.image[0]);
       formData.append("image", values.image[0]); // Assuming single file upload. For multiple, loop through the array
     }
-
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/updateuserdetail`, formData, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .put(`/users/${activeUser.id}`, formData)
       .then((res) => {
         getUsers();
         document.getElementById("my_modal_edit").close();
@@ -216,23 +145,6 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
         }
       });
   };
-
-  // const handleFileSelect = (event) => {
-  //   if (event.target.value !== "") {
-  //     const files = event.target.files;
-  //     let myFiles = Array.from(files);
-
-  //     const reader = new FileReader();
-
-  //     reader.onload = (e) => {
-  //       setImageSrc(e.target.result);
-  //     };
-
-  //     reader.readAsDataURL(files[0]);
-
-  //     formik.setFieldValue("image", myFiles);
-  //   }
-  // };
 
   const handleFileSelect = (event) => {
     if (event.target.value !== "") {
@@ -308,7 +220,6 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
   return (
     <dialog id="my_modal_edit" className="modal">
       {contextHolder}
-
       <TwoFactAuth3 handle2FA={handle2FA3} />
       <div className="modal-box bg-base-200 max-w-[50rem] ">
         <form method="dialog">
@@ -413,12 +324,11 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
                         <div className="form-control flex flex-row items-center rounded-[15px] h-12 bg-base-100 px-3 shadow">
                           <input
                             className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                            id="telNo"
                             name="phone"
                             type="tel"
                             size="20"
-                            minlength="9"
-                            maxlength="14"
+                            minLength="9"
+                            maxLength="14"
                             onChange={formik.handleChange}
                             value={formik.values.phone}
                           />

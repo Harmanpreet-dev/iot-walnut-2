@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: Category Management API
+  version: 1.0.0
+  description: API for managing categories, including creating and retrieving categories.
+tags:
+  - name: Category
+    description: Operations related to Categories
+paths:
+  /api/categories:
+    post:
+      summary: Add a new category
+      description: Creates a new category with the provided name.
+      tags:
+        - Category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryName:
+                  type: string
+                  description: The name of the category to be created.
+              required:
+                - categoryName
+      responses:
+        "201":
+          description: Category created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating the category creation.
+        "400":
+          description: Bad request due to missing or invalid category name.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating that the category name is required.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating a server error.
+
+    get:
+      summary: Retrieve all categories
+      description: Retrieves a list of all categories.
+      tags:
+        - Category
+      responses:
+        "200":
+          description: Successfully retrieved the list of categories.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Unique identifier for the category.
+                    name:
+                      type: string
+                      description: Name of the category.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating a server error.

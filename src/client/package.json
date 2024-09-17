@@ -25,6 +25,7 @@
     "react-scripts": "5.0.1",
     "react18-input-otp": "^1.1.4",
     "redux-persist": "^6.0.0",
+    "swagger-ui-react": "^5.17.14",
     "web-vitals": "^2.1.0",
     "xlsx": "^0.18.5"
   },

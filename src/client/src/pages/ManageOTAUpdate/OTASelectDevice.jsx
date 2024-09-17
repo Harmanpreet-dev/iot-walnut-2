@@ -4,24 +4,21 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Empty, Spin, message } from "antd";
 import { MdOutlineContentCopy } from "react-icons/md";
-import { SELECT_DEVICE } from "../../redux/actions/OTAAction";
+import { SELECT_DEVICE } from "../../redux/actions/otaAction";
 import copy from "copy-to-clipboard";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function SchduleSelectDevice() {
   const navigate = useNavigate();
   const [devices, setDevices] = useState([]);
   const [fleet, setFleets] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedDevices, setSelectedDevices] = useState(false);
   const [filteredDevices, setFilteredDevices] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [Continue, setContinue] = useState(true);
-
-  const state = useSelector((state) => state);
+  const { schdule, auth } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -38,46 +35,25 @@ export default function SchduleSelectDevice() {
   };
 
   const getDevices = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/getDevices`,
-        { fleet: state.schdule.fleet.name },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .get(`/devices/fleet/${schdule.fleet.name}`)
       .then((res) => {
-        setLoading(false);
-
         let data = res.data;
-
-        data.map((x) => {
+        data?.map((x) => {
           x.checked = false;
         });
-
         setDevices(data);
         setFilteredDevices(data);
       })
-
       .catch((err) => {
         console.log(err);
       });
   };
 
   const getFleets = () => {
-    setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getFleets`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .get(`/fleets`)
       .then((res) => {
-        setLoading(false);
-
         setFleets(res.data);
       })
       .catch((err) => {
@@ -86,25 +62,18 @@ export default function SchduleSelectDevice() {
   };
 
   const handleAllSelect = (checked) => {
-    const selectedDevices = devices.map((device) => {
+    const selectedDevices = devices?.map((device) => {
       device.checked = checked;
       return device;
     });
     setDevices(selectedDevices);
     setFilteredDevices(selectedDevices);
-
     setContinue(!checked);
-
-    // if (checked) {
-    //   setSelectedDevices(selectedDevices);
-    // } else {
-    //   setSelectedDevices([]);
-    // }
   };
 
   const handleSingleSelect = (id) => {
     const selectedDevices = [];
-    const updatedDevices = devices.map((device) => {
+    const updatedDevices = devices?.map((device) => {
       if (device.id === id) {
         device.checked = !device.checked;
       }
@@ -112,15 +81,11 @@ export default function SchduleSelectDevice() {
       return device;
     });
     setDevices(updatedDevices);
-
-    setContinue(selectedDevices.length == 0);
-
-    // setSelectedDevices(selectedDevices);
+    setContinue(selectedDevices.length === 0);
   };
   const handleSubmit = () => {
     let deviceArr = [];
-
-    devices.map((device) => {
+    devices?.map((device) => {
       if (device.checked) {
         deviceArr.push(device);
       }
@@ -146,7 +111,6 @@ export default function SchduleSelectDevice() {
   return (
     <>
       {contextHolder}
-      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
@@ -160,7 +124,6 @@ export default function SchduleSelectDevice() {
             </ul>
           </div>
         </div>
-
         <div className="flex items-center justify-between flex-col my-10">
           <div className="text-[29px] font-[500] landing-[29px] text-center">
             Select Device for Schedule a Task
@@ -185,7 +148,6 @@ export default function SchduleSelectDevice() {
             </button>
           </div>
         </div>
-
         <div className="mt-6">
           <div className="col-12">
             <div className="overflow-x-auto">
@@ -210,7 +172,7 @@ export default function SchduleSelectDevice() {
                 <br />
                 <tbody className="mt-3">
                   {filteredDevices.length ? (
-                    filteredDevices.map((x) => (
+                    filteredDevices?.map((x) => (
                       <>
                         <tr className="shadow-[0_3.5px_5.5px_0_#00000005] h-20 mb-3">
                           <th className="shadow-none">
@@ -251,8 +213,8 @@ export default function SchduleSelectDevice() {
                             </span>
                           </td>
                           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                            {fleet.map((y) => {
-                              if (y.name == x.fleet) {
+                            {fleet?.map((y) => {
+                              if (y.name === x.fleet) {
                                 return y.name;
                               }
                             })}
@@ -264,7 +226,7 @@ export default function SchduleSelectDevice() {
                   ) : (
                     <tr>
                       <td colSpan="6" className="text-[20px] text-center">
-                        {loading || <Empty />}
+                        <Empty />
                       </td>
                     </tr>
                   )}

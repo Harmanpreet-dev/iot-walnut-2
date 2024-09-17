@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: Google OTP API
+  version: 1.0.0
+  description: API for generating and verifying Google OTPs (One-Time Passwords) using TOTP.
+tags:
+  - name: google OTP
+    description: Operations related to OTP generation and verification
+paths:
+  /api/google/otp:
+    post:
+      summary: Generate Google OTP
+      description: Generates a Google OTP secret and a QR code for the given email address. Updates the user's record with the OTP secret and QR code URL.
+      tags:
+        - google OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the user for whom the OTP is being generated.
+              required:
+                - email
+      responses:
+        "200":
+          description: OTP generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  secret:
+                    type: string
+                    description: The base32 OTP secret.
+                  qrcode:
+                    type: string
+                    description: The QR code URL for the OTP.
+                example:
+                  secret: "JBSWY3DPEHPK3PXP"
+                  qrcode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAU..."
+        "400":
+          description: Bad request, invalid email format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Please enter a valid Email"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "OTP Generation failed"
+
+  /api/google/verify-otp:
+    post:
+      summary: Verify Google OTP
+      description: Verifies the provided OTP token against the stored OTP secret.
+      tags:
+        - google OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: The OTP token to verify.
+                secret:
+                  type: string
+                  description: The base32 OTP secret.
+              required:
+                - token
+                - secret
+      responses:
+        "200":
+          description: OTP verification result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verified:
+                    type: boolean
+                    description: Indicates if the OTP token is valid.
+                example:
+                  verified: true
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "OTP Verification failed"

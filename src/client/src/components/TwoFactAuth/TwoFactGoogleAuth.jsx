@@ -2,28 +2,19 @@ import React, { useState } from "react";
 import { Button } from "antd";
 import OtpInput from "react18-input-otp";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function TwoFactGoogleAuth({ handleSubmitfinal }) {
   const [code, setCode] = useState("");
-  const [generatedOTP, setGeneratedOTP] = useState(123456);
   const [error, setError] = useState(null);
-  const state = useSelector((state) => state.auth);
+  const { google_secret } = useSelector((state) => state.auth);
 
   const handleSubmit = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/verifyGoogleOTP`,
-        {
-          secret: state.google_secret,
-          token: code,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/google/verify-otp`, {
+        secret: google_secret,
+        token: code,
+      })
       .then((res) => {
         if (res.data.verified === true) {
           setError(null);
@@ -64,7 +55,6 @@ export default function TwoFactGoogleAuth({ handleSubmitfinal }) {
               value={code}
               onChange={handleChange}
               numInputs={6}
-              id="myInput"
               placeholder=""
               isSuccessed={false}
               errorStyle="error"
@@ -91,20 +81,10 @@ export default function TwoFactGoogleAuth({ handleSubmitfinal }) {
           >
             Submit
           </Button>
-
           <span className="countdown mt-4 text-[#000] text-[16px] landing-[19px] font-[500]">
             {/* <span style={{ "--value": 0 }}></span>:
             <span style={{ "--value": 0 }}></span> */}
           </span>
-
-          {/* <div className="mt-3">
-            <h3 className="text-[#8C8C8C] ml-2 font-[500] text-[16px] landing-[19px]">
-              Didn’t Received OTP?{" "}
-              <span className="text-[#000] ml-2 font-[500] text-[16px] landing-[19px]">
-                Resend
-              </span>
-            </h3>
-          </div> */}
         </div>
       </div>
     </>

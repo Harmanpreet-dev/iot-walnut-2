@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { Empty, Spin } from "antd";
-import { SELECT_FLEET } from "../../redux/actions/OTAAction";
+import { Empty } from "antd";
+import { SELECT_FLEET } from "../../redux/actions/otaAction";
 import axiosInstance from "../../utils/axiosInstance";
 
 export default function OTASelectFleet() {
@@ -15,15 +15,12 @@ export default function OTASelectFleet() {
   const [filteredFleets, setFilteredFleets] = useState([]);
   const [admin, setAdmin] = useState([]);
   const [category, setCategory] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
-
   const dispatch = useDispatch();
-
   const { role, id } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (role == 0) {
+    if (role === "0") {
       getFleets();
     } else {
       getAdminFeel();
@@ -32,60 +29,61 @@ export default function OTASelectFleet() {
   }, []);
 
   const getFleets = () => {
-    setLoading(true);
     axiosInstance
-      .get(`/getFleets`)
+      .get(`/fleets`)
       .then(({ data }) => {
-        setLoading(false);
-        data.map((fleet) => {
+        data?.map((fleet) => {
           fleet.checked = false;
         });
         setFleets(data);
         setFilteredFleets(data);
       })
-      .catch(() => {
-        setLoading(false);
+      .catch((err) => {
+        console.log(err);
       });
   };
 
   const getAdminFeel = () => {
-    setLoading(true);
     axiosInstance
-      .post(`/getFleet`, { id: id })
+      .post(`/fleets/admin`, { id: id })
       .then(({ data }) => {
-        setLoading(false);
-        data.map((fleet) => {
+        data?.map((fleet) => {
           fleet.checked = false;
         });
         setFleets(data);
         setFilteredFleets(data);
       })
-      .catch(() => {
-        setLoading(false);
+      .catch((err) => {
+        console.log(err);
       });
   };
 
   const getUserCategory = () => {
-    axiosInstance.get(`/getUserCategory`).then(({ data }) => {
-      let { users, category } = data;
-      users.map((fleet) => {
-        fleet.status = false;
+    axiosInstance
+      .get(`/categories`)
+      .then(({ data }) => {
+        let { users, category } = data;
+        users?.map((fleet) => {
+          fleet.status = false;
+        });
+        setAdmin(users);
+        setCategory(category);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-      setAdmin(users);
-      setCategory(category);
-    });
   };
 
   const handleCheckStatus = (id) => {
     setFilteredFleets((prevFleets) =>
-      prevFleets.map((fleet) => ({
+      prevFleets?.map((fleet) => ({
         ...fleet,
         checked: fleet.id === id ? !fleet.checked : false,
       }))
     );
 
     setSelectedFleet(() => {
-      const clickedFleet = filteredFleets.find((fleet) => fleet.id === id);
+      const clickedFleet = filteredFleets?.find((fleet) => fleet.id === id);
       return clickedFleet.checked ? null : clickedFleet;
     });
   };
@@ -109,7 +107,6 @@ export default function OTASelectFleet() {
 
   return (
     <>
-      <Spin spinning={loading} fullscreen />
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
@@ -142,7 +139,7 @@ export default function OTASelectFleet() {
             <button
               className="btn bg-slate-950 text-slate-50 text-[16px] font-[500] landing-[19px] border rounded-xl w-40 hover:bg-slate-950"
               onClick={() => handleSubmit()}
-              disabled={selectedFleet == null ? true : false}
+              disabled={selectedFleet === null ? true : false}
             >
               Continue
             </button>
@@ -170,7 +167,7 @@ export default function OTASelectFleet() {
                         Inactive Devices
                       </span>
                     </th>
-                    {role == 0 ? (
+                    {role === "0" ? (
                       <>
                         <th>Admin</th>
                         <th>Admin Phone</th>
@@ -181,7 +178,7 @@ export default function OTASelectFleet() {
                 <br />
                 <tbody className="mt-3">
                   {filteredFleets.length ? (
-                    filteredFleets.map((fleet) => (
+                    filteredFleets?.map((fleet) => (
                       <>
                         <tr className="shadow-[0_3.5px_5.5px_0_#00000005] mb-3 h-20">
                           <td className="shadow-none ">
@@ -203,7 +200,7 @@ export default function OTASelectFleet() {
                           </td>
                           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                             {
-                              category.find(
+                              category?.find(
                                 (y) => y.id === parseInt(fleet.category)
                               )?.name
                             }
@@ -214,17 +211,17 @@ export default function OTASelectFleet() {
                           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                             0,189
                           </td>
-                          {role == 0 ? (
+                          {role === "0" ? (
                             <>
                               <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
-                                {admin.map((y) => {
+                                {admin?.map((y) => {
                                   if (y.id === parseInt(fleet.admin)) {
                                     return y.name;
                                   }
                                 })}
                               </td>
                               <td className="text-[16px] font-[500] landing-[35px] bg-base-100  rounded-r-[15px]">
-                                {admin.map((y) => {
+                                {admin?.map((y) => {
                                   if (y.id === parseInt(fleet.admin)) {
                                     return y.phone;
                                   }
@@ -239,7 +236,7 @@ export default function OTASelectFleet() {
                   ) : (
                     <tr>
                       <td colSpan="6" className="text-[20px] text-center">
-                        {loading || <Empty />}
+                        <Empty />
                       </td>
                     </tr>
                   )}

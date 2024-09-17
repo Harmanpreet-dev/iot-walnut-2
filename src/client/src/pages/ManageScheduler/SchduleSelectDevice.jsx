@@ -4,24 +4,21 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import { IoIosArrowBack } from "react-icons/io";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { Empty, Spin, message } from "antd";
+import { Empty, message } from "antd";
 import { MdOutlineContentCopy } from "react-icons/md";
-import { SELECT_DEVICE } from "../../redux/actions/SchduleAction";
+import { SELECT_DEVICE } from "../../redux/actions/schduleAction";
 import copy from "copy-to-clipboard";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function SchduleSelectDevice() {
   const navigate = useNavigate();
   const [devices, setDevices] = useState([]);
   const [fleet, setFleets] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedDevices, setSelectedDevices] = useState(false);
   const [filteredDevices, setFilteredDevices] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [Continue, setContinue] = useState(true);
-
-  const state = useSelector((state) => state);
+  const { schdule } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -38,46 +35,25 @@ export default function SchduleSelectDevice() {
   };
 
   const getDevices = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/getDevices`,
-        { fleet: state.schdule.fleet.name },
-        {
-          headers: {
-            Authorization: state.auth.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .get(`/devices/fleet/${schdule.fleet.name}`)
       .then((res) => {
-        setLoading(false);
-
         let data = res.data;
-
         data.map((x) => {
           x.checked = false;
         });
-
         setDevices(data);
         setFilteredDevices(data);
       })
-
       .catch((err) => {
         console.log(err);
       });
   };
 
   const getFleets = () => {
-    setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getFleets`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .get(`/fleets`)
       .then((res) => {
-        setLoading(false);
-
         setFleets(res.data);
       })
       .catch((err) => {
@@ -92,14 +68,7 @@ export default function SchduleSelectDevice() {
     });
     setDevices(selectedDevices);
     setFilteredDevices(selectedDevices);
-
     setContinue(!checked);
-
-    // if (checked) {
-    //   setSelectedDevices(selectedDevices);
-    // } else {
-    //   setSelectedDevices([]);
-    // }
   };
 
   const handleSingleSelect = (id) => {
@@ -112,10 +81,7 @@ export default function SchduleSelectDevice() {
       return device;
     });
     setDevices(updatedDevices);
-
-    setContinue(selectedDevices.length == 0);
-
-    // setSelectedDevices(selectedDevices);
+    setContinue(selectedDevices.length === 0);
   };
   const handleSubmit = () => {
     let deviceArr = [];
@@ -146,7 +112,7 @@ export default function SchduleSelectDevice() {
   return (
     <>
       {contextHolder}
-      <Spin spinning={loading} fullscreen />
+
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <div aria-label="Breadcrumbs" className="breadcrumbs p-0">
@@ -252,7 +218,7 @@ export default function SchduleSelectDevice() {
                           </td>
                           <td className="text-[16px] font-[500] landing-[35px] bg-base-100 ">
                             {fleet.map((y) => {
-                              if (y.name == x.fleet) {
+                              if (y.name === x.fleet) {
                                 return y.name;
                               }
                             })}
@@ -264,7 +230,7 @@ export default function SchduleSelectDevice() {
                   ) : (
                     <tr>
                       <td colSpan="6" className="text-[20px] text-center">
-                        {loading || <Empty />}
+                        <Empty />
                       </td>
                     </tr>
                   )}

@@ -1,0 +1,310 @@
+openapi: 3.0.0
+info:
+  title: OTA Update API
+  version: 1.0.0
+  description: API for managing OTA updates, including creating, retrieving, and listing OTA updates.
+tags:
+  - name: OTA Update
+    description: Operations related to OTA Updates
+paths:
+  /api/ota-updates:
+    post:
+      summary: Create a new OTA update
+      description: Creates a new OTA update with the provided details.
+      tags:
+        - OTA Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the OTA update.
+                fleetId:
+                  type: string
+                  description: The ID of the fleet associated with the OTA update.
+                fleet:
+                  type: object
+                  description: Details about the fleet.
+                devices:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      arn:
+                        type: string
+                        description: The ARN of the device.
+                  description: List of devices to be updated.
+                description:
+                  type: string
+                  description: A description of the OTA update.
+                json:
+                  type: string
+                  description: The JSON configuration for the OTA update.
+                isOpen:
+                  type: boolean
+                  description: Indicates if the OTA update is open.
+                rate:
+                  type: integer
+                  description: The rate of the OTA update.
+                maxPerMinute:
+                  type: integer
+                  description: Maximum updates per minute.
+                baseRatePerMinute:
+                  type: integer
+                  description: Base rate per minute.
+                incrementFactor:
+                  type: integer
+                  description: Increment factor for the rate.
+                maxPerMinute2:
+                  type: integer
+                  description: Secondary maximum updates per minute.
+              required:
+                - name
+                - fleetId
+                - fleet
+                - devices
+                - description
+                - json
+      responses:
+        "201":
+          description: OTA update created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                example:
+                  message: "OTA update created successfully"
+        "400":
+          description: Bad request, missing required fields or invalid data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Name, FleetId, Fleet, Devices, Description, and JSON are required!"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Something went wrong"
+
+    get:
+      summary: Retrieve all OTA updates
+      description: Fetches a list of all OTA updates stored in the database.
+      tags:
+        - OTA Update
+      responses:
+        "200":
+          description: A list of OTA updates.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The unique identifier of the OTA update.
+                    name:
+                      type: string
+                      description: The name of the OTA update.
+                    fleetId:
+                      type: string
+                      description: The ID of the fleet associated with the OTA update.
+                    fleet:
+                      type: object
+                      description: Details about the fleet.
+                    devices:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          arn:
+                            type: string
+                            description: The ARN of the device.
+                      description: List of devices to be updated.
+                    description:
+                      type: string
+                      description: A description of the OTA update.
+                    json:
+                      type: string
+                      description: The JSON configuration for the OTA update.
+                    isOpen:
+                      type: boolean
+                      description: Indicates if the OTA update is open.
+                    rate:
+                      type: integer
+                      description: The rate of the OTA update.
+                    maxPerMinute:
+                      type: integer
+                      description: Maximum updates per minute.
+                    baseRatePerMinute:
+                      type: integer
+                      description: Base rate per minute.
+                    incrementFactor:
+                      type: integer
+                      description: Increment factor for the rate.
+                    maxPerMinute2:
+                      type: integer
+                      description: Secondary maximum updates per minute.
+                    status:
+                      type: boolean
+                      description: Status of the OTA update.
+                example:
+                  - id: 1
+                    name: "OTA Update 1"
+                    fleetId: "fleet123"
+                    fleet: { "name": "Fleet 1" }
+                    devices:
+                      [{ "arn": "arn:aws:iot:region:account-id:thing/device1" }]
+                    description: "First OTA Update"
+                    json: "{...}"
+                    isOpen: true
+                    rate: 10
+                    maxPerMinute: 5
+                    baseRatePerMinute: 2
+                    incrementFactor: 1
+                    maxPerMinute2: 10
+                    status: true
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Something went wrong"
+
+  /api/ota-updates/{id}:
+    get:
+      summary: Retrieve a specific OTA update
+      description: Fetches details of a specific OTA update by its ID.
+      tags:
+        - OTA Update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The unique identifier of the OTA update.
+      responses:
+        "200":
+          description: Details of the OTA update.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The unique identifier of the OTA update.
+                  name:
+                    type: string
+                    description: The name of the OTA update.
+                  fleetId:
+                    type: string
+                    description: The ID of the fleet associated with the OTA update.
+                  fleet:
+                    type: object
+                    description: Details about the fleet.
+                  devices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        arn:
+                          type: string
+                          description: The ARN of the device.
+                    description: List of devices to be updated.
+                  description:
+                    type: string
+                    description: A description of the OTA update.
+                  json:
+                    type: string
+                    description: The JSON configuration for the OTA update.
+                  isOpen:
+                    type: boolean
+                    description: Indicates if the OTA update is open.
+                  rate:
+                    type: integer
+                    description: The rate of the OTA update.
+                  maxPerMinute:
+                    type: integer
+                    description: Maximum updates per minute.
+                  baseRatePerMinute:
+                    type: integer
+                    description: Base rate per minute.
+                  incrementFactor:
+                    type: integer
+                    description: Increment factor for the rate.
+                  maxPerMinute2:
+                    type: integer
+                    description: Secondary maximum updates per minute.
+                  status:
+                    type: boolean
+                    description: Status of the OTA update.
+                example:
+                  id: 1
+                  name: "OTA Update 1"
+                  fleetId: "fleet123"
+                  fleet: { "name": "Fleet 1" }
+                  devices:
+                    [{ "arn": "arn:aws:iot:region:account-id:thing/device1" }]
+                  description: "First OTA Update"
+                  json: "{...}"
+                  isOpen: true
+                  rate: 10
+                  maxPerMinute: 5
+                  baseRatePerMinute: 2
+                  incrementFactor: 1
+                  maxPerMinute2: 10
+                  status: true
+        "400":
+          description: Bad request, invalid ID or missing parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Id is required"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing what went wrong.
+                example:
+                  error: "Something went wrong"

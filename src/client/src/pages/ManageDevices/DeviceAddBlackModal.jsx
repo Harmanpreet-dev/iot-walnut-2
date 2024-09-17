@@ -1,19 +1,17 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { message, Upload, Spin, Button } from "antd";
+import { message, Upload, Button } from "antd";
 import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
-import useMessage from "antd/es/message/useMessage";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function DeviceAddBlackModal({ getDevices }) {
-  const state = useSelector((state) => state.auth);
+  const { email, jwt } = useSelector((state) => state.auth);
   const params = useParams();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [dublicateData, setDublicateData] = useState([]);
-
   const { Dragger } = Upload;
 
   const handleFormSubmit = () => {
@@ -23,10 +21,10 @@ export default function DeviceAddBlackModal({ getDevices }) {
     formData.append("file", file);
     formData.append("fleet", params.fleet);
 
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/uploadBlack`, formData, {
+    axiosInstance
+      .post(`/devices/blacklist`, formData, {
         headers: {
-          Authorization: state.jwt,
+          Authorization: `Bearer ${jwt}`,
           "Content-Type": "multipart/form-data",
         },
       })
@@ -38,7 +36,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
       })
       .catch((err) => {
         setLoading(false);
-        if (err.response.status == 400) {
+        if (err.response.status === 400) {
           setDublicateData(err.response.data.duplicates);
           console.log(err.response.data.duplicates);
         }
@@ -63,18 +61,10 @@ export default function DeviceAddBlackModal({ getDevices }) {
   };
 
   const verifyUser = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: email,
+      })
       .then((res) => {
         document.getElementById("my_modal_2_2").showModal();
       })
@@ -118,7 +108,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
                   </p>
                 </Dragger>
               </div>
-              {dublicateData.length == 0 ? (
+              {dublicateData.length === 0 ? (
                 <div className="text-center">
                   <p>Upload Only xlxs, csv files</p>
                 </div>
@@ -130,7 +120,7 @@ export default function DeviceAddBlackModal({ getDevices }) {
                       Dublicate IMEI Numbers
                     </div>
                     <div className="collapse-content">
-                      {dublicateData.map((x, i) => {
+                      {dublicateData?.map((x, i) => {
                         return (
                           <div>
                             {i + 1}

@@ -1,0 +1,32 @@
+.topbar {
+  display: none;
+}
+.swagger-ui .info {
+  margin: 8px 0px;
+}
+
+.swagger-ui .scheme-container {
+  margin: 0;
+  padding: 8px 0;
+}
+
+.swagger-ui .main {
+  margin: 0;
+}
+
+.swagger-ui .info hgroup.main {
+  margin: 0px;
+}
+
+.swagger-ui .dialog-ux .modal-ux-content {
+  padding: 0;
+}
+
+.swagger-ui .auth-btn-wrapper {
+  padding: 8px;
+  gap: 8px;
+}
+
+.swagger-ui .opblock-tag {
+  padding: 4;
+}

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
-import axios from "axios";
 import { useSelector } from "react-redux";
-
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
+import axiosInstance from "../../utils/axiosInstance";
 
 const validate = (values) => {
   const errors = {};
@@ -18,7 +17,7 @@ const validate = (values) => {
 };
 
 const CategoryAddModal = ({ getCategory }) => {
-  const state = useSelector((state) => state.auth);
+  const { name, email, image } = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState();
 
   const formik = useFormik({
@@ -34,21 +33,13 @@ const CategoryAddModal = ({ getCategory }) => {
   const handleFormSubmit = (values) => {
     const timestamp = new Date().toISOString(); // Capture current timestamp in ISO format
 
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/categories`,
-        {
-          categoryName: values.categoryName,
-          name: state.name,
-          img: state.image,
-          timestamp, // Send timestamp to the server
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/categories`, {
+        categoryName: values.categoryName,
+        name: name,
+        img: image,
+        timestamp, // Send timestamp to the server
+      })
       .then((res) => {
         getCategory();
         document.getElementById("my_modal_1").close();
@@ -62,18 +53,10 @@ const CategoryAddModal = ({ getCategory }) => {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: email,
+      })
       .then((res) => {
         console.log(res.data);
         setFormValues(value);

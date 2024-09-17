@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
+import axiosInstance from "../../utils/axiosInstance";
 
 const validate = (values) => {
   const errors = {};
@@ -29,7 +29,7 @@ const validate = (values) => {
 };
 
 export default function FleetAddModal({ getFleets, admin, category }) {
-  const state = useSelector((state) => state.auth);
+  const { email } = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState();
 
   const formik = useFormik({
@@ -44,14 +44,9 @@ export default function FleetAddModal({ getFleets, admin, category }) {
 
   const handleFormSubmit = (values) => {
     values.name = values.name.replace(" ", "_");
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/addFleet`, values, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .post(`/fleets`, values)
       .then((res) => {
-        console.log(res);
         getFleets();
         document.getElementById("my_modal_3").close();
       })
@@ -61,20 +56,11 @@ export default function FleetAddModal({ getFleets, admin, category }) {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: email,
+      })
       .then((res) => {
-        console.log(res.data);
         setFormValues(value);
         document.getElementById("my_modal_2").showModal();
       })
@@ -140,7 +126,7 @@ export default function FleetAddModal({ getFleets, admin, category }) {
                         <option value="0" disabled>
                           Select Category
                         </option>
-                        {category.map((x, i) => {
+                        {category?.map((x, i) => {
                           return (
                             <option value={x.id} key={i}>
                               {x.name}
@@ -171,7 +157,7 @@ export default function FleetAddModal({ getFleets, admin, category }) {
                         <option value="0" disabled>
                           Select Admin
                         </option>
-                        {admin.map((x, i) => {
+                        {admin?.map((x, i) => {
                           return (
                             <option value={x.id} key={i}>
                               {x.name}

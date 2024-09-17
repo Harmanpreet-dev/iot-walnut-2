@@ -1,3 +1,4 @@
+import { Empty } from "antd";
 import React from "react";
 import { GoDotFill } from "react-icons/go";
 
@@ -50,18 +51,28 @@ export default function CategoryTable({ categories }) {
             </thead>
             <br />
             <tbody className="mt-3">
-              {categories.map((x) => {
-                let { id, name } = x;
-                return (
-                  <TableRow
-                    key={id}
-                    name={name}
-                    active="27682"
-                    inactive="27682"
-                    total="27682832"
-                  />
-                );
-              })}
+              {categories?.length ? (
+                <>
+                  {categories.map((x) => {
+                    let { id, name } = x;
+                    return (
+                      <TableRow
+                        key={id}
+                        name={name}
+                        active="27682"
+                        inactive="27682"
+                        total="27682832"
+                      />
+                    );
+                  })}
+                </>
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-[20px] text-center">
+                    <Empty />
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

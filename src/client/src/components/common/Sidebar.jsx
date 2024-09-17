@@ -6,14 +6,13 @@ import { SideBarDataAdmin } from "./SideBarDataAdmin";
 
 const Sidebar = () => {
   const [sideBarDataState, setSideBarDataState] = useState([]);
-
-  const state = useSelector((state) => state);
+  const { role } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (state.auth.role == 0) {
+    if (role === "0") {
       setSideBarDataState(SideBarDataSuperAdmin);
     }
-    if (state.auth.role == 1) {
+    if (role === "1") {
       setSideBarDataState(SideBarDataAdmin);
     }
   }, []);

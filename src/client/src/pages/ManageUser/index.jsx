@@ -2,19 +2,18 @@ import React, { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import { Drawer, Breadcrumb, Spin, message } from "antd";
+import { Breadcrumb, Spin, message } from "antd";
 import UserAddModal from "./UserAddModel";
 import UserTable from "./UserTable";
 import TwoFactAuth2 from "../../components/TwoFactAuth2/TwoFactAuth2";
 import UserEditModal from "./UserEditModel";
 import UserFilter from "./UserFilter";
+import axiosInstance from "../../utils/axiosInstance";
 
 const Manageuser = () => {
   const [userdetail, setUserdetail] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
   const state = useSelector((state) => state.auth);
-  const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [formValues, setFormValues] = useState();
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,27 +35,17 @@ const Manageuser = () => {
   };
 
   const getAdmins = () => {
-    setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getAdmins`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .get(`/admins`)
       .then((res) => {
-        setLoading(false);
-
         let users = res.data;
-
         users.map((x) => {
           x.status = false;
         });
-
         setAdmin(users);
       })
       .catch((err) => {
         console.log(err);
-        setLoading(false);
       });
   };
 
@@ -78,15 +67,9 @@ const Manageuser = () => {
   };
 
   const getuserdetail = () => {
-    setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/getuserdetail`, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .get(`/users`)
       .then((res) => {
-        setLoading(false);
         setUserdetail(res.data);
       })
       .catch((err) => {
@@ -95,18 +78,10 @@ const Manageuser = () => {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: state.email,
+      })
       .then((res) => {
         console.log(res.data);
         setFormValues(value);
@@ -125,32 +100,21 @@ const Manageuser = () => {
     setOpen(false);
   };
 
-  const handleDeleteAdmin = (id) => {
-    setLoading(true);
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/deleteUserDetails`,
-        { id },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+  const handleDeleteUser = (id) => {
+    axiosInstance
+      .delete(`/users/${id}`)
       .then((res) => {
-        console.log(res);
         getuserdetail();
-        setLoading(false);
         messageApi.success("Admin Deleted Successfully");
       })
       .catch((err) => {
-        setLoading(false);
+        console.log(err);
       });
   };
 
   const handle2FA2 = (response) => {
     if (response === true) {
-      handleDeleteAdmin(formValues);
+      handleDeleteUser(formValues);
     }
   };
 
@@ -165,7 +129,7 @@ const Manageuser = () => {
   const handleFilterDataBySider = (checked, id) => {
     let byAdmin = admin;
     byAdmin.map((x) => {
-      if (x.id == id) {
+      if (x.id === id) {
         x.status = checked;
       }
     });
@@ -180,7 +144,7 @@ const Manageuser = () => {
     let adminFilter = false;
 
     admin.map((x) => {
-      if (x.status == true) {
+      if (x.status === true) {
         adminFilter = true;
       }
     });
@@ -188,8 +152,8 @@ const Manageuser = () => {
     if (adminFilter) {
       userdetail.map((x) => {
         admin.map((y) => {
-          if (x.author_id == y.id) {
-            if (y.status == true) {
+          if (x.author_id === y.id) {
+            if (y.status === true) {
               Arr.push(x);
             }
           }
@@ -206,7 +170,7 @@ const Manageuser = () => {
   return (
     <>
       <TwoFactAuth2 handle2FA={handle2FA2} />
-      <Spin spinning={loading} fullscreen />
+
       <div className="content-wrapper bg-base-200">
         <div className="flex items-center justify-between">
           <Breadcrumb
@@ -221,7 +185,7 @@ const Manageuser = () => {
               className="filtersSet text-[17px] font-[500] flex items-center justify-center cursor-pointer"
               onClick={showDrawer}
             >
-              Filter{" "}
+              Filter
             </div>
             <UserFilter
               admin={admin}
@@ -229,114 +193,6 @@ const Manageuser = () => {
               drawerClose={onClose}
               handleFilterDataBySider={handleFilterDataBySider}
             />
-            {/* <Drawer title="FILTER" onClose={onClose} open={open}>
-              <div className="collapse collapse-plus">
-                <input type="radio" name="my-accordion-3" defaultChecked />
-                <div className="collapse-title text-[20px] font-[600]">
-                  Categories
-                </div>
-                <div className="collapse-content">
-                  <div className="flex justify-start items-center mb-4">
-                    <input
-                      type="checkbox"
-                      fill="fill-current"
-                      className="checkbox mr-2 rounded-sm text-[19] font-[500] landing-[35px]"
-                    />
-                    <span className="text-[19px] landing-[20px] font-[300]">
-                      solar
-                    </span>
-                  </div>
-                  <div className="flex justify-start items-center mb-4">
-                    <input
-                      type="checkbox"
-                      fill="fill-current"
-                      className="checkbox mr-2 rounded-sm text-[19] font-[500] landing-[35px]"
-                    />
-                    <span className="text-[19px] landing-[20px] font-[300]">
-                      solar
-                    </span>
-                  </div>
-                  <div className="flex justify-start items-center mb-4">
-                    <input
-                      type="checkbox"
-                      fill="fill-current"
-                      className="checkbox mr-2 rounded-sm text-[19] font-[500] landing-[35px]"
-                    />
-                    <span className="text-[19px] landing-[20px] font-[300]">
-                      solar
-                    </span>
-                  </div>
-                  <div className="flex justify-start items-center mb-4">
-                    <input
-                      type="checkbox"
-                      fill="fill-current"
-                      className="checkbox mr-2 rounded-sm text-[19] font-[500] landing-[35px]"
-                    />
-                    <span className="text-[19px] landing-[20px] font-[300]">
-                      solar
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="collapse collapse-plus">
-                <input type="radio" name="my-accordion-3" defaultChecked />
-                <div
-                  className="collapse-title text-[20px] font-[600]"
-                  onClick={() =>
-                    document.getElementById("my_modal_3").showModal()
-                  }
-                >
-                  Admins
-                </div>
-                <div className="collapse-content">
-                  <div className="flex justify-start items-center mb-4">
-                    <input
-                      type="checkbox"
-                      fill="fill-current"
-                      className="checkbox mr-2 rounded-sm text-[19] font-[500] landing-[35px]"
-                    />
-                    <span className="text-[19px] landing-[20px] font-[300]">
-                      {" "}
-                      Admin 1
-                    </span>
-                  </div>
-                  <div className="flex justify-start items-center mb-4">
-                    <input
-                      type="checkbox"
-                      fill="fill-current"
-                      className="checkbox mr-2 rounded-sm text-[19] font-[500] landing-[35px]"
-                    />
-                    <span className="text-[19px] landing-[20px] font-[300]">
-                      {" "}
-                      Admin 2
-                    </span>
-                  </div>
-                  <div className="flex justify-start items-center mb-4">
-                    <input
-                      type="checkbox"
-                      fill="fill-current"
-                      className="checkbox mr-2 rounded-sm text-[19] font-[500] landing-[35px]"
-                    />
-                    <span className="text-[19px] landing-[20px] font-[300]">
-                      {" "}
-                      Admin 3
-                    </span>
-                  </div>
-                  <div className="flex justify-start items-center mb-4">
-                    <input
-                      type="checkbox"
-                      fill="fill-current"
-                      className="checkbox mr-2 rounded-sm text-[19] font-[500] landing-[35px]"
-                    />
-                    <span className="text-[19px] landing-[20px] font-[300]">
-                      {" "}
-                      Admin 4
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Drawer> */}
             <div className="form-control flex flex-row items-center rounded-box border border-base-content/20 px-2 mx-4 bg-base-100">
               <CiSearch className="text-[25px]" />
               <input
@@ -372,7 +228,7 @@ const Manageuser = () => {
         />
         <UserTable
           users={filteredUsers}
-          handleDeleteAdmin={verifyUser}
+          handleDeleteUser={verifyUser}
           error={error}
           handleActive={handleActive}
         />

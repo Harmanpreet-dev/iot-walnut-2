@@ -1,28 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 import { FiUpload } from "react-icons/fi";
 import "./style.css";
 
 export default function IemiUpload() {
-  const [file, setFile] = useState(null);
-
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-
     if (!selectedFile) {
       console.log("No file to upload");
       alert("Please select a file to upload");
       return;
     }
-
     const formData = new FormData();
     formData.append("file", selectedFile);
-
     try {
-      const response = await fetch("http://localhost:5000/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/devices/whitelist",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -44,7 +41,6 @@ export default function IemiUpload() {
       console.error("Error uploading file:", error);
       alert("Error uploading file: " + error.message);
     } finally {
-      setFile(null);
       e.target.value = null;
     }
   };

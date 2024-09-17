@@ -1,10 +1,10 @@
 import { useFormik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
-import axios from "axios";
 import { IoEyeOutline } from "react-icons/io5";
 import TwoFactAuth from "../../components/TwoFactAuth/TwoFactAuth";
 import { message } from "antd";
+import axiosInstance from "../../utils/axiosInstance";
 
 const validate = (values) => {
   const errors = {};
@@ -92,7 +92,7 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
   });
 
   useEffect(() => {
-    if (state.role == 1) {
+    if (state.role === "1") {
       formik.setValues({
         admin: state.id,
       });
@@ -100,16 +100,8 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
   }, []);
 
   const checkEmail = (values) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/checkEmail`,
-        { email: values.email },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/exists`, { email: values.email })
       .then((res) => {
         if (res.data === true) {
           setEmailError("");
@@ -124,18 +116,10 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
   };
 
   const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
+    axiosInstance
+      .post(`/email/otp`, {
+        email: state.email,
+      })
       .then((res) => {
         console.log(res.data);
         setFormValues(value);
@@ -161,7 +145,7 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
 
   const selectAdminforUser = (e) => {
     const selectedAdminId = e.target.value;
-    const selectedAdmin = admin.find((k) => k.id == selectedAdminId);
+    const selectedAdmin = admin.find((k) => k.id === selectedAdminId);
 
     setAuthorid(selectedAdmin.id);
     setAuthorname(selectedAdmin.name);
@@ -170,8 +154,6 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
   const handleFormSubmit = (values) => {
     values.author_id = authorid;
     values.author_name = authorname;
-    // setLoading(true);
-
     setEmailError("");
 
     const formData = new FormData();
@@ -183,15 +165,10 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
     formData.append("author_name", values.author_name);
     if (values.image && values.image.length > 0) {
       console.log(values.image[0]);
-      formData.append("image", values.image[0]); // Assuming single file upload. For multiple, loop through the array
+      formData.append("image", values.image[0]);
     }
-
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/adduserdetail`, formData, {
-        headers: {
-          Authorization: state.jwt,
-        },
-      })
+    axiosInstance
+      .post(`/adduserdetail`, formData)
       .then((res) => {
         getuserdetail();
         document.getElementById("my_modal_3").close();
@@ -324,7 +301,7 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
                     ) : null}
                   </span>
                 </div>
-                {state.role == 0 ? (
+                {state.role === "0" ? (
                   <>
                     <div className="form-control">
                       <label className="label">
@@ -396,11 +373,10 @@ export default function UserAddModal({ getuserdetail, state, admin }) {
                     <div className="form-control flex flex-row items-center rounded-[15px] h-12 bg-base-100 px-3 shadow">
                       <input
                         className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                        id="telNo"
                         name="phone"
                         type="number"
-                        minlength="9"
-                        maxlength="10"
+                        minLength="9"
+                        maxLength="10"
                         onChange={formik.handleChange}
                         value={formik.values.phone}
                       />

@@ -2,12 +2,6 @@ import { FleetSVG, SchdulerSVG, User2SVG, UserSVG, OTAUpdate } from "./SVGIcon";
 import { HiOutlineViewGrid } from "react-icons/hi";
 
 export let SideBarDataSuperAdmin = [
-  // {
-  //   id: 0,
-  //   name: "Dashboard",
-  //   link: "/dashboard",
-  //   svg: <FleetSVG />,
-  // },
   {
     id: 1,
     name: "Manage Admin",

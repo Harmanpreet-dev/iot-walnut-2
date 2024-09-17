@@ -1,11 +1,9 @@
-import React from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
 } from "react-router-dom";
-
 import Login from "../pages/auth/Login";
 import ManageAdmin from "../pages/ManageAdmin";
 import Layout from "../components/Layout";
@@ -29,16 +27,19 @@ import OTASelectFleet from "../pages/ManageOTAUpdate/OTASelectFleet";
 import OTASelectDevice from "../pages/ManageOTAUpdate/OTASelectDevice";
 import OTAUpdate from "../pages/ManageOTAUpdate/OTAUpdate";
 import OTADetails from "../pages/ManageOTAUpdate/OTADetails";
-import Dashboard from "../pages/Dashboard";
+import SwaggerDocs from "../components/common/SwaggerDocs";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { Spin } from "antd";
 
 const routerAdmin = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<Login />}></Route>
       <Route path="/" element={<Layout />}>
-        <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/settings" element={<Settings />}></Route>
+        <Route path="/api-docs" element={<SwaggerDocs />}></Route>
         <Route path="/change-password" element={<ChangePassword />}></Route>
         <Route path="/manage-admin" element={<ManageAdmin />}></Route>
         <Route path="/manage-user" element={<Manageuser />}></Route>
@@ -74,10 +75,13 @@ const routerAdmin = createBrowserRouter(
 );
 
 const Router = () => {
+  const loader = useSelector((state) => state.loader);
+
   return (
-    <div>
-      <RouterProvider router={routerAdmin} />
-    </div>
+    <>
+      {<Spin spinning={loader?.loading} fullscreen />}
+      <RouterProvider router={routerAdmin} />;
+    </>
   );
 };
 

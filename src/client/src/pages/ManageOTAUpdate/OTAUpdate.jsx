@@ -21,7 +21,6 @@ export default function OTAUpdate() {
   const [baseRatePerMinute, setBaseRatePerMinute] = useState();
   const [incrementFactor, setIncrementFactor] = useState();
   const [maxPerMinute2, setMaxPerMinute2] = useState();
-  const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
 
   const { OTA, auth } = useSelector((state) => state);
@@ -54,20 +53,15 @@ export default function OTAUpdate() {
   };
 
   const verifyUser = () => {
-    setLoading(true);
     axiosInstance
-      .post(`/sendEmailOTP`, {
+      .post(`/email/otp`, {
         email: auth.email,
       })
       .then((res) => {
-        setLoading(false);
         document.getElementById("my_modal_2").showModal();
       })
       .catch((err) => {
-        setLoading(false);
-        if (err.response.data.error === "Email already exists") {
-          // setEmailError(err.response.data.error);
-        }
+        console.log(err);
       });
   };
 
@@ -79,7 +73,6 @@ export default function OTAUpdate() {
 
   const createOTAUpdate = () => {
     const { fleetId, fleet, devices } = OTA;
-    setLoading(true);
     const dataJson = {
       fleetId,
       fleet,
@@ -97,16 +90,15 @@ export default function OTAUpdate() {
       maxPerMinute2,
     };
     axiosInstance
-      .post(`/ota`, dataJson)
+      .post(`/ota-updates`, dataJson)
       .then(() => {
         openNotificationWithIcon("success", "OTA Update Added");
         setTimeout(() => {
-          setLoading(false);
           navigate("/manage-ota-update");
         }, 2000);
       })
-      .catch((er) => {
-        setLoading(false);
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -129,7 +121,6 @@ export default function OTAUpdate() {
 
   return (
     <>
-      <Spin spinning={loading} fullscreen />
       <TwoFactAuth handle2FA={handle2FA} />
       {contextHolder}
       <div className="content-wrapper bg-base-200">
@@ -232,7 +223,6 @@ export default function OTAUpdate() {
                       cols="50"
                       style={{ height: "150px", resize: "none" }}
                       value={json}
-                      // onChange={(e) => setJson(e.target.value)}
                       onChange={handleJsonChange}
                     />
                   </div>
@@ -341,7 +331,7 @@ export default function OTAUpdate() {
                         </label>
                       </div>
                     </div>
-                    {rate == "constant" ? (
+                    {rate === "constant" ? (
                       <div className="form-control mt-4">
                         <label className="label">
                           <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">

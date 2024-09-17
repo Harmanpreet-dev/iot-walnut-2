@@ -1,80 +1,33 @@
 import { useFormik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
-import { FaRegEyeSlash } from "react-icons/fa";
-import axios from "axios";
-import { IoEyeOutline } from "react-icons/io5";
 import TwoFactAuth3 from "../../components/TwoFactAuth3/TwoFactAuth3";
 import { message } from "antd";
+import axiosInstance from "../../utils/axiosInstance";
 
 const validate = (values) => {
   const errors = {};
 
   if (!values.name) {
     errors.name = "Required";
-  } else if (!/^[0-9a-zA-Z].*/i.test(values.name)) {
+  } else if (!/^[0-9a-zA-Z].*/.test(values.name)) {
     errors.name = "Invalid username";
   }
-
   if (!values.email) {
     errors.email = "Required";
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
     errors.email = "Invalid email address";
   }
-
   if (!values.phone) {
     errors.phone = "Required";
   } else if (!/^\d{8,11}$/.test(values.phone)) {
     errors.phone = "Enter valid Phone Number";
   }
-
-  return errors;
-};
-
-const validate2 = (values) => {
-  const errors = {};
-
-  if (!values.Password) {
-    errors.Password = "Required";
-  }
-
-  // if (!values.new_password) {
-  //   errors.new_password = "Required";
-  // } else if (values.new_password.length < 8) {
-  //   // Fixed this line
-  //   errors.new_password = "*new_password must be 8 characters long.";
-  // } else if (
-  //   !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.new_password)
-  // ) {
-  //   errors.new_password = "*Invalid confirmpassword";
-  // }
-
-  // if (!values.confirm_password) {
-  //   errors.confirm_password = "Required";
-  // } else if (values.confirm_password.length < 8) {
-  //   // Fixed this line
-  //   errors.confirm_password = "*confirm_password must be 8 characters long.";
-  // } else if (
-  //   !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/i.test(values.confirm_password)
-  // ) {
-  //   errors.confirm_password = "*Invalid confirmpassword";
-  // }
-
-  // if (
-  //   values.new_password &&
-  //   values.confirmpassword &&
-  //   values.new_password !== values.confirmpassword
-  // ) {
-  //   errors.confirmpassword = "Passwords do not match";
-  // }
-
   return errors;
 };
 
 export default function AdminEditModal({ getUsers, state, activeUser = null }) {
   const uploadRef = useRef();
   const [imageSrc, setImageSrc] = useState("./images/default.jpeg");
-  const [type, setType] = useState("password");
-  const [icon, setIcon] = useState(<FaRegEyeSlash />);
   const [emailError, setEmailError] = useState("");
   const [formValues, setFormValues] = useState();
   const [passwordModal, setPasswordModal] = useState(false);
@@ -105,7 +58,6 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
     },
     validate,
     onSubmit: (values) => {
-      // checkEmail(values);
       handleFormSubmit(values);
     },
   });
@@ -113,65 +65,11 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
   const formik2 = useFormik({
     initialValues: {
       Password: "",
-      // new_password: "",
-      // confirm_password: "",
     },
-    // validate2,
     onSubmit: (values) => {
       console.log(values);
-      // checkEmail(values);
-      // handleFormSubmit(values);
     },
   });
-
-  const checkEmail = (values) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/checkEmailEdit`,
-        { id: activeUser.id, email: values.email },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data === true) {
-          setEmailError("");
-          verifyUser(values);
-        }
-      })
-      .catch((err) => {
-        if (err.response.data.error === "Email already exists") {
-          setEmailError(err.response.data.error);
-        }
-      });
-  };
-
-  const verifyUser = (value) => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/sendEmailOTP`,
-        {
-          email: state.email,
-        },
-        {
-          headers: {
-            Authorization: state.jwt,
-          },
-        }
-      )
-      .then((res) => {
-        console.log(res.data);
-        setFormValues(value);
-        document.getElementById("my_modal_2_3").showModal();
-      })
-      .catch((err) => {
-        if (err.response.data.error === "Email already exists") {
-          setEmailError(err.response.data.error);
-        }
-      });
-  };
 
   const handle2FA3 = (response) => {
     console.log(response);
@@ -185,9 +83,7 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
   };
 
   const handleFormSubmit = (values) => {
-    // setLoading(true);
     setEmailError("");
-
     const formData = new FormData();
     formData.append("id", activeUser.id);
     formData.append("name", values.name);
@@ -195,17 +91,16 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
     formData.append("phone", values.phone);
 
     if (values.image && values.image.length > 0) {
-      console.log(values.image[0]);
-      formData.append("image", values.image[0]); // Assuming single file upload. For multiple, loop through the array
+      formData.append("image", values.image[0]);
     }
 
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/updateAdmin`, formData, {
+    axiosInstance
+      .put(`/admins/${activeUser.id}`, formData, {
         headers: {
-          Authorization: state.jwt,
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       })
-      .then((res) => {
+      .then(() => {
         getUsers();
         document.getElementById("my_modal_edit").close();
         messageApi.success("Admin Updated Successfully");
@@ -217,28 +112,10 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
       });
   };
 
-  // const handleFileSelect = (event) => {
-  //   if (event.target.value !== "") {
-  //     const files = event.target.files;
-  //     let myFiles = Array.from(files);
-
-  //     const reader = new FileReader();
-
-  //     reader.onload = (e) => {
-  //       setImageSrc(e.target.result);
-  //     };
-
-  //     reader.readAsDataURL(files[0]);
-
-  //     formik.setFieldValue("image", myFiles);
-  //   }
-  // };
-
   const handleFileSelect = (event) => {
     if (event.target.value !== "") {
       const files = event.target.files;
       let myFiles = Array.from(files);
-
       const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
       const maxSize = 5 * 1024 * 1024; // 5 MB
 
@@ -256,129 +133,42 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
 
       if (myFiles.length > 0) {
         const reader = new FileReader();
-
         reader.onload = (e) => {
           setImageSrc(e.target.result);
         };
-
         reader.readAsDataURL(myFiles[0]);
-
         formik.setFieldValue("image", myFiles);
       }
     }
   };
 
-  const handleToggle = () => {
-    if (type === "password") {
-      setIcon(<IoEyeOutline />);
-      setType("text");
-    } else {
-      setIcon(<FaRegEyeSlash />);
-      setType("password");
-    }
-  };
-
   const ChangePassword = () => {
     return (
-      <>
-        <div className="mt-3 w-3/4">
-          <form onSubmit={formik2.handleSubmit}>
-            {/* <div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">
-                    Password
-                  </span>
-                </label>
-                <div className="form-control flex flex-row items-center rounded-[15px] h-12 bg-base-100 px-3 shadow">
-                  <input
-                    type="text"
-                    className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                    name="Password"
-                    onChange={formik2.handleChange}
-                    value={formik2.values.current_password}
-                  />
-                </div>
-                <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
-                  {formik2.errors.Password ? (
-                    <div>{formik2.errors.Password}</div>
-                  ) : null}
-                </span>
-              </div>
-            </div> */}
-            {/* <div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">
-                    New Password
-                  </span>
-                </label>
-                <div className="form-control flex flex-row items-center rounded-[15px] h-12 bg-base-100 px-3 shadow">
-                  <input
-                    type="password"
-                    className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                    name="new_password"
-                    onChange={formik2.handleChange}
-                    value={formik2.values.new_password}
-                  />
-                </div>
-                <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
-                  {formik2.errors.new_password ? (
-                    <div>{formik2.errors.new_password}</div>
-                  ) : null}
-                </span>
-              </div>
-            </div>
-            <div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="text-[#B6B8BB] dark:white text-[17px] font-[500] landing-[19px]">
-                    Re-enter New Password
-                  </span>
-                </label>
-                <div className="form-control flex flex-row items-center rounded-[15px] h-12 bg-base-100 px-3 shadow">
-                  <input
-                    type="password"
-                    className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                    name="confirm_password"
-                    onChange={formik2.handleChange}
-                    value={formik2.values.confirm_password}
-                  />
-                </div>
-                <span className="h-[2px] mt-2 text-rose-600 text-[12px]">
-                  {formik2.errors.confirm_password ? (
-                    <div>{formik2.errors.confirm_password}</div>
-                  ) : null}
-                </span>
-              </div>
-            </div> */}
-
-            <div className="mt-6">
-              <button
-                type="submit"
-                className="btn text-white gap-2 btn-neutral btn-block rounded text-[17px] font-[500] landing-[19px]"
-              >
-                Submit
-              </button>
-              <button
-                type="button"
-                style={{ color: "black" }}
-                className="btn mt-4 text-white gap-2 btn btn-block rounded text-[17px] font-[500] landing-[19px]"
-                // onClick={() => setPasswordModal(false)}
-              >
-                Go Back
-              </button>
-            </div>
-          </form>
-        </div>
-      </>
+      <div className="mt-3 w-3/4">
+        <form onSubmit={formik2.handleSubmit}>
+          <div className="mt-6">
+            <button
+              type="submit"
+              className="btn text-white gap-2 btn-neutral btn-block rounded text-[17px] font-[500] landing-[19px]"
+            >
+              Submit
+            </button>
+            <button
+              type="button"
+              style={{ color: "black" }}
+              className="btn mt-4 text-white gap-2 btn btn-block rounded text-[17px] font-[500] landing-[19px]"
+            >
+              Go Back
+            </button>
+          </div>
+        </form>
+      </div>
     );
   };
 
   return (
     <dialog id="my_modal_edit" className="modal">
       {contextHolder}
-
       <TwoFactAuth3 handle2FA={handle2FA3} />
       <div className="modal-box bg-base-200 max-w-[50rem] ">
         <form method="dialog">
@@ -412,7 +202,6 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
                   className="w-24 h-24 border border-1 border-current rounded-full object-cover"
                 />
                 <div className="tex-[15px] font-[700] landing-[15px] text-center mt-2">
-                  {" "}
                   Upload New Picture
                 </div>
               </div>
@@ -483,12 +272,11 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
                         <div className="form-control flex flex-row items-center rounded-[15px] h-12 bg-base-100 px-3 shadow">
                           <input
                             className="input w-full focus:border-none focus:outline-none input-sm focus:outline-offset-none"
-                            id="telNo"
                             name="phone"
                             type="tel"
                             size="20"
-                            minlength="9"
-                            maxlength="14"
+                            minLength="9"
+                            maxLength="14"
                             onChange={formik.handleChange}
                             value={formik.values.phone}
                           />
@@ -510,14 +298,6 @@ export default function AdminEditModal({ getUsers, state, activeUser = null }) {
                     >
                       Submit
                     </button>
-                    {/* <button
-                      type="button"
-                      style={{ color: "black" }}
-                      className="btn mt-4 text-white gap-2 btn btn-block rounded text-[17px] font-[500] landing-[19px]"
-                      onClick={() => setPasswordModal(true)}
-                    >
-                      Change Password
-                    </button> */}
                   </div>
                 </form>
               </div>
